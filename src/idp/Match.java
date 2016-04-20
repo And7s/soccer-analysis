@@ -12,11 +12,21 @@ public class Match {
     public int c_player = 0;
 
     public Match(String filename) {
+
+
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         InputStream in;
         long startTime = System.nanoTime();
 
         int c_nodes = 0;
+
+        Player p2 = new Player();
+        p2.ShortName = "Ball";
+        p2.PersonId = "DFL-OBJ-0000XT";
+        players[c_player++] = p2;
+
+
+
         Frame[] frames = new Frame[3600000];
         try {
             in = new FileInputStream(filename);
@@ -56,6 +66,7 @@ public class Match {
                 return players[i];
             }
         }
+
         System.out.println("Cannot found player " + id);
         return null;
     }
