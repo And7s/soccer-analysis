@@ -28,11 +28,13 @@ public class idp {
         frame.setVisible(true);
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         Position position = new Position();
-        frameSet = position.fakeData();
-        //frameSet = position.readData();
+        //frameSet = position.fakeData();
+        frameSet = position.readData();
         analyze();
 
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
+
+        visField.updateData(position, match);
 
     }
 
@@ -107,7 +109,7 @@ public class idp {
             dat[i].sd = (float)Math.sqrt(dat[i].var);
             System.out.println("mean "+dat[i]);
         }
-        visField.updateData(dat, frameSet, match);
+
 
         //  canvas.updateData(dat, frameSet);
     }

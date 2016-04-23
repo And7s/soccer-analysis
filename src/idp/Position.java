@@ -194,6 +194,14 @@ public class Position {
         return frameSet;
     }
 
+    public FrameSet getBallFirstHalf(boolean firsHalf) {
+        if (firsHalf) {
+            return frameSet[idx_ball_first_half];
+        }else {
+            return frameSet[idx_ball_second_half];
+        }
+    }
+
 
 
 }

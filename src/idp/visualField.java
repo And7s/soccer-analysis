@@ -14,14 +14,15 @@ public class visualField extends JPanel {
     FrameSet[] frameSet;
     Match match;
     Graphics g;
+    Position position;
     int width, height;
     float scale = 10f;
-
     int cur_pos = 0;
+    boolean show_first_half = true;
 
-    public void updateData(MeanData[] data, FrameSet[] frameSet, Match match) {
-        this.data = data;
-        this.frameSet = frameSet;
+    public void updateData(Position position, Match match) {
+        this.position = position;
+        this.frameSet = position.frameSet;
         this.match = match;
         repaint();
 
@@ -44,7 +45,11 @@ public class visualField extends JPanel {
     public void update() {
         System.out.println("update"+cur_pos);
         cur_pos++;
-        if (cur_pos > 980) cur_pos = 0;
+        int amount = position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
+        if (cur_pos > amount) {
+            cur_pos = 0;
+            show_first_half = !show_first_half;
+        }
         repaint();
     }
 
@@ -70,28 +75,42 @@ public class visualField extends JPanel {
 
 
         // some random Lines
+        FrameSet ball_frames = position.getBallFirstHalf(show_first_half);
+
+
         for (int j = 0; j < frameSet.length; j++) {
             g.setColor(new Color(0,0, 0, 0.05f));
-            for (int i = 1; i < draw_frames_count; i++) { // todo synchronize the offset with the ball
-                if (i % steps_increase_alpha == 0) {
-                    g.setColor(new Color(0,0, 0, 0.1f * i / 10.0f));
-                }
-                int idx = i + cur_pos;
 
-                g.drawLine(
-                    scaleX(frameSet[j].frames[idx - 1].X),
-                    scaleY(frameSet[j].frames[idx - 1].Y),
-                    scaleX(frameSet[j].frames[idx].X),
-                    scaleY(frameSet[j].frames[idx].Y)
+            if (frameSet[j].firstHalf == show_first_half) { // if this half is currently shown
+                int offset = ball_frames.frames[0].N - frameSet[j].frames[0].N;  // offset betwen ball (match) and player activation
+
+                for (int i = 1; i < draw_frames_count; i++) { // todo synchronize the offset with the ball
+                    int idx = i + cur_pos + offset;
+
+                    if (idx > 0 && idx < frameSet[j].frames.length) {  // inside the array (player is currently active)
+                        if (i % steps_increase_alpha == 0) {
+                            g.setColor(new Color(0, 0, 0, 0.1f * i / 10.0f));
+                        }
+
+
+                        g.drawLine(
+                            scaleX(frameSet[j].frames[idx - 1].X),
+                            scaleY(frameSet[j].frames[idx - 1].Y),
+                            scaleX(frameSet[j].frames[idx].X),
+                            scaleY(frameSet[j].frames[idx].Y)
+                        );
+                    }
+                }
+                g.setColor(Color.black);
+                ((Graphics2D) g).drawString(
+                    match.getPlayer(frameSet[j].Object).ShortName + " " + frameSet[j].frames[cur_pos + draw_frames_count].N,
+                    scaleX(frameSet[j].frames[cur_pos + draw_frames_count].X),
+                    scaleY(frameSet[j].frames[cur_pos + draw_frames_count].Y)
                 );
             }
-
-            ((Graphics2D) g).drawString(
-                match.getPlayer(frameSet[j].Object).ShortName +" "+ frameSet[j].frames[cur_pos + draw_frames_count].N,
-                scaleX(frameSet[j].frames[cur_pos + draw_frames_count].X),
-                scaleY(frameSet[j].frames[cur_pos + draw_frames_count].Y)
-            );
         }
+        // indicate ballstatus and ballposession
+
 
         long duration = System.nanoTime() - startTime;
         System.out.println("duration" + (duration / 1E6)+ "ms");
