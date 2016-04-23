@@ -48,10 +48,12 @@ public class Position {
                 }
 
                 Frame frame = new Frame();
+
                 frame.BallStatus =  cur_ball_status;
                 frame.BallPossession = cur_ball_posession;
                 frame.N = j + (i % 2) * 100000;
                 frame.S = (float) Math.abs(rand.nextGaussian() * 10);
+                frame.A = (j > 0) ? (frame.S - frameSet[i].frames[j - 1].S) * 25 : 0;
                 frame.X = cur_pos_x * (1.0f - perc) + cur_goal_x * perc ;
                 frame.Y = cur_pos_y * (1.0f - perc) + cur_goal_y * perc ;
                 frameSet[i].frames[j] = frame;
@@ -106,6 +108,7 @@ public class Position {
                         frame.X = Float.parseFloat(streamReader.getAttributeValue(null, "X"));
                         frame.Y = Float.parseFloat(streamReader.getAttributeValue(null, "Y"));
                         frame.S = Float.parseFloat(streamReader.getAttributeValue(null, "S"));
+                        frame.A = (tmp_c_nodes > 0) ? (frame.S - tmp_frames[tmp_c_nodes - 1].S) * 25 : 0;
                         //System.out.println("N"+N);
                         tmp_frames[tmp_c_nodes++] = frame;
 

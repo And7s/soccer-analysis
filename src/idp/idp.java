@@ -32,8 +32,8 @@ public class idp {
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
-        frameSet = position.fakeData();
-        //frameSet = position.readData();
+        //frameSet = position.fakeData();
+        frameSet = position.readData();
         analyze();
         createTable();
         my_frame.addView(visField, "Field");
