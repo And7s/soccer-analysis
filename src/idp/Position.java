@@ -52,7 +52,9 @@ public class Position {
                 frame.BallStatus =  cur_ball_status;
                 frame.BallPossession = cur_ball_posession;
                 frame.N = j + (i % 2) * 100000;
-                frame.S = (float) Math.abs(rand.nextGaussian() * 10);
+                frame.S = (j > 0) ?
+                    (float) Math.abs(rand.nextGaussian() * 10) * 0.3f + frameSet[i].frames[j - 1].S * 0.7f:
+                    (float) Math.abs(rand.nextGaussian() * 10);
                 frame.A = (j > 0) ? (frame.S - frameSet[i].frames[j - 1].S) * 25 : 0;
                 frame.X = cur_pos_x * (1.0f - perc) + cur_goal_x * perc ;
                 frame.Y = cur_pos_y * (1.0f - perc) + cur_goal_y * perc ;

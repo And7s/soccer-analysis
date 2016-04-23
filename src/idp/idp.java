@@ -11,6 +11,9 @@ import javax.swing.JFrame;
 import javax.xml.stream.*;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
+
+// about power
+// http://www.gpexe.com/en/blog/metabolic-power-really-understood.html
 public class idp {
 
     public MyCanvas canvas;
@@ -32,7 +35,7 @@ public class idp {
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
-        //frameSet = position.fakeData();
+        frameSet = position.fakeData();
         frameSet = position.readData();
         analyze();
         createTable();

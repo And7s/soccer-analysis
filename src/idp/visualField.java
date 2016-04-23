@@ -128,26 +128,26 @@ public class visualField extends JPanel {
             top = scaleY(-68.0f / 2.0f),
             right = scaleX(105f / 2.0f),
             bottom = scaleY(68f / 2.0f);
-        g.drawLine(left, top, right, top);
-        g.drawLine(left, bottom, right, bottom);
-        g.drawLine(left, top, left, bottom);
-        g.drawLine(right, top, right, bottom);
-        g.drawLine(scaleX(0), top, scaleX(0), bottom);
+
+        g.drawRect(left, top, (int)(105f * scale), (int)(68f * scale));
         int scaledCirle = (int) (18.3 * scale);
         int dotSize = (int) (0.5f * scale);
         int meterSize = (int) (1.5f * scale);
         g.drawArc(scaleX(0) - scaledCirle / 2, scaleY(0) - scaledCirle / 2, scaledCirle, scaledCirle, 0, 360);
         g.drawArc(scaleX(0) - dotSize / 2, scaleY(0) - dotSize / 2, dotSize, dotSize, 0, 360);
 
-        drawLine(-105f / 2 + 5.5f, -68f / 2, -105f / 2 + 5.5f, 68f / 2);
-        drawLine(105f / 2 - 5.5f, -68f / 2, 105f / 2 - 5.5f, 68f / 2);
+        // goal room
+        g.drawRect(scaleX(-105f / 2), scaleY(-12.8f / 2), (int)(5.5f * scale), (int)(12.8f * scale));
+        g.drawRect(scaleX(105f / 2 - 5.5f), scaleY(-12.8f / 2), (int)(5.5f * scale), (int)(12.8f * scale));
+        // penalty room
+        g.drawRect(scaleX(-105f / 2), scaleY(-34.8f / 2), (int)(16.5f * scale), (int)(34.8f * scale));
+        g.drawRect(scaleX(105f / 2 - 16.5f), scaleY(-34.8f / 2), (int)(16.5f * scale), (int)(34.8f * scale));
+
 
         // edges
         g.drawArc(right - meterSize / 2, bottom - meterSize / 2, meterSize, meterSize, 90, 90);
         g.drawArc(right - meterSize / 2, top - meterSize / 2, meterSize, meterSize, 180, 90);
-
         g.drawArc(left - meterSize / 2, top - meterSize / 2, meterSize, meterSize, 270, 90);
-
         g.drawArc(left - meterSize / 2, bottom - meterSize / 2, meterSize, meterSize, 0, 90);
     }
 

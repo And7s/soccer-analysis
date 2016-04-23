@@ -122,6 +122,44 @@ public static int foo() {
 
 
 
+        // filter some more (calculate power consumption
+
+
+        int j = 0;  // which frameset
+        Frame[] fs = frameSet[j].frames;
+        int start = 40;
+        int end = 50;
+        int offset_y = 400;
+        float scale_x = scale_x = (float) width / (end - start);
+        float scale_y = 1;
+        System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
+        g2d.setColor(Color.black);
+        for (int i = start + 1; i < end; i++ ) {
+
+            double ES = fs[i].A / 3.6 / 9.81;
+            double EM = Math.sqrt(Math.pow(9.81, 2) + Math.pow(fs[i].A, 2)) / 9.81;
+            double EC = (
+                + 155.4 * Math.pow(ES, 5)
+                - 30.4 * Math.pow(ES , 4)
+                - 43.3 * Math.pow(ES, 3)
+                + 46.3 * Math.pow(ES, 2)
+                + 19.5 * ES
+                + 3.6
+                ) * EM;
+            double P = EC * fs[i].S / 3.6;
+            System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
+            float val = fs[i].S;
+            float val_prev = fs[i - 1].S;
+            g2d.drawLine(
+                (int)((float)(i - start - 1) * scale_x),
+                (int)(val_prev * scale_y + offset_y),
+                (int)((float)(i - start) * scale_x),
+                (int)(val * scale_y + offset_y)
+            );
+        }
+
+
+
 /*
 
 
