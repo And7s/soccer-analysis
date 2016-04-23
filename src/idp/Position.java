@@ -18,6 +18,9 @@ public class Position {
         idx_ball_first_half = 0;
         idx_ball_second_half = 1;
 
+        int cur_ball_status = 0;
+        int cur_ball_posession = 1;
+
         frameSet = new FrameSet[58];
         for (int i = 0; i < 58; i++) {  // framesets
             frameSet[i] = new FrameSet();
@@ -37,10 +40,16 @@ public class Position {
             int first_half = i % 2;
             for (int j = 0; j < 1000; j++) {
                 float perc = (recalc_at - j) / recalc_in;
+                if (Math.random() > 0.99) {
+                    cur_ball_status = Math.abs(cur_ball_status - 1);    // alters between 0 and 1
+                }
+                if (Math.random() > 0.99) {
+                    cur_ball_posession = (cur_ball_posession % 2) + 1;   // alters 1 and 2
+                }
 
                 Frame frame = new Frame();
-                frame.BallStatus = 1;
-                frame.BallPossession = 1;
+                frame.BallStatus =  cur_ball_status;
+                frame.BallPossession = cur_ball_posession;
                 frame.N = j + (i % 2) * 100000;
                 frame.S = (float) Math.abs(rand.nextGaussian() * 10);
                 frame.X = cur_pos_x * (1.0f - perc) + cur_goal_x * perc ;
@@ -54,7 +63,8 @@ public class Position {
                 }
             }
         }
-        return frameSet;
+
+        return spreadBallStatus(frameSet);
     }
 
     public FrameSet[] readData() {
@@ -153,45 +163,49 @@ public class Position {
             long duration = System.nanoTime() - startTime;
             System.out.println("took: " + (duration / 1E9) +"s");
 
-            // get ballposession and ballstatus for others
-            int start_first_half = frameSet[idx_ball_first_half].frames[0].N,
-                start_second_half = frameSet[idx_ball_second_half].frames[0].N;
-            System.out.println("start at "+start_first_half+" and "+start_second_half);
-            for (int i = 0; i < frameSet.length; i++) {
-                if (i == idx_ball_first_half || i == idx_ball_second_half) continue;    // the ball has the ball status itself
-                int num = frameSet[i].frames[0].N;
-                int ball_idx = idx_ball_first_half, diff; // diff is how much later the player joined this half
-                if (num >= start_second_half) {
-                    ball_idx = idx_ball_second_half;
-                    diff = num - start_second_half;
-                } else {
-                    diff = num - start_first_half;
-                }
-                // System.out.println("Frameset " + i +" starts at "+num + "diff "+diff + "in half "+ball_idx);
-                for (int j = 0; j < frameSet[i].frames.length; j++) {
-                    // error detection
-                    if (frameSet[i].frames[j].N != frameSet[ball_idx].frames[j + diff].N) {     // this should not happen, but still, in the dataset are wholes
-                        System.out.println("i"+i+" j"+j);
-                        System.out.println(frameSet[i].frames[j].toString());
-                        System.out.println(frameSet[ball_idx].frames[j + diff].toString());
-
-                        int var = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j + diff].N;
-                        System.out.println("abweichung " + var);
-
-                        diff = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j].N;    // realign
-                        //System.exit(-1);
-
-                    }
-                    frameSet[i].frames[j].BallPossession = frameSet[ball_idx].frames[j + diff].BallPossession;
-                    frameSet[i].frames[j].BallStatus = frameSet[ball_idx].frames[j + diff].BallStatus;
-                }
-            }
+            frameSet = spreadBallStatus(frameSet);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return frameSet;
+    }
+    public FrameSet[] spreadBallStatus(FrameSet[] frameSet) {
+        // get ballposession and ballstatus for others
+        int start_first_half = frameSet[idx_ball_first_half].frames[0].N,
+            start_second_half = frameSet[idx_ball_second_half].frames[0].N;
+        System.out.println("start at "+start_first_half+" and "+start_second_half);
+        for (int i = 0; i < frameSet.length; i++) {
+            if (i == idx_ball_first_half || i == idx_ball_second_half) continue;    // the ball has the ball status itself
+            int num = frameSet[i].frames[0].N;
+            int ball_idx = idx_ball_first_half, diff; // diff is how much later the player joined this half
+            if (num >= start_second_half) {
+                ball_idx = idx_ball_second_half;
+                diff = num - start_second_half;
+            } else {
+                diff = num - start_first_half;
+            }
+            // System.out.println("Frameset " + i +" starts at "+num + "diff "+diff + "in half "+ball_idx);
+            for (int j = 0; j < frameSet[i].frames.length; j++) {
+                // error detection
+                if (frameSet[i].frames[j].N != frameSet[ball_idx].frames[j + diff].N) {     // this should not happen, but still, in the dataset are wholes
+                    System.out.println("i"+i+" j"+j);
+                    System.out.println(frameSet[i].frames[j].toString());
+                    System.out.println(frameSet[ball_idx].frames[j + diff].toString());
+
+                    int var = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j + diff].N;
+                    System.out.println("abweichung " + var);
+
+                    diff = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j].N;    // realign
+                    //System.exit(-1);
+
+                }
+                frameSet[i].frames[j].BallPossession = frameSet[ball_idx].frames[j + diff].BallPossession;
+                frameSet[i].frames[j].BallStatus = frameSet[ball_idx].frames[j + diff].BallStatus;
+            }
+        }
+        return  frameSet;
     }
 
     public FrameSet getBallFirstHalf(boolean firsHalf) {

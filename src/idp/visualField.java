@@ -43,7 +43,7 @@ public class visualField extends JPanel {
 
 
     public void update() {
-        System.out.println("update"+cur_pos);
+
         cur_pos++;
         int amount = position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
         if (cur_pos > amount) {
@@ -54,6 +54,7 @@ public class visualField extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
+        // System.out.println("update"+cur_pos);
         this.g = g;
         long startTime = System.nanoTime();
         Graphics2D g2d = (Graphics2D) g;
@@ -113,7 +114,7 @@ public class visualField extends JPanel {
 
 
         long duration = System.nanoTime() - startTime;
-        System.out.println("duration" + (duration / 1E6)+ "ms");
+        // System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
     public void drawBackground() {

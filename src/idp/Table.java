@@ -1,19 +1,15 @@
 package idp;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 
-import javax.swing.RowSorter;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-public class Table {
+public class Table extends JPanel {
     public Table(Object[][] rowData, Object[] columnNames) {
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //JFrame frame = new JFrame();
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
         TableModel model = new DefaultTableModel(rowData, columnNames) {
@@ -35,8 +31,9 @@ public class Table {
         table.setRowSorter(sorter);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        frame.add(scrollPane, BorderLayout.CENTER);
-        frame.setSize(300, 150);
-        frame.setVisible(true);
+        add(scrollPane, BorderLayout.CENTER);
+        setLayout(new GridLayout(1,0));
+        //setSize(300, 150);
+        //setVisible(true);
     }
 }

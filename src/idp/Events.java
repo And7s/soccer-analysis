@@ -34,11 +34,11 @@ public class Events {
                 if (streamReader.isStartElement()) {
                     String tag = streamReader.getLocalName();
                     if (tag.equals("Event")) {
-                        System.out.println(tag);
-                        int count = streamReader.getAttributeCount();
+                        // System.out.println(tag);
+                        /*int count = streamReader.getAttributeCount();
                         for (int i = 0; i < count; i++) {
                             System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
-                        }
+                        }*/
 
                         Date date = sdf.parse(streamReader.getAttributeValue(null, "EventTime").replace('T', '|'));
                         Event ev = new Event();
@@ -51,11 +51,11 @@ public class Events {
                             streamReader.next();
                             if (streamReader.isStartElement()) {
 
-                                System.out.println(streamReader.getLocalName());
+                                /*System.out.println(streamReader.getLocalName());
                                 count = streamReader.getAttributeCount();
                                 for (int i = 0; i < count; i++) {
                                     System.out.println("\t\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
-                                }
+                                }*/
                             }
 
                         } while(!streamReader.isEndElement() && streamReader.getLocalName().equals("Event"));   // wait for the closing Event tag
@@ -80,9 +80,9 @@ public class Events {
             }
         });
 
-        for (int i = 0; i < c_nodes; i++) {
+        /*for (int i = 0; i < c_nodes; i++) {
             System.out.println("event "+event[i].date.getTime());
-        }
+        }*/
         // reading over
         System.out.println("read " + c_nodes + " Events");
 
