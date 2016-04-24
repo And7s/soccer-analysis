@@ -26,10 +26,9 @@ public class myFrame extends JFrame {
         contentPane.setLayout(new GridLayout(1,0));   // The content-pane sets its layout
 
         tabbedPane = new JTabbedPane();
-        JPanel panel = new JPanel();
-        panel.add(new myPanel());
 
-        tabbedPane.addTab("asd", null, panel);
+
+        tabbedPane.addTab("Home", null, new myPanel());
 
         //contentPane.add(tabbedPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

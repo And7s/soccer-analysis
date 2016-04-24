@@ -19,6 +19,7 @@ public class idp {
     public MyCanvas canvas;
     public static Match match;
     public visualField visField;
+    public static visZones vis_zones;
     public Events events;
     public static FrameSet[] frameSet;
 
@@ -35,12 +36,16 @@ public class idp {
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
-        //frameSet = position.fakeData();
-        frameSet = position.readData();
+        frameSet = position.fakeData();
+        //frameSet = position.readData();
         analyze();
         createTable();
         my_frame.config.updateData();
         my_frame.addView(visField, "Field");
+
+        vis_zones = new visZones();
+        my_frame.addView(vis_zones, "Zones");
+
         visSpeed vis_speed = new visSpeed();
         vis_speed.updateData(dat, frameSet);
         my_frame.addView(vis_speed, "speed");
@@ -55,7 +60,7 @@ public class idp {
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
         visField.updateData(position, match);
-
+        vis_zones.repaint();
 
 
     }
@@ -133,6 +138,7 @@ public class idp {
         for (int i = 0; i < border.length - 1; i++) {   // create Meandaata objects
             dat[i] = new MeanData();
         }
+
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
             if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
@@ -155,26 +161,50 @@ public class idp {
                     if (!App.only_active || frames[j].BallStatus == 1) {     // either ball statis is active, or its not requested
 
                         if (frames[j].N >= border[k]) {
-                            if (j == 20 && k == 0) {
-                                System.out.println(frameSet[i]);
-                                System.out.println(frames[j]);
-                                System.out.println("stargin "+is_starting);
-                            }
+
+                            // speed
                             dat[k].sum += frames[j].S;
                             dat[k].count++;
                             dat[k].sq_sum += frames[j].S * frames[j].S;
+
+                            // speed zones
+                            int speed_zone_idx;
+                            // todo: reverse the selection for performance (smallest to the top)
+                            if (frames[j].S / 3.6 > 7) {
+                                speed_zone_idx = 4;
+                            } else if (frames[j].S / 3.6 > 5.5) {
+                                speed_zone_idx = 3;
+                            } else if (frames[j].S / 3.6 > 4) {
+                                speed_zone_idx = 2;
+                            } else if (frames[j].S / 3.6 > 2) {
+                                speed_zone_idx = 1;
+                            } else {
+                                speed_zone_idx = 0;
+                            }
+                            dat[k].speed_zones[speed_zone_idx].count++;
+                            dat[k].speed_zones[speed_zone_idx].sum += (frames[j].S / 3.6f);
+                            dat[k].speed_zones[speed_zone_idx].sq_sum += Math.pow(frames[j].S / 3.6, 2);
+
+
                             break;
                         }
                     }
                 }
             }
+            if (vis_zones != null) vis_zones.repaint();
         }
 
+        // to get the mean and the standard derivate we need to calculate (dived and stuff)
         for (int i = 0; i < border.length - 1; i++) {
             dat[i].mean = dat[i].sum / dat[i].count;
             dat[i].var = dat[i].sq_sum / dat[i].count - dat[i].mean * dat[i].mean;
             dat[i].sd = (float)Math.sqrt(dat[i].var);
             System.out.println("mean "+dat[i]);
+            for (int j = 0; j < dat[i].speed_zones.length; j++) {
+                dat[i].speed_zones[j].mean = dat[i].speed_zones[j].sum / dat[i].speed_zones[j].count;
+                dat[i].speed_zones[j].var = dat[i].speed_zones[j].sq_sum / dat[i].speed_zones[j].count - dat[i].speed_zones[j].mean * dat[i].speed_zones[j].mean;
+                dat[i].speed_zones[j].sd = (float)Math.sqrt(dat[i].speed_zones[j].var);
+            }
         }
 
         long duration = System.nanoTime() - startTime;

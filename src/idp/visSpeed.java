@@ -97,10 +97,10 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         // plot the whole game at once
         // TODO: merge couple of framesets
 
-        Filter filter_speed = new Filter(2) {
+        Filter filter_speed = new Filter(10) {
             @Override
             float Frames(Frame f) {
-                return f.S;
+                return (float)(f.S / 3.6);
             }
 
             @Override

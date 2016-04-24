@@ -59,9 +59,6 @@ public class visMean extends JPanel {
         g2d.setColor(new Color(150, 150, 150));
 
 
-
-        g2d.drawString(width + " - " + height, 50, 50);
-
         // labels
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
         g2d.setStroke(dashed);
@@ -78,8 +75,6 @@ public class visMean extends JPanel {
 
         g2d.setColor(Color.black);
         if (data != null) {
-            g2d.drawString(data[0].toString(), 10, 10);
-
             for (int i = 0; i < data.length; i++) {
                 int x = scaleX(i);
                 int y = scaleY(data[i].mean);
