@@ -1,6 +1,8 @@
 package idp;
 
 import java.awt.*;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -22,11 +24,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 
-public class visSpeed extends JPanel {
+public class visSpeed extends JPanel implements MouseWheelListener {
     MeanData[] data;
     FrameSet[] frameSet;
     Graphics2D g2d;
     private int width, height;
+    float zoom = 1;
     //private Graphics2D g2d;
     public void updateData(MeanData[] data, FrameSet[] frameSet) {
         this.data = data;
@@ -35,11 +38,32 @@ public class visSpeed extends JPanel {
 
     }
 
+    visSpeed() {
+        addMouseWheelListener(this);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        System.out.println(e.getWheelRotation());
+        System.out.println(e.getPoint());
+
+        if (e.getWheelRotation() > 0) {
+            zoom /= 1.1;
+        }
+        if (e.getWheelRotation() < 0) {
+            zoom *= 1.1;
+        }
+        zoom = Math.max(zoom, 1);
+
+        System.out.println("zoom "+zoom);
+        repaint();
+    }
+
     public void plotSubset(int start, int end, int offset_y, Filter f) {
 
         int j = 0;  // which frameset
-        Frame[] fs = frameSet[0].frames;
-        float scale_x = scale_x = (float) width / (end - start);
+        Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
+        float scale_x = (float) width / (end - start);
         float scale_y = f.scale;
         System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         for (int i = start + 1; i < end; i++ ) {
@@ -53,9 +77,7 @@ public class visSpeed extends JPanel {
             );
         }
     }
-public static int foo() {
-    return 1;
-}
+
     public void paintComponent(Graphics g) {
         //super.paintComponent(g);
 
@@ -63,12 +85,14 @@ public static int foo() {
         g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, // Anti-alias!
             RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.WHITE);
+
 
         Dimension size = getSize();
         width = size.width ;
         height = size.height;
-
+        g2d.fillRect(0, 0, width, height);
+        g2d.setColor(Color.BLACK);
 
         // plot the whole game at once
         // TODO: merge couple of framesets
@@ -95,9 +119,11 @@ public static int foo() {
             }
         };
 
-        plotSubset(0, frameSet[0].frames.length, 0, filter_speed);
+        int length = frameSet[App.selctedFramesetIdx].frames.length;
+        plotSubset(0, length, 0, filter_speed);
 
-        plotSubset(40, 200, 100, filter_speed);
+
+        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 100, filter_speed);
 
         Filter filter_acc =  new Filter(0.6f) {
             @Override
@@ -116,24 +142,25 @@ public static int foo() {
             }
         };
 
-        plotSubset(0, frameSet[0].frames.length, 200, filter_acc);
+        plotSubset(0, frameSet[App.selctedFramesetIdx].frames.length, 200, filter_acc);
 
-        plotSubset(40, 200, 300, filter_acc);
+        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 300, filter_acc);
 
 
 
         // filter some more (calculate power consumption
 
 
-        int j = 0;  // which frameset
-        Frame[] fs = frameSet[j].frames;
-        int start = 40;
-        int end = 50;
+        Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
+        int start = (int)((0.5 - 0.5 / zoom) * length);
+        int end = (int)((0.5 + 0.5 / zoom) * length);
         int offset_y = 400;
         float scale_x = scale_x = (float) width / (end - start);
-        float scale_y = 1;
+        float scale_y = 8f;
         System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         g2d.setColor(Color.black);
+        double EC_before = 0;
+        double P_before = 0;
         for (int i = start + 1; i < end; i++ ) {
 
             double ES = fs[i].A / 3.6 / 9.81;
@@ -146,93 +173,36 @@ public static int foo() {
                 + 19.5 * ES
                 + 3.6
                 ) * EM;
+            // TODO: clairify: what about decelerations
+
+
             double P = EC * fs[i].S / 3.6;
+
+            // ransform the values we plot
+            EC = Math.log(Math.abs(EC) + 1);
+            P = Math.log(Math.abs(P) + 1);
+
             System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
-            float val = fs[i].S;
-            float val_prev = fs[i - 1].S;
+
             g2d.drawLine(
                 (int)((float)(i - start - 1) * scale_x),
-                (int)(val_prev * scale_y + offset_y),
+                (int)(EC_before * scale_y + offset_y),
                 (int)((float)(i - start) * scale_x),
-                (int)(val * scale_y + offset_y)
+                (int)(EC * scale_y + offset_y)
             );
+
+            g2d.drawLine(
+                (int)((float)(i - start - 1) * scale_x),
+                (int)(P_before * scale_y + offset_y + 100),
+                (int)((float)(i - start) * scale_x),
+                (int)(P * scale_y + offset_y + 100)
+            );
+            EC_before = EC;
+            P_before = P;
         }
-
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-        // plot speed
-
-
-        int j = 3;
-
-        Frame[] frames = frameSet[j].frames;
-        float x1 = 0,
-            y1 = frames[0].S,
-            acc = 0;
-        int offsety = 0;
-        int dur_sprint = 0, count_sprint = 0;
-        for (int i = 1; i < frames.length; i++) {
-            if (frames[i].BallStatus == 1) {
-
-
-                float vel_ms = frames[i].S / 3.6f;
-                if (vel_ms < 2) {
-                    g2d.setColor(Color.lightGray);
-                } else if (vel_ms < 4) {
-                    g2d.setColor(Color.YELLOW);
-                } else if (vel_ms < 5.5) {
-                    g2d.setColor(Color.GREEN);
-                } else if (vel_ms < 7) {
-                    g2d.setColor(Color.ORANGE);
-                } else {
-                    g2d.setColor(Color.RED);
-                }
-
-                if (vel_ms >= 7) {
-                    dur_sprint++;
-                } else {
-                    // no sprint, sprint over
-                    if (dur_sprint >= 25) {
-                        count_sprint++;
-                        System.out.println("sprint took "+dur_sprint+"is sprint nr "+count_sprint);
-                    }
-                    dur_sprint = 0;
-                }
-
-                g2d.drawLine((int)(x1), (int) (y1 * 6.0f + offsety), (int)(x1 + 1), (int) (frames[i].S * 6.0f + offsety));
-
-
-                // deltav is in unit deltav per frame => derive to m/s2 by dividing by time (0.04s)
-
-                x1++;
-                if (x1 > width) {
-                    x1 = 0;
-                    offsety += 200;
-                }
-                y1 = frames[i].S;
-            }
-
-
-
-        }
-*/
-        //
-
 
         long duration = System.nanoTime() - startTime;
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
-
 
 }

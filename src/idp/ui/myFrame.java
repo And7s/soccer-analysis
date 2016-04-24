@@ -13,6 +13,7 @@ import java.awt.event.*;
 public class myFrame extends JFrame {
     public int count;
     private JTabbedPane tabbedPane;
+    public idp.Config config;
     public myFrame() {
 
         setTitle("DFL Soccer Analysis | IDP | Andreas Schmelz");
@@ -33,10 +34,10 @@ public class myFrame extends JFrame {
         //contentPane.add(tabbedPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        idp.Config con = new idp.Config();
+        config = new idp.Config();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-            tabbedPane, con);
+            tabbedPane, config);
         splitPane.setResizeWeight(1);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(400);
@@ -44,7 +45,7 @@ public class myFrame extends JFrame {
 
         Dimension minimumSize = new Dimension(100, 50);
         tabbedPane.setMinimumSize(minimumSize);
-        con.setMinimumSize(minimumSize);
+        config.setMinimumSize(minimumSize);
 
         contentPane.add(splitPane);
 

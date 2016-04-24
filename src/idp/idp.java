@@ -39,6 +39,7 @@ public class idp {
         frameSet = position.readData();
         analyze();
         createTable();
+        my_frame.config.updateData();
         my_frame.addView(visField, "Field");
         visSpeed vis_speed = new visSpeed();
         vis_speed.updateData(dat, frameSet);
@@ -46,6 +47,7 @@ public class idp {
 
         visMean vis_mean = new visMean();
         App.vis_mean = vis_mean;    // set static ref
+        App.vis_speed = vis_speed;
         vis_mean.updateData(dat, frameSet);
         my_frame.addView(vis_mean, "mean");
 

@@ -4,6 +4,9 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 
 /**
  * Created by Andre on 23/04/2016.
@@ -76,5 +79,25 @@ public class Config extends JPanel {
         });
         add(ignoreExchange);
 
+    }
+    public void updateData() {
+        String[] selectString = new String[idp.frameSet.length];
+
+        for (int i = 0; i < idp.frameSet.length; i++) {
+            selectString[i] = i + ": " + idp.frameSet[i].Object;
+        }
+        System.out.println(selectString);
+
+        JComboBox selectList = new JComboBox(selectString);
+        selectList.setSelectedIndex(App.selctedFramesetIdx);
+        selectList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.selctedFramesetIdx = selectList.getSelectedIndex();
+                App.vis_speed.repaint();
+            }
+        });
+
+        add(selectList);
     }
 }
