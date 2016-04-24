@@ -17,7 +17,7 @@ import javax.xml.stream.*;
 public class idp {
 
     public MyCanvas canvas;
-    public Match match;
+    public static Match match;
     public visualField visField;
     public Events events;
     public static FrameSet[] frameSet;
@@ -27,7 +27,7 @@ public class idp {
     public static Position position;
     public idp() {
 
-      my_frame = new myFrame();
+        my_frame = new myFrame();
 
         //canvas = new MyCanvas();
 
@@ -35,7 +35,7 @@ public class idp {
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
-        frameSet = position.fakeData();
+        //frameSet = position.fakeData();
         frameSet = position.readData();
         analyze();
         createTable();
@@ -67,7 +67,7 @@ public class idp {
 
         // create a table view
 
-        Object rowData[][] = new Object[frameSet.length][7];
+        Object rowData[][] = new Object[frameSet.length][9];
         for (int i = 0; i < frameSet.length; i++) {
 
             rowData[i][0] = match.getPlayer(frameSet[i].Object) != null ?
@@ -88,10 +88,18 @@ public class idp {
                 leftPad("" + frameSet[i].getSprintCount(-1), 4, ' ') + " | " +
                 leftPad("" + frameSet[i].getSprintCount(0), 4, ' ') + " | " +
                 leftPad("" + frameSet[i].getSprintCount(1), 4, ' ');
+            rowData[i][7] = match.getPlayer(frameSet[i].Object) != null ?
+                match.getPlayer(frameSet[i].Object).Starting :
+                "-";
+            rowData[i][8] = match.getPlayer(frameSet[i].Object) != null ?
+                match.getPlayer(frameSet[i].Object).PlayingPosition :
+                "-";
+
+            System.out.println("psoition"+match.getPlayer(frameSet[i].Object).PlayingPosition);
     System.out.println("create ");
 
         }
-        Object columnNames[] = { "#", "Object", "firstHalf", "mean [km/h]", "duration [min]", "distance [km]", "#sprints (all, inter, active), per minute"};
+        Object columnNames[] = { "#", "Object", "firstHalf", "mean [km/h]", "duration [min]", "distance [km]", "#sprints (all, inter, active), per minute", "starting", "position"};
 
         my_frame.addView(new Table(rowData, columnNames), "Table");
 
@@ -101,6 +109,7 @@ public class idp {
     }
 
     public static void analyze() {
+        long startTime = System.nanoTime();
         int parts = App.steps_mean;  // in how many parts i divide a halftime
         int[] border = new int[parts * 2 + 1];
         FrameSet fs_ball = position.getBallFirstHalf(true);
@@ -124,15 +133,31 @@ public class idp {
         }
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
-            System.out.println("analyze");
-            System.out.println(frameSet[i].toString());
+            if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
+            //System.out.println("analyze");
+            //System.out.println(frameSet[i].toString());
             Frame[] frames = frameSet[i].frames;    // quickref
+
+            Player player = match.getPlayer(frameSet[i].Object);
+            boolean is_tw = player.PlayingPosition.equals("TW");
+            boolean is_starting = player.Starting;
+
+             if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+             if(App.ignore_exchange && !is_starting) continue;
+
             for (int j = 0; j < frames.length; j++) {
+
                 // in which range?
                 for (int k = border.length - 2; k >= 0; k--) {
 
-                    if (frames[j].BallStatus == 1 || !App.only_active) {    // either ball statis is active, or its not requested
+                    if (!App.only_active || frames[j].BallStatus == 1) {     // either ball statis is active, or its not requested
+
                         if (frames[j].N >= border[k]) {
+                            if (j == 20 && k == 0) {
+                                System.out.println(frameSet[i]);
+                                System.out.println(frames[j]);
+                                System.out.println("stargin "+is_starting);
+                            }
                             dat[k].sum += frames[j].S;
                             dat[k].count++;
                             dat[k].sq_sum += frames[j].S * frames[j].S;
@@ -149,6 +174,9 @@ public class idp {
             dat[i].sd = (float)Math.sqrt(dat[i].var);
             System.out.println("mean "+dat[i]);
         }
+
+        long duration = System.nanoTime() - startTime;
+        System.out.println("analyze took" + (duration / 1E6)+ "ms");
 
 
     }

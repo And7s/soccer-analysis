@@ -23,6 +23,7 @@ public class Match {
         Player p2 = new Player();
         p2.ShortName = "Ball";
         p2.PersonId = "DFL-OBJ-0000XT";
+        p2.PlayingPosition = "-";
         players[c_player++] = p2;
 
 
@@ -42,6 +43,7 @@ public class Match {
                         p.LastName = streamReader.getAttributeValue(null, "LastName");
                         p.PersonId = streamReader.getAttributeValue(null, "PersonId");
                         p.PlayingPosition = streamReader.getAttributeValue(null, "PlayingPosition");
+                        p.Starting = streamReader.getAttributeValue(null, "Starting").equals("true");
                         p.ShortName = streamReader.getAttributeValue(null, "Shortname");
                         p.ShirtNumber = Integer.parseInt(streamReader.getAttributeValue(null, "ShirtNumber"));
                         players[c_player++] = p;

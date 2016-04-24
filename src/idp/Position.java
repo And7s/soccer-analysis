@@ -27,7 +27,7 @@ public class Position {
             frameSet[i].Club = (i < 2) ? "Ball" : "A";
             frameSet[i].firstHalf = (i % 2) == 0;
             frameSet[i].Match = "asd";
-            frameSet[i].Object = (i < 2) ? "DFL-OBJ-0000XT" : "DFL-OBJ-00003M";
+            frameSet[i].Object = (i < 2) ? "DFL-OBJ-0000XT" : (Math.random() > 0.9 ? "DFL-OBJ-0000VY": "DFL-OBJ-00003M");
 
             frameSet[i].frames = new Frame[1000];
             float cur_pos_x = (float) Math.random() * 105f - 105f / 2.0f,

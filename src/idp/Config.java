@@ -3,6 +3,7 @@ package idp;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 
 /**
  * Created by Andre on 23/04/2016.
@@ -10,7 +11,7 @@ import javax.swing.event.ChangeListener;
 public class Config extends JPanel {
 
     public Config() {
-
+        setLayout(new GridLayout(10,2));
 
         JSlider slider1 = new JSlider(JSlider.HORIZONTAL,1,10,4);//direction , min , max , current
 
@@ -33,18 +34,47 @@ public class Config extends JPanel {
         add(slider1);
 
 
-        JCheckBox chinButton = new JCheckBox("Chin");
+        JCheckBox chinButton = new JCheckBox("only active play");
         chinButton.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 System.out.println(chinButton.isSelected());
-                App.only_active = chinButton.isSelected();
-                idp.analyze();
-                App.vis_mean.updateData(idp.dat, idp.frameSet);
+                if (App.only_active != chinButton.isSelected()) {   // only do something if value actually changed
+                    App.only_active = chinButton.isSelected();
+                    idp.analyze();
+                    App.vis_mean.updateData(idp.dat, idp.frameSet);
+                }
             }
         });
-
-
         add(chinButton);
+
+        JCheckBox ignoreKeeper = new JCheckBox("ignopre keeper");
+        ignoreKeeper.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(ignoreKeeper.isSelected());
+                if (App.ignore_keeper != ignoreKeeper.isSelected()) {
+                    App.ignore_keeper = ignoreKeeper.isSelected();
+                    idp.analyze();
+                    App.vis_mean.updateData(idp.dat, idp.frameSet);
+                }
+            }
+        });
+        add(ignoreKeeper);
+
+        JCheckBox ignoreExchange = new JCheckBox("ignore exchange players");
+        ignoreExchange.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(ignoreExchange.isSelected());
+                if ( App.ignore_exchange != ignoreExchange.isSelected()) {
+                    App.ignore_exchange = ignoreExchange.isSelected();
+                    idp.analyze();
+                    App.vis_mean.updateData(idp.dat, idp.frameSet);
+                }
+            }
+        });
+        add(ignoreExchange);
+
     }
 }
