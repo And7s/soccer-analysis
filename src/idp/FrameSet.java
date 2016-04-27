@@ -37,14 +37,23 @@ public class FrameSet {
     }
 
     // how many values are in every minute segment
-    public int getCount() {
-        return getCount(0, agg_speed.length);
-    }
+    public int getCount() { return getCount(0, agg_speed.length); }
+    public int getCount(int start, int end) { return getCount(start, end, -1); }
 
-    public int getCount(int start, int end) {
+    public int getCount(int start, int end, int filter) {
         int count = 0;
         for (int i = Math.max(start, 0); i < end && i < agg_speed.length; i++) {
-            count += agg_speed[i].all.count;
+            switch (filter) {
+                case -1:    // all
+                    count += agg_speed[i].all.count;
+                    break;
+                case 0:
+                    count += agg_speed[i].paused.count;
+                    break;
+                case 1:
+                    count += agg_speed[i].active.count;
+                    break;
+            }
         }
         System.out.println("count called with "+start+" "+end+"= "+count);
         return count;
@@ -73,14 +82,25 @@ public class FrameSet {
     }
 
     // get number of sprints ( > 1s min 7m/s)
-    public int getSprintCount() {
-        return getSprintCount(0, agg_sprints.length);
-    }
+    public int getSprintCount() { return getSprintCount(0, agg_sprints.length); }
+    public int getSprintCount(int start, int end) { return getSprintCount(start, end, -1); }
 
-    public int getSprintCount(int start, int end) { // filter [-1 = all, 0 = interrupt, 1 = active]
+    public int getSprintCount(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
         int count_sprint = 0;
         for (int i = start; i < end && i < agg_sprints.length; i++) {
-            count_sprint += agg_sprints[i].all.sum;
+            switch (filter) {
+                case -1:    // all
+                    count_sprint += agg_sprints[i].all.sum;
+                    break;
+                case 0:
+                    count_sprint += agg_sprints[i].paused.sum;
+                    break;
+                case 1:
+                    count_sprint += agg_sprints[i].active.sum;
+                    break;
+            }
+
+
         }
         System.out.println("sprintcount called with "+start+" "+end+"= "+count_sprint);
         return count_sprint;
@@ -88,10 +108,13 @@ public class FrameSet {
 
 
 
+
+
     // when a frameset is entirely loaded i can analze it to prepare results that might propably be reused
     public void analyze() {
         // preadjustements
         int ball_fs_offset = idp.position.getBallFirstHalf(firstHalf).frames[0].N;
+        Frame[] ball_frames = idp.position.getBallFirstHalf(firstHalf).frames;
         int last_frame = frames[frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
         agg_sprints = new MinuteData[duration_game_min];  // will hold the aggregated information of the sprints per minute
@@ -120,16 +143,32 @@ public class FrameSet {
                 dur_sprint++;
                 if (dur_sprint == 25) {
                     agg_sprints[cur_minute].all.sum++;
+                    if (ball_frames[i].BallStatus == 1) {
+                        agg_sprints[cur_minute].active.sum++;
+                    } else {
+                        agg_sprints[cur_minute].paused.sum++;
+                    }
                 }
             } else {
                 dur_sprint = 0;
             }
-            agg_sprints[cur_minute].all.count++;
 
             // speed
             agg_speed[cur_minute].all.count++;
             agg_speed[cur_minute].all.sum += frames[i].S;
             agg_speed[cur_minute].all.sq_sum += (frames[i].S * frames[i].S);
+            agg_sprints[cur_minute].all.count++;
+            if (ball_frames[i].BallStatus == 1) {
+                agg_speed[cur_minute].active.count++;
+                agg_speed[cur_minute].active.sum += frames[i].S;
+                agg_speed[cur_minute].active.sq_sum += (frames[i].S * frames[i].S);
+                agg_sprints[cur_minute].active.count++;
+            } else {
+                agg_speed[cur_minute].paused.count++;
+                agg_speed[cur_minute].paused.sum += frames[i].S;
+                agg_speed[cur_minute].paused.sq_sum += (frames[i].S * frames[i].S);
+                agg_sprints[cur_minute].paused.count++;
+            }
         }
     }
 

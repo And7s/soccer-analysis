@@ -144,7 +144,6 @@ public class idp {
         for (int i = 0; i < dat.length; i++) dat[i] = new MeanData();   // initialize the objects
 
 
-        int sprint_count = 0;
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
             if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
@@ -165,12 +164,13 @@ public class idp {
                 int from_min = (int)(50.0 / parts * k);
                 int to_min = (int)(50.0 / parts * (k + 1));
                 System.out.println("go from "+from_min+"to"+to_min);
+                int filter = App.only_active ? 1 : -1;
                 if (frameSet[i].firstHalf) {    // account to first half
-                    dat[k].sprints.sum += frameSet[i].getSprintCount(from_min, to_min);
-                    dat[k].sprints.count += frameSet[i].getCount(from_min, to_min);
+                    dat[k].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
+                    dat[k].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
                 } else {        // second half
-                    dat[k + parts].sprints.sum += frameSet[i].getSprintCount(from_min, to_min);
-                    dat[k + parts].sprints.count += frameSet[i].getCount(from_min, to_min);
+                    dat[k + parts].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
+                    dat[k + parts].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
                 }
             }
 
