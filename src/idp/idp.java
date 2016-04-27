@@ -26,6 +26,7 @@ public class idp {
     public myFrame my_frame;
     public static MeanData[] dat;
     public static Position position;
+    public static visSprints vis_sprints;
     public idp() {
 
         my_frame = new myFrame();
@@ -55,6 +56,11 @@ public class idp {
         App.vis_speed = vis_speed;
         vis_mean.updateData(dat, frameSet);
         my_frame.addView(vis_mean, "mean");
+
+        vis_sprints = new visSprints();
+        App.vis_sprints = vis_sprints;
+        vis_sprints.updateData(dat, frameSet);
+        my_frame.addView(vis_sprints, "sprints");
 
         // events depend on an existing frameset when being instantiated
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
@@ -138,7 +144,7 @@ public class idp {
         for (int i = 0; i < border.length - 1; i++) {   // create Meandaata objects
             dat[i] = new MeanData();
         }
-
+        int sprint_count = 0;
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
             if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
@@ -185,6 +191,17 @@ public class idp {
                             dat[k].speed_zones[speed_zone_idx].sum += (frames[j].S / 3.6f);
                             dat[k].speed_zones[speed_zone_idx].sq_sum += Math.pow(frames[j].S / 3.6, 2);
 
+                            // sprint count at least 1 second faster than 7ms
+                            if (frames[j].S / 3.6 > 7) {
+                                //System.out.println("count "+sprint_count);
+                                sprint_count++;
+                                if (sprint_count == 25) {
+                                    dat[k].sprints.sum++;
+                                }
+                            } else {
+                                sprint_count = 0;
+                            }
+                            dat[k].sprints.count++; // to be able to measure sprint per time
 
                             break;
                         }
@@ -192,6 +209,7 @@ public class idp {
                 }
             }
             if (vis_zones != null) vis_zones.repaint();
+            if (vis_sprints != null) vis_sprints.repaint();
         }
 
         // to get the mean and the standard derivate we need to calculate (dived and stuff)
@@ -205,6 +223,9 @@ public class idp {
                 dat[i].speed_zones[j].var = dat[i].speed_zones[j].sq_sum / dat[i].speed_zones[j].count - dat[i].speed_zones[j].mean * dat[i].speed_zones[j].mean;
                 dat[i].speed_zones[j].sd = (float)Math.sqrt(dat[i].speed_zones[j].var);
             }
+            dat[i].sprints.mean = dat[i].sprints.sum / dat[i].sprints.count * 25 * 60;   // sprints per minute
+            dat[i].sprints.var = 0;
+            dat[i].sprints.sd = 0;
         }
 
         long duration = System.nanoTime() - startTime;

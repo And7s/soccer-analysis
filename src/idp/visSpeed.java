@@ -160,6 +160,8 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         g2d.setColor(Color.black);
         double EC_before = 0;
+        double EC_sum = 0;
+        double P_sum = 0;
         double P_before = 0;
         for (int i = start + 1; i < end; i++ ) {
 
@@ -174,9 +176,10 @@ public class visSpeed extends JPanel implements MouseWheelListener {
                 + 3.6
                 ) * EM;
             // TODO: clairify: what about decelerations
-
+            EC_sum += Math.abs(EC); // sum the absolute values
 
             double P = EC * fs[i].S / 3.6;
+            P_sum += Math.abs(P);
 
             // ransform the values we plot
             EC = Math.log(Math.abs(EC) + 1);
@@ -200,6 +203,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             EC_before = EC;
             P_before = P;
         }
+        System.out.println("this player consumed ec" +EC_sum+" and P: "+P_sum +" in "+(end - start) + "frams");
 
         long duration = System.nanoTime() - startTime;
         System.out.println("duration" + (duration / 1E6)+ "ms");
