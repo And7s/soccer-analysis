@@ -79,6 +79,27 @@ public class Config extends JPanel {
         });
         add(ignoreExchange);
 
+
+        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,4);//direction , min , max , current
+
+        slider_playback_speed.setMajorTickSpacing(3);
+        slider_playback_speed.setMinorTickSpacing(1);
+        slider_playback_speed.setOpaque(false);
+        slider_playback_speed.setPaintLabels(true);
+        slider_playback_speed.setPaintTicks(true);
+        slider_playback_speed.setPaintTrack(true);
+        slider_playback_speed.setAutoscrolls(true);
+        slider_playback_speed.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(slider_playback_speed.getValue());
+                App.playback_speed = Math.exp(slider_playback_speed.getValue() - 1) - 1;
+                System.out.println("set to " + App.playback_speed);
+
+            }
+        });
+        add(slider_playback_speed);
+
     }
     public void updateData() {
         String[] selectString = new String[idp.frameSet.length];

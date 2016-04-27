@@ -44,9 +44,9 @@ public class visualField extends JPanel {
 
     public void update() {
 
-        cur_pos++;
+        cur_pos += App.playback_speed;
         int amount = position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
-        if (cur_pos > amount) {
+        if (cur_pos >= amount) {
             cur_pos = 0;
             show_first_half = !show_first_half;
         }
@@ -78,15 +78,19 @@ public class visualField extends JPanel {
         // some random Lines
         FrameSet ball_frames = position.getBallFirstHalf(show_first_half);
 
+        g2d.drawString("frame:" + cur_pos + ", "+(cur_pos / 25 / 60) + "min", 5, 30);
+        g2d.drawString("Ballstatus" + ball_frames.frames[cur_pos].BallStatus, 5, 60);
+        g2d.drawString("BallPosession" + ball_frames.frames[cur_pos].BallPossession, 5, 90);
+
 
         for (int j = 0; j < frameSet.length; j++) {
             g.setColor(new Color(0,0, 0, 0.05f));
 
             if (frameSet[j].firstHalf == show_first_half) { // if this half is currently shown
                 int offset = ball_frames.frames[0].N - frameSet[j].frames[0].N;  // offset betwen ball (match) and player activation
-
+                int idx = 0;
                 for (int i = 1; i < draw_frames_count; i++) { // todo synchronize the offset with the ball
-                    int idx = i + cur_pos + offset;
+                    idx = i + cur_pos + offset;
 
                     if (idx > 0 && idx < frameSet[j].frames.length) {  // inside the array (player is currently active)
                         if (i % steps_increase_alpha == 0) {
@@ -102,13 +106,53 @@ public class visualField extends JPanel {
                         );
                     }
                 }
-                g.setColor(Color.black);
-                ((Graphics2D) g).drawString(
-                    match.getPlayer(frameSet[j].Object).ShortName + " " + frameSet[j].frames[cur_pos + draw_frames_count].N,
-                    scaleX(frameSet[j].frames[cur_pos + draw_frames_count].X),
-                    scaleY(frameSet[j].frames[cur_pos + draw_frames_count].Y)
-                );
+                if (idx > 0 && idx < frameSet[j].frames.length) {
+                    int x = scaleX(frameSet[j].frames[idx].X),
+                        y = scaleY(frameSet[j].frames[idx].Y);
+                    g.fillArc(x - 1, y - 1, 3, 3, 0, 360);
+                    g.setColor(Color.black);
+                    ((Graphics2D) g).drawString(
+                        match.getPlayer(frameSet[j].Object).ShortName, x,y);
+                }
             }
+        }
+
+        // draw the Frames
+        Event[] event = Events.event;
+
+        int draw_event_count = 1 * 60 * 25;     // x minutes of events
+        int end_frame = ball_frames.frames[0].N + cur_pos + draw_frames_count;
+        int start_frame =  end_frame - draw_event_count;    // startframe
+
+        int plot_event = 0;
+        Color eventcolor = new Color(1, 1, 0, 0.05f);
+        for (int  i = 0; i < event.length; i++) {
+            if (event[i].T > end_frame) break;  // can end now, as frames are sorted
+            if (event[i].T > start_frame) {
+                g2d.setColor(Color.black);
+                g2d.drawString(event[i].type, width - 150, 20 * plot_event);
+                plot_event++;
+
+
+                g2d.setColor(eventcolor);
+                // where was the ball at this time?
+                int ball_idx = event[i].T - ball_frames.frames[0].N;    // the offset from curent frameset to the first
+                if (ball_idx >= 0 && ball_idx < ball_frames.frames.length) {    // check if not out of bounds
+                    ///System.out.println("ball idx is " + ball_idx);
+                    Frame event_frame = ball_frames.frames[ball_idx];    //TODO: take players position rather than the one of the ball
+
+                    for (int j = 1; j < 10; j++) {
+                        int s = j*j;
+                        g2d.fillArc(scaleX(event_frame.X) - s / 2, scaleY(event_frame.Y) - s / 2, s, s, 0, 360);
+                    }
+
+
+                } else {
+                    System.out.println("out of bounds " + ball_idx);    // should not happen with a regular dataset
+                }
+            }
+
+            //System.out.println(event[i]);
         }
         // indicate ballstatus and ballposession
 
@@ -130,6 +174,7 @@ public class visualField extends JPanel {
             bottom = scaleY(68f / 2.0f);
 
         g.drawRect(left, top, (int)(105f * scale), (int)(68f * scale));
+        g.drawLine(scaleX(0), top, scaleX(0), bottom);
         int scaledCirle = (int) (18.3 * scale);
         int dotSize = (int) (0.5f * scale);
         int meterSize = (int) (1.5f * scale);

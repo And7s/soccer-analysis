@@ -182,7 +182,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             EC = Math.log(Math.abs(EC) + 1);
             P = Math.log(Math.abs(P) + 1);
 
-            System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
+            //System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
 
             g2d.drawLine(
                 (int)((float)(i - start - 1) * scale_x),

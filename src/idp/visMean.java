@@ -61,6 +61,7 @@ public class visMean extends JPanel {
 
         // labels
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
+
         g2d.setStroke(dashed);
 
         for (int i = 0; i < 20; i +=2) {

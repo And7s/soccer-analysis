@@ -36,8 +36,8 @@ public class idp {
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
-        frameSet = position.fakeData();
-        //frameSet = position.readData();
+        //frameSet = position.fakeData();
+        frameSet = position.readData();
         analyze();
         createTable();
         my_frame.config.updateData();
@@ -56,7 +56,7 @@ public class idp {
         vis_mean.updateData(dat, frameSet);
         my_frame.addView(vis_mean, "mean");
 
-
+        // events depend on an existing frameset when being instantiated
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
         visField.updateData(position, match);
@@ -102,8 +102,8 @@ public class idp {
                 match.getPlayer(frameSet[i].Object).PlayingPosition :
                 "-";
 
-            System.out.println("psoition"+match.getPlayer(frameSet[i].Object).PlayingPosition);
-    System.out.println("create ");
+            //System.out.println("psoition"+match.getPlayer(frameSet[i].Object).PlayingPosition);
+
 
         }
         Object columnNames[] = { "#", "Object", "firstHalf", "mean [km/h]", "duration [min]", "distance [km]", "#sprints (all, inter, active), per minute", "starting", "position"};
@@ -215,10 +215,9 @@ public class idp {
     public static String leftPad(String originalString, int length,
                                  char padCharacter) {
         StringBuilder sb = new StringBuilder();
-        System.out.println("L "+sb.length() + " v "+originalString.length());
+
         while (sb.length() + originalString.length() < length) {
             sb.append(padCharacter);
-            System.out.println("l "+sb.length() + " v "+originalString.length());
         }
         sb.append(originalString);
 

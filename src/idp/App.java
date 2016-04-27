@@ -10,5 +10,6 @@ public class App {
     public static boolean only_active = false, ignore_keeper = false, ignore_exchange = false;
     public static int steps_mean = 5, selctedFramesetIdx = 2;
 
+    public static double playback_speed = 10;
 
 }
