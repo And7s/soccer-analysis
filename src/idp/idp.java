@@ -160,18 +160,21 @@ public class idp {
             // get information from minute data
             // parts say how many parts a half time should be split
 
+
             for (int k = 0; k < parts; k++) {   // create MeanData objects
+                // sprints
                 int from_min = (int)(50.0 / parts * k);
                 int to_min = (int)(50.0 / parts * (k + 1));
-                System.out.println("go from "+from_min+"to"+to_min);
                 int filter = App.only_active ? 1 : -1;
-                if (frameSet[i].firstHalf) {    // account to first half
-                    dat[k].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
-                    dat[k].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
-                } else {        // second half
-                    dat[k + parts].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
-                    dat[k + parts].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
-                }
+                int account_chunk = frameSet[i].firstHalf ? k : k + parts;
+
+                dat[account_chunk].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
+                dat[account_chunk].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
+
+                // speed
+                dat[account_chunk].sum += frameSet[i].getSpeed(from_min, to_min, filter);
+                dat[account_chunk].count += frameSet[i].getCount(from_min, to_min, filter);
+                dat[account_chunk].sq_sum += frameSet[i].getSpeedSq(from_min, to_min, filter);
             }
 
 
@@ -183,11 +186,6 @@ public class idp {
                     if (!App.only_active || frames[j].BallStatus == 1) {     // either ball statis is active, or its not requested
 
                         if (frames[j].N >= border[k]) {
-
-                            // speed
-                            dat[k].sum += frames[j].S;
-                            dat[k].count++;
-                            dat[k].sq_sum += frames[j].S * frames[j].S;
 
                             // speed zones
                             int speed_zone_idx;
@@ -214,6 +212,7 @@ public class idp {
             }
             if (vis_zones != null) vis_zones.repaint();
             if (vis_sprints != null) vis_sprints.repaint();
+
         }
 
         // to get the mean and the standard derivate we need to calculate (dived and stuff)
@@ -221,7 +220,7 @@ public class idp {
             dat[i].mean = dat[i].sum / dat[i].count;
             dat[i].var = dat[i].sq_sum / dat[i].count - dat[i].mean * dat[i].mean;
             dat[i].sd = (float)Math.sqrt(dat[i].var);
-            System.out.println("mean "+dat[i]);
+
             for (int j = 0; j < dat[i].speed_zones.length; j++) {
                 dat[i].speed_zones[j].mean = dat[i].speed_zones[j].sum / dat[i].speed_zones[j].count;
                 dat[i].speed_zones[j].var = dat[i].speed_zones[j].sq_sum / dat[i].speed_zones[j].count - dat[i].speed_zones[j].mean * dat[i].speed_zones[j].mean;
@@ -234,7 +233,6 @@ public class idp {
 
         long duration = System.nanoTime() - startTime;
         System.out.println("analyze took" + (duration / 1E6)+ "ms");
-
 
     }
     public static String leftPad(String originalString, int length,

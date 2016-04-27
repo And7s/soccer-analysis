@@ -27,14 +27,51 @@ public class FrameSet {
     public double getSpeed() {
         return getSpeed(0, agg_speed.length);  // the entire game
     }
+    public double getSpeed(int start, int end) { return getSpeed(start, end, -1); }
 
-    public double getSpeed(int start, int end) {
+    public double getSpeed(int start, int end, int filter) {
         double sum = 0;
+
         for (int i = Math.max(start, 0); i < end && i < agg_speed.length; i++) {
-            sum += agg_speed[i].all.sum;
+            switch (filter) {
+                case -1:    // all
+                    sum += agg_speed[i].all.sum;
+                    break;
+                case 0:
+                    sum += agg_speed[i].paused.sum;
+                    break;
+                case 1:
+                    sum += agg_speed[i].active.sum;
+                    break;
+            }
         }
+
         return sum;
     }
+
+    public double getSpeedSq() { return getSpeedSq(0, agg_speed.length); }  // the entire game
+    public double getSpeedSq(int start, int end) { return getSpeedSq(start, end, -1); }
+
+    public double getSpeedSq(int start, int end, int filter) {
+        double sum = 0;
+
+        for (int i = Math.max(start, 0); i < end && i < agg_speed.length; i++) {
+            switch (filter) {
+                case -1:    // all
+                    sum += agg_speed[i].all.sq_sum;
+                    break;
+                case 0:
+                    sum += agg_speed[i].paused.sq_sum;
+                    break;
+                case 1:
+                    sum += agg_speed[i].active.sq_sum;
+                    break;
+            }
+        }
+
+        return sum;
+    }
+
 
     // how many values are in every minute segment
     public int getCount() { return getCount(0, agg_speed.length); }
@@ -55,7 +92,6 @@ public class FrameSet {
                     break;
             }
         }
-        System.out.println("count called with "+start+" "+end+"= "+count);
         return count;
     }
 
@@ -102,7 +138,6 @@ public class FrameSet {
 
 
         }
-        System.out.println("sprintcount called with "+start+" "+end+"= "+count_sprint);
         return count_sprint;
     }
 
