@@ -125,7 +125,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
         plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 100, filter_speed);
 
-        Filter filter_acc =  new Filter(0.6f) {
+        Filter filter_acc =  new Filter(2.6f) {
             @Override
             double Frames(Frame f) {
                 return f.A;
@@ -168,12 +168,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
             double ES = fs[i].A / 3.6 / 9.81;
             double EM = Math.sqrt(Math.pow(9.81, 2) + Math.pow(fs[i].A, 2)) / 9.81;
-            if (EM < 1) {
-                System.out.println("EM small "+fs[i].A);
-            }
-            if (ES < -0.6 || ES > 0.4) {
-                System.out.println("big slope "+ES+" a"+fs[i].A);
-            }
+
             double EC = (
                 + 155.4 * Math.pow(ES, 5)
                 - 30.4 * Math.pow(ES , 4)
@@ -181,22 +176,16 @@ public class visSpeed extends JPanel implements MouseWheelListener {
                 + 46.3 * Math.pow(ES, 2)
                 + 19.5 * ES
                 + 3.6
-                ) * EM;
+                ) * EM; // unit J/kg/m
             // TODO: clairify: what about decelerations
             EC_sum += Math.abs(EC); // sum the absolute values
 
-            double P = EC * fs[i].S / 3.6;
-            P_sum += Math.abs(P);
+            double P = EC * fs[i].S / 3.6 / 25; // unit J/kg
+            P_sum += P;
 
-            // ransform the values we plot
-            EC = Math.log(Math.abs(EC) + Math.E );
-            P = Math.log(Math.abs(P) + Math.E );
-            if (EC < 0 || P < 0) {
-                System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
-            }
             if (EC < ec_min) {
                 ec_min = EC;
-                System.out.println("new min "+EC);
+                System.out.println("new min " + EC + "EC m"+EM+" slo"+ES);
             }
 
             //System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
@@ -217,7 +206,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             EC_before = EC;
             P_before = P;
         }
-        System.out.println("this player consumed ec" +EC_sum+" and P: "+P_sum +" in "+(end - start) + "frams");
+        System.out.println("this player consumed ec: " + (EC_sum / 1000) + " and P: "+P_sum +" in "+(end - start) + "frams");
 
         long duration = System.nanoTime() - startTime;
         System.out.println("duration" + (duration / 1E6)+ "ms");

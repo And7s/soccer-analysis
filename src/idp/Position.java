@@ -109,8 +109,8 @@ public class Position {
                         //frame.T = 0;
                         frame.X = Float.parseFloat(streamReader.getAttributeValue(null, "X"));
                         frame.Y = Float.parseFloat(streamReader.getAttributeValue(null, "Y"));
-                        frame.S = Float.parseFloat(streamReader.getAttributeValue(null, "S"));
-                        frame.A = (tmp_c_nodes > 0) ? (frame.S - tmp_frames[tmp_c_nodes - 1].S) * 25 : 0;
+                        frame.S = Float.parseFloat(streamReader.getAttributeValue(null, "S"));  // km/h
+                        frame.A = 0;    // is set in analyze
                         //System.out.println("N"+N);
                         tmp_frames[tmp_c_nodes++] = frame;
 

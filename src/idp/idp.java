@@ -98,9 +98,9 @@ public class idp {
 
             rowData[i][5] = frameSet[i].getSpeed() / 25.0 / 60 / 60;
             rowData[i][6] =
-                leftPad("" + frameSet[i].getSprintCount(-1), 4, ' ') + " | " +
-                leftPad("" + frameSet[i].getSprintCount(0), 4, ' ') + " | " +
-                leftPad("" + frameSet[i].getSprintCount(1), 4, ' ');
+                leftPad("" + frameSet[i].getSprintCount(), 4, ' ') + " | " +
+                leftPad("" + frameSet[i].getSprintCount(), 4, ' ') + " | " +
+                leftPad("" + frameSet[i].getSprintCount(), 4, ' ');
             rowData[i][7] = match.getPlayer(frameSet[i].Object) != null ?
                 match.getPlayer(frameSet[i].Object).Starting :
                 "-";
@@ -141,15 +141,14 @@ public class idp {
 
 
         dat = new MeanData[border.length - 1];
-        for (int i = 0; i < border.length - 1; i++) {   // create Meandaata objects
-            dat[i] = new MeanData();
-        }
+        for (int i = 0; i < dat.length; i++) dat[i] = new MeanData();   // initialize the objects
+
+
         int sprint_count = 0;
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
             if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
-            //System.out.println("analyze");
-            //System.out.println(frameSet[i].toString());
+
             Frame[] frames = frameSet[i].frames;    // quickref
 
             Player player = match.getPlayer(frameSet[i].Object);
@@ -158,6 +157,23 @@ public class idp {
 
              if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
              if(App.ignore_exchange && !is_starting) continue;
+
+            // get information from minute data
+            // parts say how many parts a half time should be split
+
+            for (int k = 0; k < parts; k++) {   // create MeanData objects
+                int from_min = (int)(50.0 / parts * k);
+                int to_min = (int)(50.0 / parts * (k + 1));
+                System.out.println("go from "+from_min+"to"+to_min);
+                if (frameSet[i].firstHalf) {    // account to first half
+                    dat[k].sprints.sum += frameSet[i].getSprintCount(from_min, to_min);
+                    dat[k].sprints.count += frameSet[i].getCount(from_min, to_min);
+                } else {        // second half
+                    dat[k + parts].sprints.sum += frameSet[i].getSprintCount(from_min, to_min);
+                    dat[k + parts].sprints.count += frameSet[i].getCount(from_min, to_min);
+                }
+            }
+
 
             for (int j = 0; j < frames.length; j++) {
 
@@ -190,18 +206,6 @@ public class idp {
                             dat[k].speed_zones[speed_zone_idx].count++;
                             dat[k].speed_zones[speed_zone_idx].sum += (frames[j].S / 3.6f);
                             dat[k].speed_zones[speed_zone_idx].sq_sum += Math.pow(frames[j].S / 3.6, 2);
-
-                            // sprint count at least 1 second faster than 7ms
-                            if (frames[j].S / 3.6 > 7) {
-                                //System.out.println("count "+sprint_count);
-                                sprint_count++;
-                                if (sprint_count == 25) {
-                                    dat[k].sprints.sum++;
-                                }
-                            } else {
-                                sprint_count = 0;
-                            }
-                            dat[k].sprints.count++; // to be able to measure sprint per time
 
                             break;
                         }
