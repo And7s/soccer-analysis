@@ -197,15 +197,15 @@ public class visualField extends JPanel {
     }
 
     // draws a line, but takes arguments in METER
-    public void drawLine(float x1, float y1, float x2, float y2) {
+    public void drawLine(double x1, double y1, double x2, double y2) {
         g.drawLine(scaleX(x1), scaleY(y1), scaleX(x2), scaleY(y2));
     }
 
-    public int scaleX(float x) {
+    public int scaleX(double x) {
         return (int) ((x + 75) * scale) ;
     }
 
-    public int scaleY(float y) {
+    public int scaleY(double y) {
         return (int) ((y + 50) * scale);
     }
 

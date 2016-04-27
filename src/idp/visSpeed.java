@@ -63,16 +63,16 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
         int j = 0;  // which frameset
         Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
-        float scale_x = (float) width / (end - start);
-        float scale_y = f.scale;
+        double scale_x = (double) width / (end - start);
+        double scale_y = f.scale;
         System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         for (int i = start + 1; i < end; i++ ) {
-            float val = f.Frames(fs[i]);
+            double val = f.Frames(fs[i]);
             g2d.setColor(f.getColor(val));
             g2d.drawLine(
-                (int)((float)(i - start - 1) * scale_x),
+                (int)((double)(i - start - 1) * scale_x),
                 (int)(f.Frames(fs[i - 1]) * scale_y + offset_y),
-                (int)((float)(i - start) * scale_x),
+                (int)((double)(i - start) * scale_x),
                 (int)(val * scale_y + offset_y)
             );
         }
@@ -99,12 +99,12 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
         Filter filter_speed = new Filter(10) {
             @Override
-            float Frames(Frame f) {
-                return (float)(f.S / 3.6);
+            double Frames(Frame f) {
+                return (double)(f.S / 3.6);
             }
 
             @Override
-            Color getColor(float f) {
+            Color getColor(double f) {
                 if (f < 2) {
                     return Color.lightGray;
                 } else if (f < 4) {
@@ -127,11 +127,11 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
         Filter filter_acc =  new Filter(0.6f) {
             @Override
-            float Frames(Frame f) {
+            double Frames(Frame f) {
                 return f.A;
             }
             @Override
-            Color getColor(float f) {
+            Color getColor(double f) {
                 if (Math.abs(f) < 2) {
                     return Color.lightGray;
                 } else if(Math.abs(f) < 4) {
@@ -163,10 +163,17 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         double EC_sum = 0;
         double P_sum = 0;
         double P_before = 0;
+        double ec_min = 10000000;
         for (int i = start + 1; i < end; i++ ) {
 
             double ES = fs[i].A / 3.6 / 9.81;
             double EM = Math.sqrt(Math.pow(9.81, 2) + Math.pow(fs[i].A, 2)) / 9.81;
+            if (EM < 1) {
+                System.out.println("EM small "+fs[i].A);
+            }
+            if (ES < -0.6 || ES > 0.4) {
+                System.out.println("big slope "+ES+" a"+fs[i].A);
+            }
             double EC = (
                 + 155.4 * Math.pow(ES, 5)
                 - 30.4 * Math.pow(ES , 4)
@@ -182,8 +189,15 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             P_sum += Math.abs(P);
 
             // ransform the values we plot
-            EC = Math.log(Math.abs(EC) + 1);
-            P = Math.log(Math.abs(P) + 1);
+            EC = Math.log(Math.abs(EC) + Math.E );
+            P = Math.log(Math.abs(P) + Math.E );
+            if (EC < 0 || P < 0) {
+                System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
+            }
+            if (EC < ec_min) {
+                ec_min = EC;
+                System.out.println("new min "+EC);
+            }
 
             //System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
 

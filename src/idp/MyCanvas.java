@@ -61,8 +61,8 @@ public class MyCanvas extends JPanel {
         int j = 3;
 
         Frame[] frames = frameSet[j].frames;
-        float x1 = 0,
-              y1 = frames[0].S,
+        double x1 = 0,
+               y1 = frames[0].S,
               acc = 0;
         int offsety = 0;
         int dur_sprint = 0, count_sprint = 0;
@@ -70,7 +70,7 @@ public class MyCanvas extends JPanel {
             if (frames[i].BallStatus == 1) {
 
 
-                float vel_ms = frames[i].S / 3.6f;
+                double vel_ms = frames[i].S / 3.6;
                 if (vel_ms < 2) {
                     g2d.setColor(Color.lightGray);
                 } else if (vel_ms < 4) {

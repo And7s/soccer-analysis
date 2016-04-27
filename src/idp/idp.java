@@ -90,13 +90,13 @@ public class idp {
                 match.getPlayer(frameSet[i].Object).ShortName :
                 frameSet[i].Object;
             rowData[i][2] = frameSet[i].firstHalf;
-            rowData[i][3] = frameSet[i].getSum() / frameSet[i].getCount(0);
+            rowData[i][3] = frameSet[i].getSpeed() / frameSet[i].getCount(0);
             rowData[i][4] =
                 String.format("%.1f", (frameSet[i].getCount(-1) / 25.0 / 60)) + " | " +
                 String.format("%.1f", (frameSet[i].getCount(0) / 25.0 / 60)) + " | " +
                 String.format("%.1f", (frameSet[i].getCount(1) / 25.0 / 60));
 
-            rowData[i][5] = frameSet[i].getSum() / 25.0 / 60 / 60;
+            rowData[i][5] = frameSet[i].getSpeed() / 25.0 / 60 / 60;
             rowData[i][6] =
                 leftPad("" + frameSet[i].getSprintCount(-1), 4, ' ') + " | " +
                 leftPad("" + frameSet[i].getSprintCount(0), 4, ' ') + " | " +

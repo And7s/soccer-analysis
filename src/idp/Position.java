@@ -174,6 +174,9 @@ public class Position {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        for (int i = 0; i < frameSet.length; i++) {
+            frameSet[i].analyze();
+        }
         return frameSet;
     }
     public FrameSet[] spreadBallStatus(FrameSet[] frameSet) {
