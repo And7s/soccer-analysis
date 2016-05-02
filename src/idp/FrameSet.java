@@ -15,6 +15,7 @@ class MinuteData {
 public class FrameSet {
     public String Match, Club, Object;
     public boolean firstHalf;
+    public boolean isBall = false;
     public Frame frames[];
 
     private double sum = -1, sq_sum = -1;
@@ -146,10 +147,12 @@ public class FrameSet {
 
 
     // when a frameset is entirely loaded i can analze it to prepare results that might propably be reused
-    public void analyze() {
+    public void analyze(FrameSet frameSet) {
         // preadjustements
-        int ball_fs_offset = idp.position.getBallFirstHalf(firstHalf).frames[0].N;
-        Frame[] ball_frames = idp.position.getBallFirstHalf(firstHalf).frames;
+        int ball_fs_offset = frameSet.frames[0].N;
+        Frame[] ball_frames = frameSet.frames;
+
+
         int last_frame = frames[frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
         agg_sprints = new MinuteData[duration_game_min];  // will hold the aggregated information of the sprints per minute

@@ -29,11 +29,12 @@ public class idp {
     public static visSprints vis_sprints;
     public idp() {
 
-        my_frame = new myFrame();
+        //my_frame = new myFrame();
+        new Batch();
 
         //canvas = new MyCanvas();
 
-        visField = new visualField();
+        /*visField = new visualField();
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();
@@ -66,7 +67,7 @@ public class idp {
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
         visField.updateData(position, match);
-        vis_zones.repaint();
+        vis_zones.repaint();*/
 
 
     }

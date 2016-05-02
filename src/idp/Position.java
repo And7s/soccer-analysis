@@ -175,7 +175,7 @@ public class Position {
             e.printStackTrace();
         }
         for (int i = 0; i < frameSet.length; i++) {
-            frameSet[i].analyze();
+ // ERROR           frameSet[i].analyze();
         }
         return frameSet;
     }
