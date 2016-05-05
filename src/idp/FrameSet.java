@@ -1,7 +1,7 @@
 package idp;
 
 class GameSection {
-    double sum, sq_sum, count;
+    double sum, sq_sum, count, min, max;
 }
 class MinuteData {
     public MinuteData() {
@@ -17,8 +17,7 @@ public class FrameSet {
     public boolean firstHalf;
     public boolean isBall = false;
     public Frame frames[];
-
-    private double sum = -1, sq_sum = -1;
+    public int frames_missing = 0;
 
     private MinuteData[] agg_sprints, agg_speed;
     public String toString() {
@@ -96,15 +95,7 @@ public class FrameSet {
         return count;
     }
 
-    public double getSqSum() {
-        if (sq_sum == -1) {
-            sq_sum = 0;
-            for (int i = 0; i < frames.length; i++) {
-                sq_sum += frames[i].S * frames[i].S;
-            }
-        }
-        return sq_sum;
-    }
+
 
     public int getCount(int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
         if (filter == - 1) return frames.length;
@@ -141,6 +132,53 @@ public class FrameSet {
         }
         return count_sprint;
     }
+
+    // get minimum of speed
+    public double getSpeedMin() { return getSpeedMin(0, agg_speed.length); }
+    public double getSpeedMin(int start, int end) { return getSpeedMin(start, end, -1); }
+
+    public double getSpeedMin(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
+        double min = Double.MAX_VALUE;
+        for (int i = start + 1; i < end && i < agg_speed.length; i++) {
+            switch (filter) {
+                case -1:    // all
+                    min = Math.min(min, agg_speed[i].all.min);
+                    break;
+                case 0:
+                    min = Math.min(min, agg_speed[i].paused.min);
+                    break;
+                case 1:
+                    min = Math.min(min, agg_speed[i].active.min);
+                    break;
+            }
+
+        }
+        return min;
+    }
+
+    public double getSpeedMax() { return getSpeedMax(0, agg_speed.length); }
+    public double getSpeedMax(int start, int end) { return getSpeedMax(start, end, -1); }
+
+    public double getSpeedMax(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
+        double max = Double.MIN_VALUE;
+        for (int i = start + 1; i < end && i < agg_speed.length; i++) {
+            switch (filter) {
+                case -1:    // all
+                    max = Math.max(max, agg_speed[i].all.max);
+                    break;
+                case 0:
+                    max = Math.max(max, agg_speed[i].paused.max);
+                    break;
+                case 1:
+                    max = Math.max(max, agg_speed[i].active.max);
+                    break;
+            }
+
+        }
+        return max;
+    }
+
+
 
 
 
@@ -196,16 +234,34 @@ public class FrameSet {
             agg_speed[cur_minute].all.sum += frames[i].S;
             agg_speed[cur_minute].all.sq_sum += (frames[i].S * frames[i].S);
             agg_sprints[cur_minute].all.count++;
+            if (agg_speed[cur_minute].all.min > frames[i].S) {
+                agg_speed[cur_minute].all.min = frames[i].S;
+            }
+            if (agg_speed[cur_minute].all.max < frames[i].S) {
+                agg_speed[cur_minute].all.max = frames[i].S;
+            }
             if (ball_frames[i].BallStatus == 1) {
                 agg_speed[cur_minute].active.count++;
                 agg_speed[cur_minute].active.sum += frames[i].S;
                 agg_speed[cur_minute].active.sq_sum += (frames[i].S * frames[i].S);
                 agg_sprints[cur_minute].active.count++;
+                if (agg_speed[cur_minute].active.min > frames[i].S) {
+                    agg_speed[cur_minute].active.min = frames[i].S;
+                }
+                if (agg_speed[cur_minute].active.max < frames[i].S) {
+                    agg_speed[cur_minute].active.max = frames[i].S;
+                }
             } else {
                 agg_speed[cur_minute].paused.count++;
                 agg_speed[cur_minute].paused.sum += frames[i].S;
                 agg_speed[cur_minute].paused.sq_sum += (frames[i].S * frames[i].S);
                 agg_sprints[cur_minute].paused.count++;
+                if (agg_speed[cur_minute].paused.min > frames[i].S) {
+                    agg_speed[cur_minute].paused.min = frames[i].S;
+                }
+                if (agg_speed[cur_minute].paused.max < frames[i].S) {
+                    agg_speed[cur_minute].paused.max = frames[i].S;
+                }
             }
         }
     }
