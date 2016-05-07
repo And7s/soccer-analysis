@@ -50,11 +50,11 @@ public class Batch {
 
         Game game = new Game();
 
-        game.match = new Match("D:\\dfl\\DFL-MAT-0002UH_MatchInformation.xml");
+        game.addMatch(new Match("D:\\dfl\\DFL-MAT-0002UH_MatchInformation.xml"));
         try {
             FrameSet[] frame_set = Position_new.readPosition("D:\\dfl\\DFL-MAT-0002UH_ObservedPositionalData.xml", 1);
             Position_new pos = new Position_new(frame_set);
-            game.position = pos;
+            game.addPosition(pos);
             game.writeCSV();
 
         } catch (InvalidPositionDataSet e) {
