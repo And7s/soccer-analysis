@@ -17,6 +17,88 @@ class InvalidPositionDataSet extends Exception {
 }
 
 public class Position_new {
+    private int idx_ball_first_half, idx_ball_second_half;
+    public FrameSet[] frameSet;
+
+    public Position_new(FrameSet[] frameSet) {
+        this.frameSet = frameSet;
+        analyzeFrameSet();
+        spreadBallStatus();
+    }
+
+    public FrameSet getBallFirstHalf(boolean firstHalf) {
+        if (firstHalf) {
+            return frameSet[idx_ball_first_half];
+        } else {
+            return frameSet[idx_ball_second_half];
+        }
+    }
+
+
+    public void analyzeFrameSet() {
+        for (int i = 0; i < frameSet.length; i++) {
+            if (frameSet[i].isBall) {       // determine which frameset is the ball
+                if (frameSet[i].firstHalf) {
+                    idx_ball_first_half = i;
+                } else {
+                    idx_ball_second_half = i;
+                }
+            }
+            Frame[] frames = frameSet[i].frames;
+            int last_n = frames[0].N;
+            System.out.println("a " + frames.length);
+            for (int j = 1; j < frames.length; j++) {
+                if (frames[j].N != last_n + 1) {
+                    System.out.println("error" + (frames[j].N - last_n - 1));
+                    frameSet[i].frames_missing += (frames[j].N - last_n - 1);
+                }
+                last_n = frames[j].N;
+            }
+        }
+        spreadBallStatus();
+    }
+
+    public void spreadBallStatus() {
+        // get ballposession and ballstatus for others
+        int start_first_half = frameSet[idx_ball_first_half].frames[0].N,
+            start_second_half = frameSet[idx_ball_second_half].frames[0].N;
+        System.out.println("start at "+start_first_half+" and "+start_second_half);
+        for (int i = 0; i < frameSet.length; i++) {
+            if (i == idx_ball_first_half || i == idx_ball_second_half) continue;    // the ball has the ball status itself
+            int num = frameSet[i].frames[0].N;
+            int ball_idx, diff; // diff is how much later the player joined this half
+
+            if (frameSet[i].firstHalf) {
+                ball_idx = idx_ball_first_half;
+                diff = num - start_first_half;
+            } else {
+                ball_idx = idx_ball_second_half;
+                diff = num - start_second_half;
+            }
+
+            // System.out.println("Frameset " + i +" starts at "+num + "diff "+diff + "in half "+ball_idx);
+            for (int j = 0; j < frameSet[i].frames.length; j++) {
+                // error detection
+                if (frameSet[i].frames[j].N != frameSet[ball_idx].frames[j + diff].N) {     // this should not happen, but still, in the dataset are wholes
+
+                    int var = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j + diff].N;
+                    System.out.println("abweichung " + var);
+
+                    diff = frameSet[i].frames[j].N - frameSet[ball_idx].frames[j].N;    // realign
+                    //System.exit(-1);
+
+                }
+                frameSet[i].frames[j].BallPossession = frameSet[ball_idx].frames[j + diff].BallPossession;
+                frameSet[i].frames[j].BallStatus = frameSet[ball_idx].frames[j + diff].BallStatus;
+            }
+        }
+        // precalculate numbers
+        for (int i = 0; i < frameSet.length; i++) {
+            frameSet[i].analyze(getBallFirstHalf(frameSet[i].firstHalf));  // per generate numbers
+        }
+    }
+
+
 
     public static int checkType(String path) {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -84,14 +166,11 @@ public class Position_new {
                 if (streamReader.isStartElement()) {
                     String tag = streamReader.getLocalName();
 
-
-
                     /*System.out.println(streamReader.getLocalName());
                     int count = streamReader.getAttributeCount();
                     for (int i = 0; i < count; i++) {
                         System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
                     }*/
-
 
 
                     if (tag.equals("Frame")) {
@@ -126,7 +205,7 @@ public class Position_new {
                         String[] ClubIdent = {"Club", "TeamId"},
                             MatchIdent = {"Match", "MatchId"},
                             ObjectIdent = {"Object", "PersonId"};
-System.out.println("object is "+ ObjectIdent[FORMAT]);
+
                         FrameSet fr = new FrameSet();
                         fr.Club = streamReader.getAttributeValue(null, ClubIdent[FORMAT]);
                         fr.Match = streamReader.getAttributeValue(null, MatchIdent[FORMAT]);
