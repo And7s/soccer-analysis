@@ -139,7 +139,7 @@ public class FrameSet {
 
     public double getSpeedMin(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
         double min = Double.MAX_VALUE;
-        for (int i = start + 1; i < end && i < agg_speed.length; i++) {
+        for (int i = start; i < end && i < agg_speed.length; i++) {
             switch (filter) {
                 case -1:    // all
                     min = Math.min(min, agg_speed[i].all.min);
@@ -161,7 +161,7 @@ public class FrameSet {
 
     public double getSpeedMax(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
         double max = Double.MIN_VALUE;
-        for (int i = start + 1; i < end && i < agg_speed.length; i++) {
+        for (int i = start; i < end && i < agg_speed.length; i++) {
             switch (filter) {
                 case -1:    // all
                     max = Math.max(max, agg_speed[i].all.max);
