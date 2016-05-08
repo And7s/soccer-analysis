@@ -175,7 +175,8 @@ public class Position {
             e.printStackTrace();
         }
         for (int i = 0; i < frameSet.length; i++) {
- // ERROR           frameSet[i].analyze();
+            FrameSet ball_fs = frameSet[i].firstHalf ? frameSet[idx_ball_first_half] : frameSet[idx_ball_second_half];
+            frameSet[i].analyze(ball_fs);
         }
         return frameSet;
     }

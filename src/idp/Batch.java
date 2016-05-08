@@ -9,12 +9,14 @@ import java.util.Vector;
  */
 public class Batch {
     Vector<String> files;
+
+    public Game game;
     public Batch() {
         files = new Vector<String>(10);
         final File folder = new File("D:\\dfl\\");
         listFilesForFolder(folder, "D:\\dfl\\");
         System.out.println(files.size());
-        Game game = new Game();
+        game = new Game();
 
         /*for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
 
@@ -47,7 +49,8 @@ public class Batch {
 
 // single game output
 
-        String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};
+        //String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK"};    // with visuals one dataset less "DFL-MAT-0002UL"
+        String[] matches = {"DFL-MAT-00031J"};
 
         for (int i = 0; i < matches.length; i++) {
             game.addMatch(new Match("D:\\dfl\\" + matches[i] + "_MatchInformation.xml"));

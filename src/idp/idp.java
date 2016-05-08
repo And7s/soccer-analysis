@@ -27,14 +27,17 @@ public class idp {
     public static MeanData[] dat;
     public static Position position;
     public static visSprints vis_sprints;
+
+    public static Batch batch;
     public idp() {
 
-        //my_frame = new myFrame();
-        new Batch();
 
-        //canvas = new MyCanvas();
+        batch = new Batch();
 
-        /*visField = new visualField();
+        /*my_frame = new myFrame();
+
+
+        visField = new visualField();
 
         match = new Match("data/S_14_15_BRE_HSV/match.xml");
         position = new Position();

@@ -19,7 +19,7 @@ public class FrameSet {
     public Frame frames[];
     public int frames_missing = 0;
 
-    private MinuteData[] agg_sprints, agg_speed;
+    private MinuteData[] agg_sprints, agg_speed, agg_energy;
     public String toString() {
         return "FrameSet Obj: " + Object + " Club: " + Club + " Match: " + Match + " firstHalf: " + firstHalf + " frames " + ((frames != null) ? frames.length : "null");
     }
@@ -178,9 +178,27 @@ public class FrameSet {
         return max;
     }
 
+    public double getEnergy() { return getEnergy(0, agg_energy.length); }
+    public double getEnergy(int start, int end) { return getEnergy(start, end, -1); }
 
+    public double getEnergy(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
 
-
+        double energy = 0;
+        for (int i = start; i < end && i < agg_energy.length; i++) {
+            switch (filter) {
+                case -1:    // all
+                    energy += agg_energy[i].all.sum;
+                    break;
+                case 0:
+                    energy += agg_energy[i].paused.sum;
+                    break;
+                case 1:
+                    energy += agg_energy[i].active.sum;
+                    break;
+            }
+        }
+        return energy;
+    }
 
 
 
@@ -195,9 +213,11 @@ public class FrameSet {
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
         agg_sprints = new MinuteData[duration_game_min];  // will hold the aggregated information of the sprints per minute
         agg_speed = new MinuteData[duration_game_min];
+        agg_energy = new MinuteData[duration_game_min];
         for (int i = 0; i < duration_game_min; i++) {
             agg_sprints[i] = new MinuteData();
             agg_speed[i] = new MinuteData();
+            agg_energy[i] = new MinuteData();
         }
         int dur_sprint = 0;
 
@@ -228,6 +248,25 @@ public class FrameSet {
             } else {
                 dur_sprint = 0;
             }
+            // energy
+            double ES = frames[i].A / 9.81;
+            double EM = Math.sqrt(Math.pow(9.81, 2) + Math.pow(frames[i].A, 2)) / 9.81;
+
+            double EC = (
+                + 155.4 * Math.pow(ES, 5)
+                    - 30.4 * Math.pow(ES , 4)
+                    - 43.3 * Math.pow(ES, 3)
+                    + 46.3 * Math.pow(ES, 2)
+                    + 19.5 * ES
+                    + 3.6
+            ) * EM; // unit J/kg/m
+            // TODO: clairify: what about decelerations
+
+            agg_energy[cur_minute].all.sum += EC;
+            agg_energy[cur_minute].all.sq_sum += (EC * EC);        // TODO: write helper, write loops, simplyfy somehow
+            agg_energy[cur_minute].all.count++;                     // TODO: add min/max
+
+
 
             // speed
             agg_speed[cur_minute].all.count++;
@@ -240,7 +279,7 @@ public class FrameSet {
             if (agg_speed[cur_minute].all.max < frames[i].S) {
                 agg_speed[cur_minute].all.max = frames[i].S;
             }
-            if (ball_frames[i].BallStatus == 1) {
+            if (ball_frames[i].BallStatus == 1) {       //active
                 agg_speed[cur_minute].active.count++;
                 agg_speed[cur_minute].active.sum += frames[i].S;
                 agg_speed[cur_minute].active.sq_sum += (frames[i].S * frames[i].S);
@@ -251,7 +290,10 @@ public class FrameSet {
                 if (agg_speed[cur_minute].active.max < frames[i].S) {
                     agg_speed[cur_minute].active.max = frames[i].S;
                 }
-            } else {
+                agg_energy[cur_minute].active.sum += EC;
+                agg_energy[cur_minute].active.sq_sum += (EC * EC);
+                agg_energy[cur_minute].active.count++;
+            } else {        // paused
                 agg_speed[cur_minute].paused.count++;
                 agg_speed[cur_minute].paused.sum += frames[i].S;
                 agg_speed[cur_minute].paused.sq_sum += (frames[i].S * frames[i].S);
@@ -262,6 +304,9 @@ public class FrameSet {
                 if (agg_speed[cur_minute].paused.max < frames[i].S) {
                     agg_speed[cur_minute].paused.max = frames[i].S;
                 }
+                agg_energy[cur_minute].paused.sum += EC;
+                agg_energy[cur_minute].paused.sq_sum += (EC * EC);
+                agg_energy[cur_minute].paused.count++;
             }
         }
     }

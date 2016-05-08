@@ -100,7 +100,7 @@ public class Game {
                     "Mean vel total", "Mean vel-15", "Mean vel-30", "Mean vel-45",
                     "in total game", "in paused game", "in active game",
                     "speed minmax -15", "speed minmax -30", "speed minmax -45",
-                    "framesmissing", "first half", "club"};
+                    "framesmissing", "first half", "club", "energy total"};
 
                 row1 = sheet.createRow(row_c++);
                 for (int i = 0; i < str_cols.length; i++) {
@@ -200,5 +200,8 @@ public class Game {
         c.setCellValue(fs.firstHalf);
         c = row1.createCell(col_c++);
         c.setCellValue(match.getTeam(fs.Club).name);
+
+        c = row1.createCell(col_c++);
+        c.setCellValue(fs.getEnergy() / fs.getCount());
     }
 }

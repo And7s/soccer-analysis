@@ -102,6 +102,7 @@ public class Config extends JPanel {
 
     }
     public void updateData() {
+        // which player is currently selected
         String[] selectString = new String[idp.frameSet.length];
 
         for (int i = 0; i < idp.frameSet.length; i++) {
@@ -120,5 +121,20 @@ public class Config extends JPanel {
         });
 
         add(selectList);
+
+        // select multiple matches
+        String[] selectMatch = new String[idp.batch.game.positions.size()];
+
+        for (int i = 0; i < idp.batch.game.positions.size(); i++) {
+            selectMatch[i] = i + ": " + idp.batch.game.positions.get(i).frameSet[0].Match; // TODO shorten these paths
+        }
+        System.out.println(selectMatch);
+
+        JComboBox selectMatchList = new JComboBox(selectMatch);
+        // selectList.setSelectedIndex(App.selctedFramesetIdx);
+        // TODO change listener
+
+        add(selectMatchList);
+
     }
 }
