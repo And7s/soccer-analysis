@@ -14,6 +14,8 @@ public class Batch {
         final File folder = new File("D:\\dfl\\");
         listFilesForFolder(folder, "D:\\dfl\\");
         System.out.println(files.size());
+        Game game = new Game();
+
         /*for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
 
             String s = (String) it.nextElement();
@@ -22,50 +24,46 @@ public class Batch {
             if (ret >= 0) {
                 System.out.println(s + " = " +ret);
             }
-            Game game = new Game();
+
             if (ret == 3) {
-                game.match = new Match(s);
-                game.writeCSV();
+                game.addMatch(new Match(s));
             }
 
             if (ret == 1 || ret == 0) {
-
-
-
                 try {
                     FrameSet[] frame_set = Position_new.readPosition(s, ret);
-                    game.analyzeFrameSet(frame_set);
-                    game.writeCSV();
+                    Position_new pos = new Position_new(frame_set);
+                    game.addPosition(pos);
+
 
                 } catch (InvalidPositionDataSet e) {
                     System.out.println("could not load file " + s);
                 }
-                //game.analyzeFrameSet(frame_set);
 
             }
 
-
+            game.writeCSV();
         }*/
 
+// single game output
 
-        Game game = new Game();
+        String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};
 
-        game.addMatch(new Match("D:\\dfl\\DFL-MAT-0002UH_MatchInformation.xml"));
-        try {
-            FrameSet[] frame_set = Position_new.readPosition("D:\\dfl\\DFL-MAT-0002UH_ObservedPositionalData.xml", 1);
-            Position_new pos = new Position_new(frame_set);
-            game.addPosition(pos);
-            game.writeCSV();
+        for (int i = 0; i < matches.length; i++) {
+            game.addMatch(new Match("D:\\dfl\\" + matches[i] + "_MatchInformation.xml"));
+            try {
+                FrameSet[] frame_set = Position_new.readPosition("D:\\dfl\\" + matches[i] + "_ObservedPositionalData.xml", 1);
+                Position_new pos = new Position_new(frame_set);
+                game.addPosition(pos);
 
-        } catch (InvalidPositionDataSet e) {
-            System.out.println("could not load file " );
+
+            } catch (InvalidPositionDataSet e) {
+                System.out.println("could not load file " );
+            }
+
         }
 
-        /*
-        String file = "H:\\dfl\\DFL-MAT-0002UG_ObservedPositionalData.xml";
-        Position_new.checkType(file);
-        FrameSet[] frame_set = Position_new.readPosition(file);
-        Game.analyzeFrameSet(frame_set);*/
+        game.writeCSV();
 
     }
 

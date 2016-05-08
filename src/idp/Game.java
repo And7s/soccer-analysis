@@ -31,6 +31,7 @@ public class Game {
     ArrayList<CellStyle> styles = new ArrayList<CellStyle>();
     HSSFWorkbook wb;
 
+
     public Game() {
 
     }
@@ -48,8 +49,6 @@ public class Game {
         if (matchs.size() != positions.size()) return;
 
         try {
-            int row_c = 0;
-
             wb = new HSSFWorkbook();
             HSSFPalette palette = wb.getCustomPalette();
 
@@ -64,8 +63,8 @@ public class Game {
                 styles.add(style);
             }
 
-
             for (int k = 0; k < matchs.size(); k++) {
+                int row_c = 0;
                 Match match = matchs.get(k);
                 Position_new position = positions.get(k);
 
