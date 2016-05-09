@@ -166,14 +166,14 @@ public class Game {
         c = row1.createCell(col_c++);
         c.setCellValue(fs.getVar(VAR.SPRINT));
         c = row1.createCell(col_c++);
-        double speed = fs.getSpeed() / fs.getCount() / 3.6;
+        double speed = fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6;
         int color = (int)Math.min(Math.max((speed * 3.3), 0), 9);
         c.setCellValue(speed);
         c.setCellStyle(styles.get(color));
 
         for (int i = 0; i < 3; i++) {
             c = row1.createCell(col_c++);
-            speed = fs.getSpeed(15 * i, 15 * i + 15, 1) / fs.getCount(15 * i, 15 * i + 15, 1) / 3.6;
+            speed = fs.getVar(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6;
             c.setCellValue(speed);
             color = (int)Math.min(Math.max((speed * 3.3), 0), 9);
             c.setCellStyle(styles.get(color));
@@ -181,18 +181,19 @@ public class Game {
 
 
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getCount(-1) / 25.0 / 60);
+        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60);
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getCount(0) / 25.0 / 60);
+        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60);
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getCount(1) / 25.0 / 60);
+        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60);
 
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getSpeedMin(0,15, 1) / 3.6  + " - " + fs.getSpeedMax(0,15, 1) / 3.6);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getSpeedMin(15,30, 1) / 3.6  + " - " + fs.getSpeedMax(15,30, 1) / 3.6);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getSpeedMin(30,45, 1) / 3.6  + " - " + fs.getSpeedMax(30,45, 1) / 3.6);
+        for (int i = 0; i < 3; i++) {
+            c = row1.createCell(col_c++);
+            c.setCellValue(
+                fs.getVarMin(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6 + " - " +
+                fs.getVarMax(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6
+            );
+        }
 
         c = row1.createCell(col_c++);
         c.setCellValue(fs.frames_missing);
@@ -202,6 +203,6 @@ public class Game {
         c.setCellValue(match.getTeam(fs.Club).name);
 
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getEnergy() / fs.getCount());
+        c.setCellValue(fs.getEnergy() / fs.getVarCount(VAR.SPEED));
     }
 }

@@ -96,13 +96,13 @@ public class idp {
                 match.getPlayer(frameSet[i].Object).ShortName :
                 frameSet[i].Object;
             rowData[i][2] = frameSet[i].firstHalf;
-            rowData[i][3] = frameSet[i].getSpeed() / frameSet[i].getCount(0);
+            rowData[i][3] = frameSet[i].getVar(VAR.SPEED) / frameSet[i].getCount(0);
             rowData[i][4] =
                 String.format("%.1f", (frameSet[i].getCount(-1) / 25.0 / 60)) + " | " +
                 String.format("%.1f", (frameSet[i].getCount(0) / 25.0 / 60)) + " | " +
                 String.format("%.1f", (frameSet[i].getCount(1) / 25.0 / 60));
 
-            rowData[i][5] = frameSet[i].getSpeed() / 25.0 / 60 / 60;
+            rowData[i][5] = frameSet[i].getVar(VAR.SPEED) / 25.0 / 60 / 60;
             rowData[i][6] =
                 leftPad("" + frameSet[i].getVar(VAR.SPRINT), 4, ' ') + " | " +
                 leftPad("" + frameSet[i].getVar(VAR.SPRINT, FILTER.PAUSED), 4, ' ') + " | " +
@@ -171,17 +171,17 @@ public class idp {
                 // sprints
                 int from_min = (int)(50.0 / parts * k);
                 int to_min = (int)(50.0 / parts * (k + 1));
-                int filter = App.only_active ? 1 : -1;
-                int filter_new = App.only_active ? FILTER.ACTIVE : FILTER.ALL;
+
+                int filter = App.only_active ? FILTER.ACTIVE : FILTER.ALL;
                 int account_chunk = frameSet[i].firstHalf ? k : k + parts;
 
-                dat[account_chunk].sprints.sum += frameSet[i].getVar(VAR.SPRINT, from_min, to_min, filter_new);
-                dat[account_chunk].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
+                dat[account_chunk].sprints.sum += frameSet[i].getVar(VAR.SPRINT, from_min, to_min, filter);
+                dat[account_chunk].sprints.count += frameSet[i].getVarCount(VAR.SPRINT, from_min, to_min, filter);
 
                 // speed
-                dat[account_chunk].sum += frameSet[i].getSpeed(from_min, to_min, filter);
-                dat[account_chunk].count += frameSet[i].getCount(from_min, to_min, filter);
-                dat[account_chunk].sq_sum += frameSet[i].getSpeedSq(from_min, to_min, filter);
+                dat[account_chunk].sum += frameSet[i].getVar(VAR.SPEED, from_min, to_min, filter);
+                dat[account_chunk].count += frameSet[i].getVarCount(VAR.SPEED, from_min, to_min, filter);
+                dat[account_chunk].sq_sum += frameSet[i].getVarSq(VAR.SPEED, from_min, to_min, filter);
             }
 
 

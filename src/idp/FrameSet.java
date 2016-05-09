@@ -1,7 +1,7 @@
 package idp;
 
 class GameSection {
-    double sum, sq_sum, count, min, max;
+    double sum, sq_sum, count, min = Double.MAX_VALUE, max = Double.MIN_VALUE;
 }
 class MinuteData {
     public MinuteData() {
@@ -30,7 +30,7 @@ public class FrameSet {
     public int frames_missing = 0;
     private GameSection[][][] aggregate;
 
-    private MinuteData[] agg_speed, agg_energy;
+    private MinuteData[] agg_energy;
     public String toString() {
         return "FrameSet Obj: " + Object + " Club: " + Club + " Match: " + Match + " firstHalf: " + firstHalf + " frames " + ((frames != null) ? frames.length : "null");
     }
@@ -49,6 +49,52 @@ public class FrameSet {
         return val;
     }
 
+    public double getVarSq(int var) { return getVarSq(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
+    public double getVarSq(int var, int start, int end) { return getVarSq(var, start, end, FILTER.ALL); }
+    public double getVarSq(int var, int filter) { return getVarSq(var, 0, aggregate[var][filter].length, filter); }
+
+    public double getVarSq(int var, int start, int end, int filter) {
+        GameSection[] dat = aggregate[var][filter];
+        double val = 0;
+        for (int i = start; i < end && i < dat.length; i++) {
+            val += dat[i].sq_sum;
+        }
+        return val;
+    }
+
+    public int getVarCount(int var) { return getVarCount(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
+    public int getVarCount(int var, int start, int end) { return getVarCount(var, start, end, FILTER.ALL); }
+    public int getVarCount(int var, int filter) { return getVarCount(var, 0, aggregate[var][filter].length, filter); }
+
+    public int getVarCount(int var, int start, int end, int filter) {
+        GameSection[] dat = aggregate[var][filter];
+        int count = 0;
+        for (int i = start; i < end && i < dat.length; i++) {
+            count += dat[i].count;
+        }
+        return count;
+    }
+
+
+    public double getVarMin(int var, int start, int end, int filter) {
+        GameSection[] dat = aggregate[var][filter];
+        double min = Double.MAX_VALUE;
+        for (int i = 0; i < dat.length; i++) {
+            min = Math.min(min, dat[i].min);
+        }
+        return min;
+    }
+    public double getVarMax(int var, int start, int end, int filter) {
+        GameSection[] dat = aggregate[var][filter];
+        double max = Double.MIN_VALUE;
+        for (int i = 0; i < dat.length; i++) {
+            max = Math.max(max, dat[i].max);
+        }
+        return max;
+    }
+
+
+
 
 
     public void addValue(int var, int status, int min, double val) {
@@ -63,7 +109,7 @@ public class FrameSet {
                 aggregate[var][i][min].max = val;
         }
     }
-
+/*
     public double getSpeed() {
         return getSpeed(0, agg_speed.length);  // the entire game
     }
@@ -134,7 +180,7 @@ public class FrameSet {
         }
         return count;
     }
-
+*/
 
 
     public int getCount(int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
@@ -152,6 +198,7 @@ public class FrameSet {
 
 
     // get minimum of speed
+    /*
     public double getSpeedMin() { return getSpeedMin(0, agg_speed.length); }
     public double getSpeedMin(int start, int end) { return getSpeedMin(start, end, -1); }
 
@@ -172,8 +219,8 @@ public class FrameSet {
 
         }
         return min;
-    }
-
+    }*/
+/*
     public double getSpeedMax() { return getSpeedMax(0, agg_speed.length); }
     public double getSpeedMax(int start, int end) { return getSpeedMax(start, end, -1); }
 
@@ -194,7 +241,7 @@ public class FrameSet {
 
         }
         return max;
-    }
+    }*/
 
     public double getEnergy() { return getEnergy(0, agg_energy.length); }
     public double getEnergy(int start, int end) { return getEnergy(start, end, -1); }
@@ -231,7 +278,6 @@ public class FrameSet {
         int last_frame = frames[frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
 
-        agg_speed = new MinuteData[duration_game_min];
         agg_energy = new MinuteData[duration_game_min];
         aggregate = new GameSection[VAR.length][FILTER.length][duration_game_min];
 
@@ -246,7 +292,6 @@ public class FrameSet {
 
         for (int i = 0; i < duration_game_min; i++) {
 
-            agg_speed[i] = new MinuteData();
             agg_energy[i] = new MinuteData();
         }
         int dur_sprint = 0;
@@ -300,41 +345,15 @@ public class FrameSet {
 
 
             // speed
-            agg_speed[cur_minute].all.count++;
-            agg_speed[cur_minute].all.sum += frames[i].S;
-            agg_speed[cur_minute].all.sq_sum += (frames[i].S * frames[i].S);
+            addValue(VAR.SPEED, ball_frames[i].BallStatus, cur_minute, frames[i].S);
 
-            if (agg_speed[cur_minute].all.min > frames[i].S) {
-                agg_speed[cur_minute].all.min = frames[i].S;
-            }
-            if (agg_speed[cur_minute].all.max < frames[i].S) {
-                agg_speed[cur_minute].all.max = frames[i].S;
-            }
             if (ball_frames[i].BallStatus == 1) {       //active
-                agg_speed[cur_minute].active.count++;
-                agg_speed[cur_minute].active.sum += frames[i].S;
-                agg_speed[cur_minute].active.sq_sum += (frames[i].S * frames[i].S);
 
-                if (agg_speed[cur_minute].active.min > frames[i].S) {
-                    agg_speed[cur_minute].active.min = frames[i].S;
-                }
-                if (agg_speed[cur_minute].active.max < frames[i].S) {
-                    agg_speed[cur_minute].active.max = frames[i].S;
-                }
                 agg_energy[cur_minute].active.sum += EC;
                 agg_energy[cur_minute].active.sq_sum += (EC * EC);
                 agg_energy[cur_minute].active.count++;
             } else {        // paused
-                agg_speed[cur_minute].paused.count++;
-                agg_speed[cur_minute].paused.sum += frames[i].S;
-                agg_speed[cur_minute].paused.sq_sum += (frames[i].S * frames[i].S);
 
-                if (agg_speed[cur_minute].paused.min > frames[i].S) {
-                    agg_speed[cur_minute].paused.min = frames[i].S;
-                }
-                if (agg_speed[cur_minute].paused.max < frames[i].S) {
-                    agg_speed[cur_minute].paused.max = frames[i].S;
-                }
                 agg_energy[cur_minute].paused.sum += EC;
                 agg_energy[cur_minute].paused.sq_sum += (EC * EC);
                 agg_energy[cur_minute].paused.count++;
