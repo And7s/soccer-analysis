@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JFrame;
 import javax.xml.stream.*;
 // http://knowm.org/open-source/xchart/xchart-example-code/
@@ -41,10 +42,7 @@ public class idp {
 
         visField = new visualField();
 
-        match = new Match("data/S_14_15_BRE_HSV/match.xml");
-        position = new Position();
-        //frameSet = position.fakeData();
-        frameSet = position.readData();
+
         analyze();
         createTable();
         my_frame.config.updateData();

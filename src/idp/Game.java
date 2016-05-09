@@ -26,7 +26,7 @@ import static idp.idp.position;
 // a Game collects all information about a game, that is framesets, events and matchinformation
 public class Game {
 
-    ArrayList<Position_new> positions = new ArrayList<Position_new>();
+    ArrayList<Position> positions = new ArrayList<Position>();
     ArrayList<Match> matchs = new ArrayList<Match>();
     ArrayList<CellStyle> styles = new ArrayList<CellStyle>();
     HSSFWorkbook wb;
@@ -36,7 +36,7 @@ public class Game {
 
     }
 
-    public void addPosition(Position_new pos) {
+    public void addPosition(Position pos) {
         positions.add(pos);
     }
 
@@ -66,7 +66,7 @@ public class Game {
             for (int k = 0; k < matchs.size(); k++) {
                 int row_c = 0;
                 Match match = matchs.get(k);
-                Position_new position = positions.get(k);
+                Position position = positions.get(k);
 
                 Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(match.GameTitle));
 

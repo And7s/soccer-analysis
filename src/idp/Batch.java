@@ -50,7 +50,7 @@ public class Batch {
 // single game output
 
         //String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};    // with visuals one dataset less "DFL-MAT-0002UL"
-        String[] matches = {};
+        /* String[] matches = {};
 
         for (int i = 0; i < matches.length; i++) {
             game.addMatch(new Match("D:\\dfl\\" + matches[i] + "_MatchInformation.xml"));
@@ -64,7 +64,21 @@ public class Batch {
                 System.out.println("could not load file " );
             }
 
+        }*/
+        Match match = new Match("data/S_14_15_BRE_HSV/match.xml");
+        game.addMatch(match);
+        idp.match = match;
+        try {
+            FrameSet[] frame_set = Position.readPosition("data/S_14_15_BRE_HSV/position.xml", 1);
+            idp.frameSet = frame_set;
+            Position pos = new Position(frame_set);
+            game.addPosition(pos);
+
+            idp.position = pos;
+        } catch (InvalidPositionDataSet e) {
+            System.out.println("could not load file " );
         }
+
 
         game.writeCSV();
 
