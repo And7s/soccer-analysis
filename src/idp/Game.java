@@ -203,6 +203,6 @@ public class Game {
         c.setCellValue(match.getTeam(fs.Club).name);
 
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getEnergy() / fs.getVarCount(VAR.SPEED));
+        c.setCellValue(fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY));
     }
 }

@@ -96,11 +96,11 @@ public class idp {
                 match.getPlayer(frameSet[i].Object).ShortName :
                 frameSet[i].Object;
             rowData[i][2] = frameSet[i].firstHalf;
-            rowData[i][3] = frameSet[i].getVar(VAR.SPEED) / frameSet[i].getCount(0);
+            rowData[i][3] = frameSet[i].getVar(VAR.SPEED) / frameSet[i].getVarCount(VAR.SPEED);
             rowData[i][4] =
-                String.format("%.1f", (frameSet[i].getCount(-1) / 25.0 / 60)) + " | " +
-                String.format("%.1f", (frameSet[i].getCount(0) / 25.0 / 60)) + " | " +
-                String.format("%.1f", (frameSet[i].getCount(1) / 25.0 / 60));
+                String.format("%.1f", (frameSet[i].getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60)) + " | " +
+                String.format("%.1f", (frameSet[i].getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60)) + " | " +
+                String.format("%.1f", (frameSet[i].getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60));
 
             rowData[i][5] = frameSet[i].getVar(VAR.SPEED) / 25.0 / 60 / 60;
             rowData[i][6] =
