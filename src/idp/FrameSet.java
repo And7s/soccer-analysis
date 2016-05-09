@@ -12,16 +12,56 @@ class MinuteData {
     GameSection all, active, paused;
 }
 
+class FILTER {
+    public static final int ALL = 0, PAUSED = 1, ACTIVE = 2,
+    length = 3;
+}
+class VAR {
+    public static final int SPEED = 0, SPRINT = 1, ENERGY = 2, POWER = 3,
+    length = 4;
+}
+
+
 public class FrameSet {
     public String Match, Club, Object;
     public boolean firstHalf;
     public boolean isBall = false;
     public Frame frames[];
     public int frames_missing = 0;
+    private GameSection[][][] aggregate;
 
-    private MinuteData[] agg_sprints, agg_speed, agg_energy;
+    private MinuteData[] agg_speed, agg_energy;
     public String toString() {
         return "FrameSet Obj: " + Object + " Club: " + Club + " Match: " + Match + " firstHalf: " + firstHalf + " frames " + ((frames != null) ? frames.length : "null");
+    }
+
+
+    public double getVar(int var) { return getVar(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
+    public double getVar(int var, int start, int end) { return getVar(var, start, end, FILTER.ALL); }
+    public double getVar(int var, int filter) { return getVar(var, 0, aggregate[var][filter].length, filter); }
+
+    public double getVar(int var, int start, int end, int filter) {
+        GameSection[] dat = aggregate[var][filter];
+        double val = 0;
+        for (int i = start; i < end && i < dat.length; i++) {
+            val += dat[i].sum;
+        }
+        return val;
+    }
+
+
+
+    public void addValue(int var, int status, int min, double val) {
+        int filter = (status == 0) ? FILTER.PAUSED : FILTER.ACTIVE;
+        for (int i = 0; i <= filter; i += filter) { // does alternate all and the corresponding status
+            aggregate[var][i][min].sum += val;
+            aggregate[var][i][min].sq_sum += (val * val);
+            aggregate[var][i][min].count ++;
+            if (val < aggregate[var][i][min].min)
+                aggregate[var][i][min].min = val;
+            if (val > aggregate[var][i][min].max)
+                aggregate[var][i][min].max = val;
+        }
     }
 
     public double getSpeed() {
@@ -109,29 +149,7 @@ public class FrameSet {
         return count;
     }
 
-    // get number of sprints ( > 1s min 7m/s)
-    public int getSprintCount() { return getSprintCount(0, agg_sprints.length); }
-    public int getSprintCount(int start, int end) { return getSprintCount(start, end, -1); }
 
-    public int getSprintCount(int start, int end, int filter) { // filter [-1 = all, 0 = interrupt, 1 = active]
-        int count_sprint = 0;
-        for (int i = start; i < end && i < agg_sprints.length; i++) {
-            switch (filter) {
-                case -1:    // all
-                    count_sprint += agg_sprints[i].all.sum;
-                    break;
-                case 0:
-                    count_sprint += agg_sprints[i].paused.sum;
-                    break;
-                case 1:
-                    count_sprint += agg_sprints[i].active.sum;
-                    break;
-            }
-
-
-        }
-        return count_sprint;
-    }
 
     // get minimum of speed
     public double getSpeedMin() { return getSpeedMin(0, agg_speed.length); }
@@ -204,6 +222,7 @@ public class FrameSet {
 
     // when a frameset is entirely loaded i can analze it to prepare results that might propably be reused
     public void analyze(FrameSet frameSet) {
+
         // preadjustements
         int ball_fs_offset = frameSet.frames[0].N;
         Frame[] ball_frames = frameSet.frames;
@@ -211,17 +230,28 @@ public class FrameSet {
 
         int last_frame = frames[frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
-        agg_sprints = new MinuteData[duration_game_min];  // will hold the aggregated information of the sprints per minute
+
         agg_speed = new MinuteData[duration_game_min];
         agg_energy = new MinuteData[duration_game_min];
+        aggregate = new GameSection[VAR.length][FILTER.length][duration_game_min];
+
+        for (int i = 0; i < VAR.length; i++) {
+
+            for (int j = 0; j < FILTER.length; j++) {
+                for (int k = 0; k < duration_game_min; k++) {
+                    aggregate[i][j][k] = new GameSection();
+                }
+            }
+        }
+
         for (int i = 0; i < duration_game_min; i++) {
-            agg_sprints[i] = new MinuteData();
+
             agg_speed[i] = new MinuteData();
             agg_energy[i] = new MinuteData();
         }
         int dur_sprint = 0;
 
-        System.out.println("have frames "+frames.length+" and minutes "+agg_sprints.length);
+
         double smooth_factor = 0.7;
 
 
@@ -238,16 +268,17 @@ public class FrameSet {
             if (frames[i].S / 3.6 > 7) {  // convert to m/s
                 dur_sprint++;
                 if (dur_sprint == 25) {
-                    agg_sprints[cur_minute].all.sum++;
-                    if (ball_frames[i].BallStatus == 1) {
-                        agg_sprints[cur_minute].active.sum++;
-                    } else {
-                        agg_sprints[cur_minute].paused.sum++;
-                    }
+                    addValue(VAR.SPRINT, ball_frames[i].BallStatus, cur_minute, 1.0);
+                } else {
+                    addValue(VAR.SPRINT, ball_frames[i].BallStatus, cur_minute, 0.0);
                 }
             } else {
                 dur_sprint = 0;
+                addValue(VAR.SPRINT, ball_frames[i].BallStatus, cur_minute, 0.0);
             }
+
+
+
             // energy
             double ES = frames[i].A / 9.81;
             double EM = Math.sqrt(Math.pow(9.81, 2) + Math.pow(frames[i].A, 2)) / 9.81;
@@ -272,7 +303,7 @@ public class FrameSet {
             agg_speed[cur_minute].all.count++;
             agg_speed[cur_minute].all.sum += frames[i].S;
             agg_speed[cur_minute].all.sq_sum += (frames[i].S * frames[i].S);
-            agg_sprints[cur_minute].all.count++;
+
             if (agg_speed[cur_minute].all.min > frames[i].S) {
                 agg_speed[cur_minute].all.min = frames[i].S;
             }
@@ -283,7 +314,7 @@ public class FrameSet {
                 agg_speed[cur_minute].active.count++;
                 agg_speed[cur_minute].active.sum += frames[i].S;
                 agg_speed[cur_minute].active.sq_sum += (frames[i].S * frames[i].S);
-                agg_sprints[cur_minute].active.count++;
+
                 if (agg_speed[cur_minute].active.min > frames[i].S) {
                     agg_speed[cur_minute].active.min = frames[i].S;
                 }
@@ -297,7 +328,7 @@ public class FrameSet {
                 agg_speed[cur_minute].paused.count++;
                 agg_speed[cur_minute].paused.sum += frames[i].S;
                 agg_speed[cur_minute].paused.sq_sum += (frames[i].S * frames[i].S);
-                agg_sprints[cur_minute].paused.count++;
+
                 if (agg_speed[cur_minute].paused.min > frames[i].S) {
                     agg_speed[cur_minute].paused.min = frames[i].S;
                 }
@@ -309,6 +340,8 @@ public class FrameSet {
                 agg_energy[cur_minute].paused.count++;
             }
         }
+        System.out.println("analyze end");
+
     }
 
 }

@@ -5,9 +5,9 @@ import java.awt.*;
 /**
  * Created by Andre on 23/04/2016.
  */
-public class Filter {
+public class VisFilter {
     double scale;
-    public Filter(float scale) {
+    public VisFilter(float scale) {
         this.scale = scale;
     }
     double Frames(Frame f) {

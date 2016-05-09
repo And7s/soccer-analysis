@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.xml.stream.*;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
+// to execute from shell go to bin/
+// > java idp.idp, data must be available from the bin directory
 
 // about power
 // http://www.gpexe.com/en/blog/metabolic-power-really-understood.html
@@ -34,7 +36,7 @@ public class idp {
 
         batch = new Batch();
 
-        /*my_frame = new myFrame();
+        my_frame = new myFrame();
 
 
         visField = new visualField();
@@ -70,7 +72,7 @@ public class idp {
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
         visField.updateData(position, match);
-        vis_zones.repaint();*/
+        vis_zones.repaint();
 
 
     }
@@ -102,9 +104,9 @@ public class idp {
 
             rowData[i][5] = frameSet[i].getSpeed() / 25.0 / 60 / 60;
             rowData[i][6] =
-                leftPad("" + frameSet[i].getSprintCount(), 4, ' ') + " | " +
-                leftPad("" + frameSet[i].getSprintCount(), 4, ' ') + " | " +
-                leftPad("" + frameSet[i].getSprintCount(), 4, ' ');
+                leftPad("" + frameSet[i].getVar(VAR.SPRINT), 4, ' ') + " | " +
+                leftPad("" + frameSet[i].getVar(VAR.SPRINT, FILTER.PAUSED), 4, ' ') + " | " +
+                leftPad("" + frameSet[i].getVar(VAR.SPRINT, FILTER.ACTIVE), 4, ' ');
             rowData[i][7] = match.getPlayer(frameSet[i].Object) != null ?
                 match.getPlayer(frameSet[i].Object).Starting :
                 "-";
@@ -170,9 +172,10 @@ public class idp {
                 int from_min = (int)(50.0 / parts * k);
                 int to_min = (int)(50.0 / parts * (k + 1));
                 int filter = App.only_active ? 1 : -1;
+                int filter_new = App.only_active ? FILTER.ACTIVE : FILTER.ALL;
                 int account_chunk = frameSet[i].firstHalf ? k : k + parts;
 
-                dat[account_chunk].sprints.sum += frameSet[i].getSprintCount(from_min, to_min, filter);
+                dat[account_chunk].sprints.sum += frameSet[i].getVar(VAR.SPRINT, from_min, to_min, filter_new);
                 dat[account_chunk].sprints.count += frameSet[i].getCount(from_min, to_min, filter);
 
                 // speed

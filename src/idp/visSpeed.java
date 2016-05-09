@@ -59,7 +59,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         repaint();
     }
 
-    public void plotSubset(int start, int end, int offset_y, Filter f) {
+    public void plotSubset(int start, int end, int offset_y, VisFilter f) {
 
         int j = 0;  // which frameset
         Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
@@ -97,7 +97,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         // plot the whole game at once
         // TODO: merge couple of framesets
 
-        Filter filter_speed = new Filter(10) {
+        VisFilter filter_speed = new VisFilter(10) {
             @Override
             double Frames(Frame f) {
                 return (double)(f.S / 3.6);
@@ -125,7 +125,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
         plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 100, filter_speed);
 
-        Filter filter_acc =  new Filter(2.6f) {
+        VisFilter filter_acc =  new VisFilter(2.6f) {
             @Override
             double Frames(Frame f) {
                 return f.A;

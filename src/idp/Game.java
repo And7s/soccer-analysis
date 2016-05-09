@@ -164,7 +164,7 @@ public class Game {
         Cell c = row1.createCell(col_c++);
         c.setCellValue(match.getPlayer(fs.Object).ShortName);
         c = row1.createCell(col_c++);
-        c.setCellValue(fs.getSprintCount());
+        c.setCellValue(fs.getVar(VAR.SPRINT));
         c = row1.createCell(col_c++);
         double speed = fs.getSpeed() / fs.getCount() / 3.6;
         int color = (int)Math.min(Math.max((speed * 3.3), 0), 9);
