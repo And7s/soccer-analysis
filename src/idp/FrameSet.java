@@ -118,12 +118,9 @@ public class FrameSet {
             }
         }
 
-
         int dur_sprint = 0;
 
-
         double smooth_factor = 0.7;
-
 
         for (int i = 0; i < frames.length; i++) {
             // smooth the graph
@@ -167,6 +164,5 @@ public class FrameSet {
             addValue(VAR.SPEED, ball_frames[i].BallStatus, cur_minute, frames[i].S);
 
         }
-        System.out.println("analyze end");
     }
 }

@@ -93,9 +93,12 @@ public class Position {
             }
         }
         // precalculate numbers
+        long startTime = System.nanoTime();
         for (int i = 0; i < frameSet.length; i++) {
             frameSet[i].analyze(getBallFirstHalf(frameSet[i].firstHalf));  // per generate numbers
         }
+        long duration = System.nanoTime() - startTime;
+        System.out.println("analyze all Fraemsets of one game took: " + (duration / 1E6)+ "ms");
     }
 
 

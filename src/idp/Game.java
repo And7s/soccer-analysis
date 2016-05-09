@@ -1,18 +1,5 @@
 package idp;
 
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFPalette;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.*;
-
-import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.*;
-
-import java.awt.*;
-import java.io.FileOutputStream;
-
 
 import java.io.*;
 import java.util.ArrayList;
@@ -28,8 +15,8 @@ public class Game {
 
     ArrayList<Position> positions = new ArrayList<Position>();
     ArrayList<Match> matchs = new ArrayList<Match>();
-    ArrayList<CellStyle> styles = new ArrayList<CellStyle>();
-    HSSFWorkbook wb;
+
+
 
 
     public Game() {
@@ -48,161 +35,69 @@ public class Game {
     public void writeCSV() {
         if (matchs.size() != positions.size()) return;
 
-        try {
-            wb = new HSSFWorkbook();
-            HSSFPalette palette = wb.getCustomPalette();
+        FrameSet[] frameSet = position.frameSet;
+        try
+        {
+            OutputStream os = new FileOutputStream(frameSet[0].Match + ".csv");
+            os.write(239);
+            os.write(187);
+            os.write(191);
 
-            for (int i = 0; i < 10; i++) {
-                short idx = (short) (i + 40);
-                System.out.println("modify color " +idx);
-                palette.setColorAtIndex(idx, (byte) Math.min(Math.abs(255-76*i),255), (byte) Math.min(3*255-76*i, 255), (byte) Math.max(255-76*i, 0));
+            PrintWriter wr = new PrintWriter(new OutputStreamWriter(os, "UTF-8"));
 
-                CellStyle style = wb.createCellStyle();
-                style.setFillForegroundColor(idx);
-                style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-                styles.add(style);
-            }
-
-            for (int k = 0; k < matchs.size(); k++) {
-                int row_c = 0;
-                Match match = matchs.get(k);
-                Position position = positions.get(k);
-
-                Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(match.GameTitle));
-
-                // head
-
-                Row row1 = sheet.createRow(row_c++);
-                Cell c = row1.createCell(0);
-                c.setCellValue("MatchId");
-                c = row1.createCell(1);
-                c.setCellValue(match.MatchId);
-
-                row1 = sheet.createRow(row_c++);
-                c = row1.createCell(0);
-                c.setCellValue("GameTitle");
-                c = row1.createCell(1);
-                c.setCellValue(match.GameTitle);
-
-                row1 = sheet.createRow(row_c++);
-                c = row1.createCell(0);
-                c.setCellValue("KickoffTime");
-                c = row1.createCell(1);
-                c.setCellValue(match.KickoffTime);
-
-                row1 = sheet.createRow(row_c++);
-                c = row1.createCell(0);
-                c.setCellValue("Competition");
-                c = row1.createCell(1);
-                c.setCellValue(match.Competition);
-
-                String[] str_cols = {"Frameset", "Sprint Count",
-                    "Mean vel total", "Mean vel-15", "Mean vel-30", "Mean vel-45",
-                    "in total game", "in paused game", "in active game",
-                    "speed minmax -15", "speed minmax -30", "speed minmax -45",
-                    "framesmissing", "first half", "club", "energy total"};
-
-                row1 = sheet.createRow(row_c++);
-                for (int i = 0; i < str_cols.length; i++) {
-                    c = row1.createCell(i);
-                    c.setCellValue(str_cols[i]);
-
-                    c = row1.createCell(i + str_cols.length + 1);
-                    c.setCellValue(str_cols[i]);
-                }
-
-                // create color palette
-
-
-                FrameSet[] frameSet = position.frameSet;
-                outer:
-                for (int i = 0; i < frameSet.length; i++) {
-
-                    FrameSet fs = frameSet[i];
-                    if (fs.isBall) continue;    // dont plot the ball
-
-                    FrameSet left = null, right = null;
-                    if (fs.firstHalf) {
-                        left = fs;
-                    } else {
-                        right = fs;
-                    }
-                    for (int j = 0; j < frameSet.length; j++) {
-                        if (fs.Object.equals(frameSet[j].Object) && i != j) {
-                            if (j < i) continue outer;  // this was already ahdnled in an earleir iteration
-                            if (frameSet[j].firstHalf) {
-                                left = frameSet[j];
-                            } else {
-                                right = frameSet[j];
-                            }
-                        }
-                    }
-                    row1 = sheet.createRow(row_c++);
-                    if (left != null) {
-                        writeFrameSet(row1, match, left, 0);
-                    }
-                    if (right != null) {
-                        writeFrameSet(row1, match, right, 1 + str_cols.length);
-                    }
-                }
-            }
-
-            FileOutputStream fileOut = new FileOutputStream("analyze.xls");
-            wb.write(fileOut);
-            fileOut.close();
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("ERROR writing file" );
-
-        }
-    }
-
-    public void writeFrameSet(Row row1, Match match, FrameSet fs, int col_c) {
-
-        Cell c = row1.createCell(col_c++);
-        c.setCellValue(match.getPlayer(fs.Object).ShortName);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getVar(VAR.SPRINT));
-        c = row1.createCell(col_c++);
-        double speed = fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6;
-        int color = (int)Math.min(Math.max((speed * 3.3), 0), 9);
-        c.setCellValue(speed);
-        c.setCellStyle(styles.get(color));
-
-        for (int i = 0; i < 3; i++) {
-            c = row1.createCell(col_c++);
-            speed = fs.getVar(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6;
-            c.setCellValue(speed);
-            color = (int)Math.min(Math.max((speed * 3.3), 0), 9);
-            c.setCellStyle(styles.get(color));
-        }
-
-
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60);
-
-        for (int i = 0; i < 3; i++) {
-            c = row1.createCell(col_c++);
-            c.setCellValue(
-                fs.getVarMin(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6 + " - " +
-                fs.getVarMax(VAR.SPEED, 15 * i, 15 * i + 15, FILTER.ACTIVE) / 3.6
+            wr.append("MatchId," + match.MatchId + "\n" +
+                "GameTitle," + match.GameTitle + "\n" +
+                "KickoffTime" + match.KickoffTime + "\n" +
+                "Competition" + "match.Competition" + "\n"
             );
+
+            wr.append("Frameset, Sprint [sprint/active min]," +
+                "vel total [m/min], Mean vel-15 [m/min], Mean vel-30 [m/min], Mean vel-45 [m/min]," +
+                "in total game [min], in paused game, in active game," +
+                "speed minmax -15[m/s], speed minmax -30[m/s], speed minmax -45[m/s]," +
+                "framesmissing, first half, club,energy[J/kg/m]," +
+                "total distance[m]\n");
+
+
+            for (int i = 0; i < frameSet.length; i++) {
+                FrameSet fs = frameSet[i];
+                if (fs.Object.equals("DFL-OBJ-0000XT")) continue;
+                wr.append(
+                    match.getPlayer(fs.Object).ShortName + "," +
+                        (fs.getVar(VAR.SPRINT, FILTER.ACTIVE) / fs.getVarCount(VAR.SPRINT, FILTER.ACTIVE) * 25 * 60) + "," +    // sprints per active minute
+
+                    fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6 * 60    + ",");
+                for (int j = 0; j < 3; j++) {
+                    wr.append(
+                        (fs.getVar(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 * 60) + ","
+                    );
+                }
+                wr.append(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60 + ",");
+                wr.append(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60 + ",");
+                wr.append(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60 + ",");
+
+                for (int j = 0; j < 3; j++) {
+                    wr.append(
+                        fs.getVarMin(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + " - " +
+                        fs.getVarMax(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + ","
+                    );
+                }
+                wr.append(fs.frames_missing + ",");
+                wr.append(fs.firstHalf + ",");
+                wr.append(match.getTeam(fs.Club).name + ",");
+                wr.append((fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY)) + ",");
+                wr.append(
+                    (fs.getVar(VAR.SPEED) / 3.6 / 25.0) + ","       // total run meter
+                );
+                wr.append("\n");
+            }
+
+            //generate whatever data you want
+
+            wr.flush();
+            wr.close();
+        } catch(IOException e){
+            e.printStackTrace();
         }
-
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.frames_missing);
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.firstHalf);
-        c = row1.createCell(col_c++);
-        c.setCellValue(match.getTeam(fs.Club).name);
-
-        c = row1.createCell(col_c++);
-        c.setCellValue(fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY));
     }
 }
