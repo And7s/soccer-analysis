@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JFrame;
 import javax.xml.stream.*;
+
+import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
 // to execute from shell go to bin/
@@ -37,12 +39,12 @@ public class idp {
 
         batch = new Batch();
 
-        my_frame = new myFrame();
+        /*my_frame = new myFrame();
 
 
         visField = new visualField();
 
-
+        showMemory("back in main");
         analyze();
         createTable();
         my_frame.config.updateData();
@@ -71,7 +73,7 @@ public class idp {
 
         visField.updateData(position, match);
         vis_zones.repaint();
-
+        */
 
     }
 

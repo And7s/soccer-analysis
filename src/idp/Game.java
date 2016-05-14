@@ -4,8 +4,7 @@ package idp;
 import java.io.*;
 import java.util.ArrayList;
 
-import static idp.idp.match;
-import static idp.idp.position;
+
 
 /**
  * Created by Andre on 02/05/2016.
@@ -35,61 +34,79 @@ public class Game {
     public void writeCSV() {
         if (matchs.size() != positions.size()) return;
 
-        FrameSet[] frameSet = position.frameSet;
+
         try
         {
-            OutputStream os = new FileOutputStream(frameSet[0].Match + ".csv");
+            OutputStream os = new FileOutputStream("analyze.csv");
             os.write(239);
             os.write(187);
             os.write(191);
 
             PrintWriter wr = new PrintWriter(new OutputStreamWriter(os, "UTF-8"));
 
-            wr.append("MatchId," + match.MatchId + "\n" +
-                "GameTitle," + match.GameTitle + "\n" +
-                "KickoffTime" + match.KickoffTime + "\n" +
-                "Competition" + "match.Competition" + "\n"
-            );
-
-            wr.append("Frameset, Sprint [sprint/active min]," +
-                "vel total [m/min], Mean vel-15 [m/min], Mean vel-30 [m/min], Mean vel-45 [m/min]," +
-                "in total game [min], in paused game, in active game," +
-                "speed minmax -15[m/s], speed minmax -30[m/s], speed minmax -45[m/s]," +
-                "framesmissing, first half, club,energy[J/kg/m]," +
-                "total distance[m]\n");
 
 
-            for (int i = 0; i < frameSet.length; i++) {
-                FrameSet fs = frameSet[i];
-                if (fs.Object.equals("DFL-OBJ-0000XT")) continue;
-                wr.append(
-                    match.getPlayer(fs.Object).ShortName + "," +
-                        (fs.getVar(VAR.SPRINT, FILTER.ACTIVE) / fs.getVarCount(VAR.SPRINT, FILTER.ACTIVE) * 25 * 60) + "," +    // sprints per active minute
-
-                    fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6 * 60    + ",");
-                for (int j = 0; j < 3; j++) {
-                    wr.append(
-                        (fs.getVar(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 * 60) + ","
-                    );
-                }
-                wr.append(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60 + ",");
-                wr.append(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60 + ",");
-                wr.append(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60 + ",");
-
-                for (int j = 0; j < 3; j++) {
-                    wr.append(
-                        fs.getVarMin(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + " - " +
-                        fs.getVarMax(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + ","
-                    );
-                }
-                wr.append(fs.frames_missing + ",");
-                wr.append(fs.firstHalf + ",");
-                wr.append(match.getTeam(fs.Club).name + ",");
-                wr.append((fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY)) + ",");
-                wr.append(
-                    (fs.getVar(VAR.SPEED) / 3.6 / 25.0) + ","       // total run meter
+            for (int k = 0; k < positions.size(); k++) {
+                FrameSet[] frameSet = positions.get(k).frameSet;
+                Match match = matchs.get(k);
+                wr.append("MatchId," + match.MatchId + "\n" +
+                    "GameTitle," + match.GameTitle + "\n" +
+                    "KickoffTime" + match.KickoffTime + "\n" +
+                    "Competition" + "match.Competition" + "\n"
                 );
-                wr.append("\n");
+
+                wr.append("Frameset, Sprint [sprint/active min]," +
+                    "vel total [m/min], Mean vel-15 [m/min], Mean vel-30 [m/min], Mean vel-45 [m/min]," +
+                    "in total game [min], in paused game, in active game," +
+                    "speed minmax -15[m/s], speed minmax -30[m/s], speed minmax -45[m/s]," +
+                    "acc -15[m/s2], acc -30[m/s2], acc -45[m/s2]," +
+                    "framesmissing, first half, club,energy[J/kg/m]," +
+                    "total distance[m]\n");
+
+
+                for (int i = 0; i < frameSet.length; i++) {
+                    FrameSet fs = frameSet[i];
+                    if (fs.Object.equals("DFL-OBJ-0000XT")) continue;
+                    wr.append(
+                        match.getPlayer(fs.Object).ShortName + "," +
+                            (fs.getVar(VAR.SPRINT, FILTER.ACTIVE) / fs.getVarCount(VAR.SPRINT, FILTER.ACTIVE) * 25 * 60) + "," +    // sprints per active minute
+
+                            fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6 * 60 + ",");
+                    for (int j = 0; j < 3; j++) {
+                        wr.append(
+                            (fs.getVar(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 * 60) + ","
+                        );
+                    }
+                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60 + ",");
+                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60 + ",");
+                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60 + ",");
+
+                    // min max speed
+                    for (int j = 0; j < 3; j++) {
+                        wr.append(
+                            fs.getVarMin(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + " - " +
+                                fs.getVarMax(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + ","
+                        );
+                    }
+                    // acceleration
+                    for (int j = 0; j < 3; j++) {
+                        wr.append(
+                                fs.getVarSq(VAR.ACC, 15 * j, 15 * j + 15, FILTER.ACTIVE) /      //m/s2 (but abs value sum)
+                                    fs.getVarCount(VAR.ACC, 15 * j, 15 * j + 15, FILTER.ACTIVE)    // need to divide by count
+                                    + ","
+                        );
+                    }
+
+                    wr.append(fs.frames_missing + ",");
+                    wr.append(fs.firstHalf + ",");
+                    wr.append(match.getTeam(fs.Club).name + ",");
+                    wr.append((fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY)) + ",");
+                    wr.append(
+                        (fs.getVar(VAR.SPEED) / 3.6 / 25.0) + ","       // total run meter
+                    );
+                    wr.append("\n");
+                }
+
             }
 
             //generate whatever data you want

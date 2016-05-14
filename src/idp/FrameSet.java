@@ -9,8 +9,8 @@ class FILTER {
     length = 3;
 }
 class VAR {
-    public static final int SPEED = 0, SPRINT = 1, ENERGY = 2, POWER = 3,
-    length = 4;
+    public static final int SPEED = 0, SPRINT = 1, ENERGY = 2, POWER = 3, ACC = 4,
+    length = 5;
 }
 
 
@@ -162,6 +162,7 @@ public class FrameSet {
 
             // speed
             addValue(VAR.SPEED, ball_frames[i].BallStatus, cur_minute, frames[i].S);
+            addValue(VAR.ACC, ball_frames[i].BallStatus, cur_minute, Math.abs(frames[i].A));
 
         }
     }

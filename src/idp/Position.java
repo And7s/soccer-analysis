@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.Random;
 
 /**
@@ -46,7 +47,6 @@ public class Position {
             }
             Frame[] frames = frameSet[i].frames;
             int last_n = frames[0].N;
-            System.out.println("a " + frames.length);
             for (int j = 1; j < frames.length; j++) {
                 if (frames[j].N != last_n + 1) {
                     System.out.println("error" + (frames[j].N - last_n - 1));
@@ -55,7 +55,6 @@ public class Position {
                 last_n = frames[j].N;
             }
         }
-        spreadBallStatus();
     }
 
     public void spreadBallStatus() {
@@ -146,6 +145,23 @@ public class Position {
         return -1;
     }
 
+    public static void showMemory(String label) {
+        Runtime runtime = Runtime.getRuntime();
+
+        NumberFormat format = NumberFormat.getInstance();
+
+        StringBuilder sb = new StringBuilder();
+        long maxMemory = runtime.maxMemory();
+        long allocatedMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+
+        //sb.append("free memory: " + format.format(freeMemory / 1024) + "<br/>");
+        System.out.println(label);
+        sb.append("alloc mem: " + format.format(allocatedMemory / 1024) + "");
+        sb.append("max memory: " + format.format(maxMemory / 1024) + "<br/>");
+        sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + "<br/>");
+        System.out.println(sb);
+    }
     public static FrameSet[] readPosition(String fileName, int FORMAT) throws InvalidPositionDataSet{
         int idx_ball_first_half = -1;
         int idx_ball_second_half = -1;  // define to be not in the fst index (0)
@@ -240,7 +256,7 @@ public class Position {
                     if (tag.equals("FrameSet")) {   // frameset ended, now i know how many are there
                         tmp_framesets[tmp_c_framesets].frames = new Frame[tmp_c_nodes];
                         System.arraycopy(tmp_frames, 0,  tmp_framesets[tmp_c_framesets].frames, 0, tmp_c_nodes);
-                        System.out.println(tmp_framesets[tmp_c_framesets].toString());
+                        //System.out.println(tmp_framesets[tmp_c_framesets].toString());
                         tmp_c_nodes = 0;
                         tmp_c_framesets++;
                     }
