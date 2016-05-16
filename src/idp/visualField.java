@@ -9,7 +9,7 @@ import java.awt.*;
  * Created by Andre on 19/04/2016.
  */
 public class visualField extends JPanel {
-
+/*
     MeanData[] data;
     FrameSet[] frameSet;
     Match match;
@@ -209,5 +209,5 @@ public class visualField extends JPanel {
         return (int) ((y + 50) * scale);
     }
 
-
+*/
 }

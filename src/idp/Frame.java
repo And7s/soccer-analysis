@@ -1,10 +1,10 @@
 package idp;
 
 public class Frame {
-    public int N, BallStatus, BallPossession,
-        M; // which minute
-    public double X, Y, S, A;
+    public int N; // which minute
+    public byte BallStatus, BallPossession, M;
+    public float S, A, OS;
     public String toString() {
-        return "Frame N: " + N + " X: " + X + " Y: " + Y + " S: " + S + " Ballstatus: " + BallStatus + " BallPossession: " + BallPossession;
+        return "Frame N: " + N + " OS: " + OS + " S: " + S + " Ballstatus: " + BallStatus + " BallPossession: " + BallPossession;
     }
 }

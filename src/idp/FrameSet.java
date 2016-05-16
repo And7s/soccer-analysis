@@ -9,8 +9,8 @@ class FILTER {
     length = 3;
 }
 class VAR {
-    public static final int SPEED = 0, SPRINT = 1, ENERGY = 2, POWER = 3, ACC = 4,
-    length = 5;
+    public static final int SPEED = 0, SPRINT = 1, ENERGY = 2, POWER = 3, ACC = 4, SZ0 = 5, SZ1 = 6, SZ2 = 7, SZ3 = 8, SZ4 = 9 ,
+    length = 10;
 }
 
 
@@ -124,12 +124,13 @@ public class FrameSet {
 
         for (int i = 0; i < frames.length; i++) {
             // smooth the graph
-            frames[i].S = (i == 0) ? frames[i].S : (frames[i - 1].S * smooth_factor + frames[i].S * (1 - smooth_factor));
+
+            frames[i].S = (float)((i == 0) ? frames[i].OS : (frames[i - 1].S * smooth_factor + frames[i].OS * (1 - smooth_factor)));
             //frames[i].A = (i == 0) ? 0 : frames[i].S - frames[i - 1].S;
 
-            frames[i].A = (i == 0) ? 0 : (frames[i].S - frames[i - 1].S) / 3.6 * 25; // m/s^2
+            frames[i].A = (float)((i == 0) ? 0 : (frames[i].S - frames[i - 1].S) / 3.6 * 25); // m/s^2
             int cur_minute = (frames[i].N - ball_fs_offset) / 25 / 60; // convert the frame number and offset to playing minute
-            frames[i].M = cur_minute;
+            frames[i].M = (byte)cur_minute;
 
             // sprints
             if (frames[i].S / 3.6 > 7) {  // convert to m/s
@@ -164,6 +165,14 @@ public class FrameSet {
             addValue(VAR.SPEED, ball_frames[i].BallStatus, cur_minute, frames[i].S);
             addValue(VAR.ACC, ball_frames[i].BallStatus, cur_minute, Math.abs(frames[i].A));
 
+            // speed zones
+            double[] zones = {7, 5.5, 4, 2, 0};
+            for (int k = VAR.SZ0; k <= VAR.SZ4; k++) {
+                if (frames[i].S / 3.6 >= zones[k - VAR.SZ0]) {
+                    addValue(k, ball_frames[i].BallStatus, cur_minute, frames[i].S);
+                    break;  // only account to the highes speed zone
+                }
+            }
         }
     }
 }

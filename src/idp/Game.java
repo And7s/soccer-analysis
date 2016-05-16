@@ -51,60 +51,58 @@ public class Game {
                 Match match = matchs.get(k);
                 wr.append("MatchId," + match.MatchId + "\n" +
                     "GameTitle," + match.GameTitle + "\n" +
-                    "KickoffTime" + match.KickoffTime + "\n" +
-                    "Competition" + "match.Competition" + "\n"
+                    "KickoffTime," + match.KickoffTime + "\n" +
+                    "Competition," + match.Competition + "\n"
                 );
 
-                wr.append("Frameset, Sprint [sprint/active min]," +
-                    "vel total [m/min], Mean vel-15 [m/min], Mean vel-30 [m/min], Mean vel-45 [m/min]," +
-                    "in total game [min], in paused game, in active game," +
-                    "speed minmax -15[m/s], speed minmax -30[m/s], speed minmax -45[m/s]," +
-                    "acc -15[m/s2], acc -30[m/s2], acc -45[m/s2]," +
-                    "framesmissing, first half, club,energy[J/kg/m]," +
-                    "total distance[m]\n");
+                wr.append("Player, " +
+                    "intervall," +
+                    "Sprint [sprint/min]," +
+                    "Speed [m/min]," +
+                    "duration [min]," +
+                    "acceleration [m/s2]," +
+                    "first half, club,energy[J/kg/m]," +
+                    "total distance[m],"+
+                    "mean abs acc [m/s2]");
+                for (int l = VAR.SZ0; l <= VAR.SZ4; l++) {
+                    wr.append("speedzone "+(l-VAR.SZ0)+"duration [min], speedzone"+(l-VAR.SZ0)+" distance [m/min],");
+                }
+                wr.append("\n");
 
 
                 for (int i = 0; i < frameSet.length; i++) {
+
+
                     FrameSet fs = frameSet[i];
                     if (fs.Object.equals("DFL-OBJ-0000XT")) continue;
-                    wr.append(
-                        match.getPlayer(fs.Object).ShortName + "," +
-                            (fs.getVar(VAR.SPRINT, FILTER.ACTIVE) / fs.getVarCount(VAR.SPRINT, FILTER.ACTIVE) * 25 * 60) + "," +    // sprints per active minute
 
-                            fs.getVar(VAR.SPEED) / fs.getVarCount(VAR.SPEED) / 3.6 * 60 + ",");
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < 4; j++) {
+                        int filter = (j == 0) ? FILTER.ALL : FILTER.ACTIVE;
+                        int start = (j == 0) ? 0 : (j - 1) * 15;
+                        int end = (j == 0) ? 45 : j * 15;
                         wr.append(
-                            (fs.getVar(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / fs.getVarCount(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 * 60) + ","
+                            match.getPlayer(fs.Object).ShortName + ((j == 0) ? " all": " active") + "," +
+                            start + "-" + end + "," +
+                            (fs.getVar(VAR.SPRINT, start, end, filter) / fs.getVarCount(VAR.SPRINT, start, end, filter) * 25 * 60) + "," +
+                            (fs.getVar(VAR.SPEED, start, end, filter) / fs.getVarCount(VAR.SPEED, start, end, filter) / 3.6 * 60) + "," +
+                            fs.getVarCount(VAR.SPEED, start, end, filter) / 25.0 / 60 + "," +      // duration
+                            (fs.getVarSq(VAR.ACC, start, end, filter) /      //m/s2 (but abs value sum)
+                            fs.getVarCount(VAR.ACC, start, end, filter) ) + "," +   // need to divide by count
+                            fs.firstHalf + "," +
+                            match.getTeam(fs.Club).name + "," +
+                            (fs.getVar(VAR.ENERGY, start, end, filter) / fs.getVarCount(VAR.ENERGY, start, end, filter)) + "," +
+                            (fs.getVar(VAR.SPEED, start, end, filter) / 3.6 / 25.0) + "," +       // total run meter
+                            Math.sqrt((fs.getVarSq(VAR.ACC, start, end, filter) / fs.getVarCount(VAR.ACC, start, end, filter))) * 25.0 / 3.6 + ","
                         );
-                    }
-                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.ALL) / 25.0 / 60 + ",");
-                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.PAUSED) / 25.0 / 60 + ",");
-                    wr.append(fs.getVarCount(VAR.SPEED, FILTER.ACTIVE) / 25.0 / 60 + ",");
 
-                    // min max speed
-                    for (int j = 0; j < 3; j++) {
-                        wr.append(
-                            fs.getVarMin(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + " - " +
-                                fs.getVarMax(VAR.SPEED, 15 * j, 15 * j + 15, FILTER.ACTIVE) / 3.6 + ","
-                        );
-                    }
-                    // acceleration
-                    for (int j = 0; j < 3; j++) {
-                        wr.append(
-                                fs.getVarSq(VAR.ACC, 15 * j, 15 * j + 15, FILTER.ACTIVE) /      //m/s2 (but abs value sum)
-                                    fs.getVarCount(VAR.ACC, 15 * j, 15 * j + 15, FILTER.ACTIVE)    // need to divide by count
-                                    + ","
-                        );
+                        for (int l = VAR.SZ0; l <= VAR.SZ4; l++) {
+                            wr.append((fs.getVarCount(l, start, end, filter) / 25.0 / 60) + ",");     // duration in this speed zone
+                            wr.append(fs.getVar(l, start, end, filter) / (fs.getVarCount(l, start, end, filter)) / 3.6 * 60 + ",");    // avg distance per minute in this zone
+                        }
+
+                        wr.append("\n");
                     }
 
-                    wr.append(fs.frames_missing + ",");
-                    wr.append(fs.firstHalf + ",");
-                    wr.append(match.getTeam(fs.Club).name + ",");
-                    wr.append((fs.getVar(VAR.ENERGY) / fs.getVarCount(VAR.ENERGY)) + ",");
-                    wr.append(
-                        (fs.getVar(VAR.SPEED) / 3.6 / 25.0) + ","       // total run meter
-                    );
-                    wr.append("\n");
                 }
 
             }
