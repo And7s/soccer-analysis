@@ -23,24 +23,31 @@ public class visZones extends JPanel  {
 
     public void paintComponent(Graphics g) {
 
+        int steps = App.steps_mean;
+        GameSection[][] plotPoints = new GameSection[steps * 2][5];
 
-        GameSection[][] plotPoints = new GameSection[6][5];
-        // TODO use config
+        int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
 
-        for (int i = 0; i < 6; i++) {   // the time zones (15 mins) TODO: use condig
+        for (int i = 0; i < steps * 2; i++) {   // the time zones (15 mins) TODO: use condig
 
-            int start = (i % 3) * 15;
-            int end = start + 15;
-
+            int start = (int)(45.0 / steps * (i % steps));
+            int end = (int)(45.0 / steps * ((i % steps) +1 ));
             for (int j = 0; j < 5; j++) {
                 GameSection gs = new GameSection();
                 FrameSet[] sets = idp.frameSet;
 
-                double val = 0, var = 0;
+
+
                 for (int k = 0; k < sets.length; k++) {
                     if (sets[k].isBall) continue;
+                    Player player = idp.match.getPlayer(sets[k].Object);
+                    boolean is_tw = player.PlayingPosition.equals("TW");
+                    boolean is_starting = player.Starting;
+                    if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+                    if(App.ignore_exchange && !is_starting) continue;
+
                     if ((i < 3) == sets[k].firstHalf) { // account to the right half time
-                        gs.add(sets[k].getGS(VAR.SZ0 + j, start, end, FILTER.ACTIVE));
+                        gs.add(sets[k].getGS(VAR.SZ0 + j, start, end, filter));
                     }
                 }
                 plotPoints[i][j] = gs;
@@ -76,16 +83,12 @@ public class visZones extends JPanel  {
 
         g2d.setColor(Color.BLACK);
 
-
         for (int i = 0; i < plotPoints.length; i++) {
             //Mean[] plot_data = idp.dat[i].speed_zones;
             GameSection[] gs = plotPoints[i];
             for (int j = 0; j < gs.length; j++) {
 
                 int x = (int)(((i + (j + 0.5) / (gs.length + 2))) * width / plotPoints.length);
-
-
-
 
                 double val = gs[j].sum / gs[j].count / 3.6; // which unit??
 

@@ -157,7 +157,7 @@ public class idp {
         dat = new MeanData[border.length - 1];
         for (int i = 0; i < dat.length; i++) dat[i] = new MeanData();   // initialize the objects
 
-
+/*
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].Club.equals("ball")) continue;
             if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
@@ -244,7 +244,10 @@ public class idp {
             dat[i].sprints.mean = dat[i].sprints.sum / dat[i].sprints.count * 25 * 60;   // sprints per minute
             dat[i].sprints.var = 0;
             dat[i].sprints.sd = 0;
-        }
+        }*/
+
+        if (vis_zones != null) vis_zones.repaint();
+        if (vis_sprints != null) vis_sprints.repaint();
 
         long duration = System.nanoTime() - startTime;
         System.out.println("analyze took" + (duration / 1E6)+ "ms");
