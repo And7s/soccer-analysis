@@ -55,6 +55,15 @@ public class visZones extends JPanel  {
         }
 
     }
+    private int getMeanStart(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * (i % steps));
+    }
+    private int getMeanEnd(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * ((i % steps) +1 ));
+    }
+
     public void paintComponent(Graphics g) {
         analyze();
         //super.paintComponent(g);
@@ -70,17 +79,32 @@ public class visZones extends JPanel  {
         height = size.height;
         g2d.fillRect(0, 0, width, height);
 
-
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.drawLine(width / 2, 0, width / 2, height);  // half time indicator
 
         // labels
         g2d.setColor(new Color(150, 150, 150));
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
         g2d.setStroke(dashed);
 
-        for (int i = 0; i < 10; i += 2) {
+        for (int i = 0; i < 10; i += 2) {   // horizontal lines
             int y = height - (int)(i * height / 10f);
             g2d.drawString(i+"", 10, y);
             g2d.drawLine(20, y, width, y);
+        }
+        for (int i = 0; i < plotPoints.length; i++) {   // vertical lines
+            g2d.drawLine(scaleX(i), 0, scaleX(i), height);
+            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 30);
+        }
+
+        // connect dots
+        g2d.setColor(Color.BLUE);
+        for (int i = 1; i < plotPoints.length; i++) {
+            for (int j = 0; j < plotPoints[i].length; j++) {    // loops the other way might be more effective?
+                double val1 = plotPoints[i - 1][j].sum / plotPoints[i - 1][j].count / 3.6;
+                double val2 = plotPoints[i][j].sum / plotPoints[i][j].count / 3.6;
+                g2d.drawLine(scaleX(i - 1), scaleY(val1), scaleX(i), scaleY(val2));
+            }
         }
 
         g2d.setColor(Color.BLACK);
@@ -90,13 +114,13 @@ public class visZones extends JPanel  {
             GameSection[] gs = plotPoints[i];
             for (int j = 0; j < gs.length; j++) {
 
-                int x = (int)(((i + (j + 0.5) / (gs.length + 2))) * width / plotPoints.length);
+                int x = scaleX(i);
 
                 double val = gs[j].sum / gs[j].count / 3.6; // which unit??
 
                 double sd = Math.sqrt(gs[j].sq_sum / gs[j].count / 3.6 / 3.6 - val * val); // sq_sum/count - mean^2 = var
 
-                int y = height - (int)(val * height / 10f); // 10 is the max of the height //
+                int y = scaleY(val); // 10 is the max of the height //
                 int delta = (int)(height * sd / 10f);
 
                 ((Graphics2D) g).setStroke(new BasicStroke(3));
@@ -116,12 +140,12 @@ public class visZones extends JPanel  {
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
-    public int scaleX(int i , int j) {
-        return (int)((i + 0.5f) * width / plotPoints.length);
+    public int scaleX(int i) {
+        return (int)((i + 0.5) * width / plotPoints.length);
     }
 
-    public int scaleY(float y) {
-        return (int)(height - y * 1);
+    public int scaleY(double y) {
+        return height - (int)(y * height / 10f);
     }
 
 }

@@ -39,6 +39,15 @@ public class visMean extends JPanel {
 
     }
 
+    private int getMeanStart(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * (i % steps));
+    }
+    private int getMeanEnd(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * ((i % steps) +1 ));
+    }
+
     public void analyze() {
         int steps = App.steps_mean;
         plotPoints = new GameSection[steps * 2];
@@ -47,8 +56,8 @@ public class visMean extends JPanel {
 
         for (int i = 0; i < steps * 2; i++) {   // the time zones (15 mins) TODO: use condig
 
-            int start = (int)(45.0 / steps * (i % steps));
-            int end = (int)(45.0 / steps * ((i % steps) +1 ));
+            int start = getMeanStart(i);
+            int end = getMeanEnd(i);
 
             GameSection gs = new GameSection();
             FrameSet[] sets = idp.frameSet;
@@ -84,23 +93,34 @@ public class visMean extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, // Anti-alias!
             RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(new Color(150, 150, 150));
 
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.drawLine(width / 2, 0, width / 2, height);  // half time indicator
+
+        g2d.setColor(new Color(150, 150, 150));
 
         // labels
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
 
         g2d.setStroke(dashed);
 
-        for (int i = 0; i < 20; i +=2) {
-            g2d.drawString(i+"", 10, scaleY(i));
+        for (int i = 0; i < 20; i +=2) {    // horizontal lines
+            g2d.drawString(i+"", 5, scaleY(i) + 5);
             g2d.drawLine(20, scaleY(i), width, scaleY(i));
         }
 
-        for (int i = 0; i < plotPoints.length; i++) {
+        for (int i = 0; i < plotPoints.length; i++) {   // vertical lines
             g2d.drawLine(scaleX(i), 0, scaleX(i), height);
+            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 30);
         }
 
+        // connect dots
+        g2d.setColor(Color.BLUE);
+        for (int i = 1; i < plotPoints.length; i++) {
+            double val1 = plotPoints[i - 1].sum / plotPoints[i - 1].count;
+            double val2 = plotPoints[i].sum / plotPoints[i].count;
+            g2d.drawLine(scaleX(i - 1), scaleY(val1), scaleX(i), scaleY(val2));
+        }
 
         g2d.setColor(Color.black);
 

@@ -22,11 +22,9 @@ import javax.swing.JPanel;
 
 
 public class MyCanvas extends JPanel {
-    MeanData[] data;
     FrameSet[] frameSet;
 
-    public void updateData(MeanData[] data, FrameSet[] frameSet) {
-        this.data = data;
+    public void updateData(FrameSet[] frameSet) {
         this.frameSet = frameSet;
         repaint();
 
