@@ -27,6 +27,7 @@ public class idp {
     public static visZones vis_zones;
     public Events events;
     public static FrameSet[] frameSet;
+    public static Game game;
 
     public myFrame my_frame;
     public static MeanData[] dat;
@@ -36,10 +37,10 @@ public class idp {
     public static Batch batch;
     public idp() {
 
-
+        game = new Game();
         batch = new Batch();
 
-        /*my_frame = new myFrame();
+        my_frame = new myFrame();
 
 
         visField = new visualField();
@@ -71,15 +72,22 @@ public class idp {
         // events depend on an existing frameset when being instantiated
         events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
-        visField.updateData(position, match);
+        //visField.updateData(position, match);
         vis_zones.repaint();
-        */
+
 
     }
 
     public static void main(String[] args) {
         new idp();
 
+    }
+
+    public static void onGameLoaded() {
+        System.out.println("a game has been loaded");
+        frameSet = game.positions.get(0).frameSet;  // make this frameset accessible
+        position = game.positions.get(0);
+        match = game.matchs.get(0); // danger how to verify that mathc has been loaded
     }
 
     public void createTable() {

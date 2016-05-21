@@ -123,10 +123,10 @@ public class Config extends JPanel {
         add(selectList);
 
         // select multiple matches
-        String[] selectMatch = new String[idp.batch.game.positions.size()];
+        String[] selectMatch = new String[idp.game.positions.size()];
 
-        for (int i = 0; i < idp.batch.game.positions.size(); i++) {
-            selectMatch[i] = i + ": " + idp.batch.game.positions.get(i).frameSet[0].Match; // TODO shorten these paths
+        for (int i = 0; i < idp.game.positions.size(); i++) {
+            selectMatch[i] = i + ": " + idp.game.positions.get(i).frameSet[0].Match; // TODO shorten these paths
         }
         System.out.println(selectMatch);
 

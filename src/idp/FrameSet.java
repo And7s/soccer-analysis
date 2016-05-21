@@ -1,7 +1,16 @@
 package idp;
 
 class GameSection {
-    double sum, sq_sum, count, min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+    double sum = 0, sq_sum, count = 0, min = Double.MAX_VALUE, max = Double.MIN_VALUE;
+
+    // merges two game section
+    void add(GameSection gs) {
+        sum += gs.sum;
+        sq_sum += gs.sq_sum;
+        count += gs.count;
+        min = Math.min(min, gs.min);
+        max = Math.max(max, gs.max);
+    }
 }
 
 class FILTER {
@@ -38,6 +47,15 @@ public class FrameSet {
             val += dat[i].sum;
         }
         return val;
+    }
+
+    // var filter time
+    public GameSection getGS(int var, int start, int end, int filter) {
+        GameSection gs = new GameSection(); // create new gs
+        for (int i = start; i < end; i++) {
+            gs.add(aggregate[var][filter][i]);
+        }
+        return gs;
     }
 
     public double getVarSq(int var) { return getVarSq(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
@@ -104,7 +122,7 @@ public class FrameSet {
         int ball_fs_offset = frameSet.frames[0].N;
         Frame[] ball_frames = frameSet.frames;
 
-        int last_frame = frames[frames.length - 1].N;
+        int last_frame = frameSet.frames[frameSet.frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
 
         aggregate = new GameSection[VAR.length][FILTER.length][duration_game_min];

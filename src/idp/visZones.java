@@ -22,6 +22,32 @@ public class visZones extends JPanel  {
     }
 
     public void paintComponent(Graphics g) {
+
+
+        GameSection[][] plotPoints = new GameSection[6][5];
+        // TODO use config
+
+        for (int i = 0; i < 6; i++) {   // the time zones (15 mins) TODO: use condig
+
+            int start = (i % 3) * 15;
+            int end = start + 15;
+
+            for (int j = 0; j < 5; j++) {
+                GameSection gs = new GameSection();
+                FrameSet[] sets = idp.frameSet;
+
+                double val = 0, var = 0;
+                for (int k = 0; k < sets.length; k++) {
+                    if (sets[k].isBall) continue;
+                    if ((i < 3) == sets[k].firstHalf) { // account to the right half time
+                        gs.add(sets[k].getGS(VAR.SZ0 + j, start, end, FILTER.ACTIVE));
+                    }
+                }
+                plotPoints[i][j] = gs;
+            }
+        }
+
+
         //super.paintComponent(g);
 
         long startTime = System.nanoTime();
@@ -51,13 +77,22 @@ public class visZones extends JPanel  {
         g2d.setColor(Color.BLACK);
 
 
-        for (int i = 0; i < idp.dat.length; i++) {
-            Mean[] plot_data = idp.dat[i].speed_zones;
-            for (int j = 0; j < plot_data.length; j++) {
+        for (int i = 0; i < plotPoints.length; i++) {
+            //Mean[] plot_data = idp.dat[i].speed_zones;
+            GameSection[] gs = plotPoints[i];
+            for (int j = 0; j < gs.length; j++) {
 
-                int x = (int)(((i + (j + 0.5) / (plot_data.length + 2))) * width / idp.dat.length);
-                int y = height - (int)(plot_data[j].mean * height / 10f);
-                int delta = (int)(plot_data[j].sd * height / 10f);
+                int x = (int)(((i + (j + 0.5) / (gs.length + 2))) * width / plotPoints.length);
+
+
+
+
+                double val = gs[j].sum / gs[j].count / 3.6; // which unit??
+
+                double sd = Math.sqrt(gs[j].sq_sum / gs[j].count / 3.6 / 3.6 - val * val); // sq_sum/count - mean^2 = var
+
+                int y = height - (int)(val * height / 10f); // 10 is the max of the height //
+                int delta = (int)(height * sd / 10f);
 
                 ((Graphics2D) g).setStroke(new BasicStroke(3));
                 g2d.drawArc(x - 1, y -1, 2, 2, 0, 360);
@@ -67,8 +102,8 @@ public class visZones extends JPanel  {
                 g2d.drawLine(x - 2, y - delta / 2, x + 2, y - delta / 2);   // upper horizontal bar
                 g2d.drawLine(x - 2, y + delta / 2, x + 2, y + delta / 2);   // lower
 
-                g2d.drawString(String.format("%.2f", plot_data[j].mean), x + 10, y + 5);
-                g2d.drawString(String.format("%4.0f", plot_data[j].count), x - 10, y + delta / 2 + 15);
+                g2d.drawString(String.format("%.2f", val), x + 10, y + 5);
+                g2d.drawString(String.format("%4.0f", gs[j].count), x - 10, y + delta / 2 + 15);
             }
         }
 

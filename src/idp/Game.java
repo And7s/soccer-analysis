@@ -63,7 +63,7 @@ public class Game {
                     "acceleration [m/s2]," +
                     "first half, club,energy[J/kg/m]," +
                     "total distance[m],"+
-                    "mean abs acc [m/s2]");
+                    "mean abs acc [m/s2],");
                 for (int l = VAR.SZ0; l <= VAR.SZ4; l++) {
                     wr.append("speedzone "+(l-VAR.SZ0)+"duration [min], speedzone"+(l-VAR.SZ0)+" distance [m/min],");
                 }

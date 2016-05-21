@@ -4,19 +4,21 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import static idp.idp.game;
+
 /**
  * Created by Andre on 01/05/2016.
  */
 public class Batch {
     Vector<String> files;
 
-    public Game game;
+
     public Batch() {
         files = new Vector<String>(10);
         final File folder = new File("D:\\dfl\\");
         listFilesForFolder(folder, "D:\\dfl\\");
         System.out.println(files.size());
-        game = new Game();
+
 
         /*for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
 
@@ -64,7 +66,7 @@ public class Batch {
             System.out.println("could not load file " );
         }
 */
-        String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK",};
+        String[] matches = {"DFL-MAT-00031J"};
         //String[] matches = {"DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};    // with visuals one dataset less "DFL-MAT-0002UL"
         //String[] matches = {"DFL-MAT-0002UQ", "DFL-MAT-0002UP", "DFL-MAT-0002UO", "DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};
         //String[] matches = {};
@@ -78,11 +80,13 @@ public class Batch {
                 game.addPosition(pos);
 
 
+
             } catch (InvalidPositionDataSet e) {
                 System.out.println("could not load file " );
             }
 
         }
+        idp.onGameLoaded();
         game.writeCSV();
         Position.showMemory("at end ");
 
