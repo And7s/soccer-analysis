@@ -84,11 +84,16 @@ public class idp {
 
     }
 
+    public static void selectFrameSet(int idx) {
+        System.out.println("slect match "+ idx);
+        frameSet = game.positions.get(idx).frameSet;  // make this frameset accessible
+        position = game.positions.get(idx);
+        match = game.matchs.get(idx); // danger how to verify that mathc has been loaded
+        analyze();
+    }
     public static void onGameLoaded() {
         System.out.println("a game has been loaded");
-        frameSet = game.positions.get(0).frameSet;  // make this frameset accessible
-        position = game.positions.get(0);
-        match = game.matchs.get(0); // danger how to verify that mathc has been loaded
+        selectFrameSet(0);
     }
 
     public void createTable() {

@@ -130,6 +130,13 @@ public class Config extends JPanel {
         // selectList.setSelectedIndex(App.selctedFramesetIdx);
         // TODO change listener
 
+        selectMatchList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                idp.selectFrameSet(selectMatchList.getSelectedIndex());
+            }
+        });
+
         add(selectMatchList);
 
     }
