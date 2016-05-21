@@ -39,7 +39,7 @@ public class visMean extends JPanel {
 
     }
 
-    public void paintComponent(Graphics g) {
+    public void analyze() {
         int steps = App.steps_mean;
         plotPoints = new GameSection[steps * 2];
 
@@ -61,16 +61,16 @@ public class visMean extends JPanel {
                 if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
                 if(App.ignore_exchange && !is_starting) continue;
 
-                if ((i < 3) == sets[k].firstHalf) { // account to the right half time
+                if ((i < steps) == sets[k].firstHalf) { // account to the right half time
                     gs.add(sets[k].getGS(VAR.SPEED, start, end, filter));
                 }
             }
             plotPoints[i] = gs;
         }
+    }
 
-
-
-
+    public void paintComponent(Graphics g) {
+        analyze();
 
         Dimension size = getSize();
         width = size.width ;
