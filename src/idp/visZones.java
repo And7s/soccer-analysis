@@ -9,22 +9,24 @@ import java.awt.Graphics2D;
 
 
 public class visZones extends JPanel  {
-    MeanData[] data;
+
     FrameSet[] frameSet;
     Graphics2D g2d;
     private int width, height;
+    private GameSection[][] plotPoints;
 
-    public void updateData(MeanData[] data, FrameSet[] frameSet) {
-        this.data = data;
+    public void updateData(FrameSet[] frameSet) {
+
         this.frameSet = frameSet;
         repaint();
 
     }
 
-    public void paintComponent(Graphics g) {
+    // generate the data to be plotted
+    public void analyze() {
 
         int steps = App.steps_mean;
-        GameSection[][] plotPoints = new GameSection[steps * 2][5];
+        plotPoints = new GameSection[steps * 2][5];
 
         int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
 
@@ -35,8 +37,6 @@ public class visZones extends JPanel  {
             for (int j = 0; j < 5; j++) {
                 GameSection gs = new GameSection();
                 FrameSet[] sets = idp.frameSet;
-
-
 
                 for (int k = 0; k < sets.length; k++) {
                     if (sets[k].isBall) continue;
@@ -54,7 +54,9 @@ public class visZones extends JPanel  {
             }
         }
 
-
+    }
+    public void paintComponent(Graphics g) {
+        analyze();
         //super.paintComponent(g);
 
         long startTime = System.nanoTime();
@@ -115,7 +117,7 @@ public class visZones extends JPanel  {
     }
 
     public int scaleX(int i , int j) {
-        return (int)((i + 0.5f) * width / idp.dat.length);
+        return (int)((i + 0.5f) * width / plotPoints.length);
     }
 
     public int scaleY(float y) {

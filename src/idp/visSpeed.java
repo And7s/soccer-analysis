@@ -25,17 +25,15 @@ import javax.swing.JPanel;
 
 
 public class visSpeed extends JPanel implements MouseWheelListener {
-    MeanData[] data;
+
     FrameSet[] frameSet;
     Graphics2D g2d;
     private int width, height;
     float zoom = 1;
-    //private Graphics2D g2d;
-    public void updateData(MeanData[] data, FrameSet[] frameSet) {
-        this.data = data;
+
+    public void updateData(FrameSet[] frameSet) {
         this.frameSet = frameSet;
         repaint();
-
     }
 
     visSpeed() {

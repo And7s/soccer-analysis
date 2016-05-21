@@ -31,7 +31,6 @@ public class Config extends JPanel {
                 System.out.println(slider1.getValue());
                 App.steps_mean = slider1.getValue();
                 idp.analyze();
-                App.vis_mean.updateData(idp.dat, idp.frameSet);
             }
         });
         add(slider1);
@@ -45,7 +44,6 @@ public class Config extends JPanel {
                 if (App.only_active != chinButton.isSelected()) {   // only do something if value actually changed
                     App.only_active = chinButton.isSelected();
                     idp.analyze();
-                    App.vis_mean.updateData(idp.dat, idp.frameSet);
                 }
             }
         });
@@ -59,7 +57,6 @@ public class Config extends JPanel {
                 if (App.ignore_keeper != ignoreKeeper.isSelected()) {
                     App.ignore_keeper = ignoreKeeper.isSelected();
                     idp.analyze();
-                    App.vis_mean.updateData(idp.dat, idp.frameSet);
                 }
             }
         });
@@ -73,7 +70,6 @@ public class Config extends JPanel {
                 if ( App.ignore_exchange != ignoreExchange.isSelected()) {
                     App.ignore_exchange = ignoreExchange.isSelected();
                     idp.analyze();
-                    App.vis_mean.updateData(idp.dat, idp.frameSet);
                 }
             }
         });

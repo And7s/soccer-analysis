@@ -30,9 +30,10 @@ public class idp {
     public static Game game;
 
     public myFrame my_frame;
-    public static MeanData[] dat;
+
     public static Position position;
     public static visSprints vis_sprints;
+    public static visMean vis_mean;
 
     public static Batch batch;
     public idp() {
@@ -55,18 +56,18 @@ public class idp {
         my_frame.addView(vis_zones, "Zones");
 
         visSpeed vis_speed = new visSpeed();
-        vis_speed.updateData(dat, frameSet);
+        vis_speed.updateData(frameSet);
         my_frame.addView(vis_speed, "speed");
 
-        visMean vis_mean = new visMean();
+        vis_mean = new visMean();
         App.vis_mean = vis_mean;    // set static ref
         App.vis_speed = vis_speed;
-        vis_mean.updateData(dat, frameSet);
+
         my_frame.addView(vis_mean, "mean");
 
         vis_sprints = new visSprints();
         App.vis_sprints = vis_sprints;
-        vis_sprints.updateData(dat, frameSet);
+        vis_sprints.updateData(frameSet);
         my_frame.addView(vis_sprints, "sprints");
 
         // events depend on an existing frameset when being instantiated
@@ -137,117 +138,10 @@ public class idp {
 
     public static void analyze() {
         long startTime = System.nanoTime();
-        int parts = App.steps_mean;  // in how many parts i divide a halftime
-        int[] border = new int[parts * 2 + 1];
-        FrameSet fs_ball = position.getBallFirstHalf(true);
-        int c_border = 0;
-        for (int i = 0; i < parts; i++) {
-            border[c_border++] = (int) (fs_ball.frames[0].N + (double) fs_ball.frames.length / parts * i);
-        }
-
-        fs_ball = position.getBallFirstHalf(false);
-        for (int i = 0; i < parts + 1; i++) {
-            border[c_border++] = (int) (fs_ball.frames[0].N + (double) fs_ball.frames.length / parts * i);
-        }
-
-
-        System.out.println("border");
-
-
-        dat = new MeanData[border.length - 1];
-        for (int i = 0; i < dat.length; i++) dat[i] = new MeanData();   // initialize the objects
-
-/*
-        for (int i = 0; i < frameSet.length; i++) {
-            if (frameSet[i].Club.equals("ball")) continue;
-            if (frameSet[i].Object.equals("DFL-OBJ-0000XT")) continue;  // different datasets declare the ball differently
-
-            Frame[] frames = frameSet[i].frames;    // quickref
-
-            Player player = match.getPlayer(frameSet[i].Object);
-            boolean is_tw = player.PlayingPosition.equals("TW");
-            boolean is_starting = player.Starting;
-
-             if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
-             if(App.ignore_exchange && !is_starting) continue;
-
-            // get information from minute data
-            // parts say how many parts a half time should be split
-
-
-            for (int k = 0; k < parts; k++) {   // create MeanData objects
-                // sprints
-                int from_min = (int)(50.0 / parts * k);
-                int to_min = (int)(50.0 / parts * (k + 1));
-
-                int filter = App.only_active ? FILTER.ACTIVE : FILTER.ALL;
-                int account_chunk = frameSet[i].firstHalf ? k : k + parts;
-
-                dat[account_chunk].sprints.sum += frameSet[i].getVar(VAR.SPRINT, from_min, to_min, filter);
-                dat[account_chunk].sprints.count += frameSet[i].getVarCount(VAR.SPRINT, from_min, to_min, filter);
-
-                // speed
-                dat[account_chunk].sum += frameSet[i].getVar(VAR.SPEED, from_min, to_min, filter);
-                dat[account_chunk].count += frameSet[i].getVarCount(VAR.SPEED, from_min, to_min, filter);
-                dat[account_chunk].sq_sum += frameSet[i].getVarSq(VAR.SPEED, from_min, to_min, filter);
-            }
-
-
-            for (int j = 0; j < frames.length; j++) {
-
-                // in which range?
-                for (int k = border.length - 2; k >= 0; k--) {
-
-                    if (!App.only_active || frames[j].BallStatus == 1) {     // either ball statis is active, or its not requested
-
-                        if (frames[j].N >= border[k]) {
-
-                            // speed zones
-                            int speed_zone_idx;
-                            // todo: reverse the selection for performance (smallest to the top)
-                            if (frames[j].S / 3.6 > 7) {
-                                speed_zone_idx = 4;
-                            } else if (frames[j].S / 3.6 > 5.5) {
-                                speed_zone_idx = 3;
-                            } else if (frames[j].S / 3.6 > 4) {
-                                speed_zone_idx = 2;
-                            } else if (frames[j].S / 3.6 > 2) {
-                                speed_zone_idx = 1;
-                            } else {
-                                speed_zone_idx = 0;
-                            }
-                            dat[k].speed_zones[speed_zone_idx].count++;
-                            dat[k].speed_zones[speed_zone_idx].sum += (frames[j].S / 3.6f);
-                            dat[k].speed_zones[speed_zone_idx].sq_sum += Math.pow(frames[j].S / 3.6, 2);
-
-                            break;
-                        }
-                    }
-                }
-            }
-            if (vis_zones != null) vis_zones.repaint();
-            if (vis_sprints != null) vis_sprints.repaint();
-
-        }
-
-        // to get the mean and the standard derivate we need to calculate (dived and stuff)
-        for (int i = 0; i < border.length - 1; i++) {
-            dat[i].mean = dat[i].sum / dat[i].count;
-            dat[i].var = dat[i].sq_sum / dat[i].count - dat[i].mean * dat[i].mean;
-            dat[i].sd = (float)Math.sqrt(dat[i].var);
-
-            for (int j = 0; j < dat[i].speed_zones.length; j++) {
-                dat[i].speed_zones[j].mean = dat[i].speed_zones[j].sum / dat[i].speed_zones[j].count;
-                dat[i].speed_zones[j].var = dat[i].speed_zones[j].sq_sum / dat[i].speed_zones[j].count - dat[i].speed_zones[j].mean * dat[i].speed_zones[j].mean;
-                dat[i].speed_zones[j].sd = (float)Math.sqrt(dat[i].speed_zones[j].var);
-            }
-            dat[i].sprints.mean = dat[i].sprints.sum / dat[i].sprints.count * 25 * 60;   // sprints per minute
-            dat[i].sprints.var = 0;
-            dat[i].sprints.sd = 0;
-        }*/
 
         if (vis_zones != null) vis_zones.repaint();
         if (vis_sprints != null) vis_sprints.repaint();
+        if (vis_mean != null) vis_mean.updateData();
 
         long duration = System.nanoTime() - startTime;
         System.out.println("analyze took" + (duration / 1E6)+ "ms");

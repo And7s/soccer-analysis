@@ -34,15 +34,14 @@ public class visSprints extends JPanel {
 
 
     }
-    public void updateData(MeanData[] data, FrameSet[] frameSet) {
-        this.data = data;
+    public void updateData(FrameSet[] frameSet) {
         this.frameSet = frameSet;
         repaint();
 
     }
 
     public void paintComponent(Graphics g) {
-        data = idp.dat;
+        /*data = idp.dat;
         frameSet = idp.frameSet;
 
         Dimension size = getSize();
@@ -86,10 +85,7 @@ public class visSprints extends JPanel {
                 g2d.drawArc(x -1, y -1, 2, 2, 0, 360);
                 ((Graphics2D) g).setStroke(new BasicStroke(1));
 
-                /*g2d.drawLine(x, y - delta / 2, x, y + delta / 2);
-                g2d.drawLine(x - 2, y - delta / 2, x + 2, y - delta / 2);   // upper horizontal bar
-                g2d.drawLine(x - 2, y + delta / 2, x + 2, y + delta / 2);   // lower
-                */
+
                 // value
 
                 g2d.drawString(String.format("%.2f", data[i].sprints.mean), x + 10, y);
@@ -100,7 +96,7 @@ public class visSprints extends JPanel {
         }
 
         long duration = System.nanoTime() - startTime;
-        System.out.println("duration" + (duration / 1E6)+ "ms");
+        System.out.println("duration" + (duration / 1E6)+ "ms");*/
     }
 
     public int scaleX(float x) {
