@@ -67,7 +67,7 @@ public class idp {
 
         //visField.updateData(position, match);
         vis_zones.repaint();
-
+        onGameLoaded();
 
     }
 
@@ -88,6 +88,8 @@ public class idp {
         frameSet = game.positions.get(idx).frameSet;  // make this frameset accessible
         position = game.positions.get(idx);
         match = game.matchs.get(idx); // danger how to verify that mathc has been loaded
+        App.selectedMatchIdx = idx;
+
         updateTable();
         analyze();
     }

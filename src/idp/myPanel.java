@@ -92,7 +92,7 @@ public class myPanel extends JPanel {
     }
 
     public void openDialog() {
-        if (false) {        // DEBUG
+        if (true) {        // DEBUG
             File position_file = null, match_file = null;
             JFileChooser fc = new JFileChooser("select a position set please");
             fc.setCurrentDirectory(new java.io.File(".")); // start at application current directory

@@ -94,7 +94,8 @@ public class Config extends JPanel {
             public void stateChanged(ChangeEvent e) {
                 System.out.println(slider_playback_speed.getValue());
                 App.smooth_factor = slider_playback_speed.getValue() * 0.1;
-                idp.redoAnalyze();
+                //idp.redoAnalyze();
+                App.vis_speed.repaint();
 
             }
         });
@@ -112,23 +113,29 @@ public class Config extends JPanel {
         add(button);
 
     }
+
+
     public void updateData() {
         // if already existent ,remove
         if (selectList != null) {
-            remove(selectList);
+            selectList.removeAllItems();
+        } else {
+            selectList = new JComboBox();
+            add(selectList);
         }
         if (selectMatchList != null) {
-            remove(selectMatchList);
+            selectMatchList.removeAllItems();
+        } else {
+            selectMatchList = new JComboBox();
+            add(selectMatchList);
         }
-        // which player is currently selected
         String[] selectString = new String[idp.frameSet.length];
 
         for (int i = 0; i < idp.frameSet.length; i++) {
-            selectString[i] = i + ": " + match.getPlayer(idp.frameSet[i].Object).ShortName;
+            selectList.addItem(i + ": " + match.getPlayer(idp.frameSet[i].Object).ShortName);
         }
         System.out.println(selectString);
 
-        selectList = new JComboBox(selectString);
         selectList.setSelectedIndex(App.selctedFramesetIdx);
         selectList.addActionListener(new ActionListener() {
             @Override
@@ -138,19 +145,9 @@ public class Config extends JPanel {
             }
         });
 
-        add(selectList);
-
-        // select multiple matches
-        String[] selectMatch = new String[idp.game.positions.size()];
-
         for (int i = 0; i < idp.game.positions.size(); i++) {
-            selectMatch[i] = i + ": " + idp.game.matchs.get(i).GameTitle;; // TODO shorten these paths
+            selectMatchList.addItem(i + ": " + idp.game.matchs.get(i).GameTitle);
         }
-        System.out.println(selectMatch);
-
-        selectMatchList = new JComboBox(selectMatch);
-        // selectList.setSelectedIndex(App.selctedFramesetIdx);
-        // TODO change listener
 
         selectMatchList.addActionListener(new ActionListener() {
             @Override
@@ -159,8 +156,6 @@ public class Config extends JPanel {
                 config.updateData();    // so other player can be selected
             }
         });
-
-        add(selectMatchList);
-
+        selectMatchList.setSelectedIndex(App.selectedMatchIdx);
     }
 }

@@ -9,7 +9,7 @@ public class App {
     public static visSprints vis_sprints;
 
     public static boolean only_active = false, ignore_keeper = false, ignore_exchange = false;
-    public static int steps_mean = 5, selctedFramesetIdx = 0;
+    public static int steps_mean = 5, selctedFramesetIdx = 0, selectedMatchIdx = 0;
 
     public static double playback_speed = 10;
     public static double smooth_factor = 0.5;

@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import static idp.idp.frameSet;
+import static idp.idp.position;
 
 
 public class visSpeed extends JPanel implements MouseWheelListener {
@@ -148,9 +149,10 @@ public class visSpeed extends JPanel implements MouseWheelListener {
 
 
         // filter some more (calculate power consumption
+        FrameSet cur_fs = frameSet[App.selctedFramesetIdx];
+        cur_fs.analyze(position.getBallFirstHalf(cur_fs.firstHalf));
+        Frame[] fs = cur_fs.frames;
 
-
-        Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
         int start = (int)((0.5 - 0.5 / zoom) * length);
         int end = (int)((0.5 + 0.5 / zoom) * length);
         int offset_y = 4* height_plot;
