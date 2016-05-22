@@ -44,18 +44,12 @@ public class Game {
 
             PrintWriter wr = new PrintWriter(new OutputStreamWriter(os, "UTF-8"));
 
-
-
             for (int k = 0; k < positions.size(); k++) {
                 FrameSet[] frameSet = positions.get(k).frameSet;
                 Match match = matchs.get(k);
-                wr.append("MatchId," + match.MatchId + "\n" +
-                    "GameTitle," + match.GameTitle + "\n" +
-                    "KickoffTime," + match.KickoffTime + "\n" +
-                    "Competition," + match.Competition + "\n"
-                );
-
-                wr.append("Player, " +
+                wr.append(
+                    "Match,MatchTitle,Competition,KickoffTime," +
+                    "Player, " +
                     "intervall," +
                     "Sprint [sprint/min]," +
                     "Speed [m/min]," +
@@ -69,18 +63,26 @@ public class Game {
                 }
                 wr.append("\n");
 
-
                 for (int i = 0; i < frameSet.length; i++) {
-
-
                     FrameSet fs = frameSet[i];
-                    if (fs.Object.equals("DFL-OBJ-0000XT")) continue;
 
-                    for (int j = 0; j < 4; j++) {
+                    if (fs.isBall) continue;
+                    Player player = idp.match.getPlayer(fs.Object);
+                    boolean is_tw = player.PlayingPosition.equals("TW");
+                    boolean is_starting = player.Starting;
+                    if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+                    if(App.ignore_exchange && !is_starting) continue;
+
+                    for (int j = 0; j <= App.steps_mean; j++) {
                         int filter = (j == 0) ? FILTER.ALL : FILTER.ACTIVE;
-                        int start = (j == 0) ? 0 : (j - 1) * 15;
-                        int end = (j == 0) ? 45 : j * 15;
+                        int start = (j == 0) ? 0 : getMeanStart(j - 1);
+                        int end = (j == 0) ? 45 : getMeanEnd(j - 1);
+
                         wr.append(
+                            match.MatchId + "," +
+                            match.GameTitle + "," +
+                            match.KickoffTime + "," +
+                            match.Competition + "," +
                             match.getPlayer(fs.Object).ShortName + ((j == 0) ? " all": " active") + "," +
                             start + "-" + end + "," +
                             (fs.getVar(VAR.SPRINT, start, end, filter) / fs.getVarCount(VAR.SPRINT, start, end, filter) * 25 * 60) + "," +
@@ -114,5 +116,13 @@ public class Game {
         } catch(IOException e){
             e.printStackTrace();
         }
+    }
+    private int getMeanStart(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * (i % steps));
+    }
+    private int getMeanEnd(int i) {
+        int steps = App.steps_mean;
+        return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 }

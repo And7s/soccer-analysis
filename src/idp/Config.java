@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 
 import static idp.idp.config;
+import static idp.idp.game;
 import static idp.idp.match;
 
 /**
@@ -98,6 +99,17 @@ public class Config extends JPanel {
             }
         });
         add(slider_playback_speed);
+
+
+        JButton button = new JButton("export");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("will export");
+                game.writeCSV();
+            }
+        });
+        add(button);
 
     }
     public void updateData() {
