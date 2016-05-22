@@ -13,9 +13,7 @@ import java.util.Random;
  * Created by Andre on 20/04/2016.
  */
 
-class InvalidPositionDataSet extends Exception {
 
-}
 
 public class Position {
     private int idx_ball_first_half, idx_ball_second_half;
@@ -103,6 +101,7 @@ public class Position {
 
 
     public static int checkType(String path) {
+        System.out.println("check file " + path);
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         InputStream in;
         try {

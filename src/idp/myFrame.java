@@ -1,10 +1,13 @@
-package idp.ui;
+package idp;
+
+
 
 import javax.swing.*;
 
 
 import java.awt.*;
-import java.awt.event.*;
+
+import static idp.idp.config;
 
 
 /**
@@ -13,7 +16,7 @@ import java.awt.event.*;
 public class myFrame extends JFrame {
     public int count;
     private JTabbedPane tabbedPane;
-    public idp.Config config;
+
     public myFrame() {
 
         setTitle("DFL Soccer Analysis | IDP | Andreas Schmelz");
@@ -33,7 +36,7 @@ public class myFrame extends JFrame {
         //contentPane.add(tabbedPane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        config = new idp.Config();
+        config = new Config();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
             tabbedPane, config);

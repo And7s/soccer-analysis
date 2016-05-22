@@ -1,16 +1,5 @@
 package idp;
 
-import idp.ui.*;
-import idp.ui.myFrame;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import javax.swing.JFrame;
-import javax.xml.stream.*;
-
 import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
@@ -29,13 +18,15 @@ public class idp {
     public static FrameSet[] frameSet;
     public static Game game;
 
-    public myFrame my_frame;
-
+    public static myFrame my_frame;
+    public static Config config;
     public static Position position;
     public static visSprints vis_sprints;
     public static visMean vis_mean;
+    public static Table table;
 
     public static Batch batch;
+
     public idp() {
 
         game = new Game();
@@ -47,16 +38,17 @@ public class idp {
         visField = new visualField();
 
         showMemory("back in main");
-        analyze();
-        createTable();
-        my_frame.config.updateData();
+       // analyze();
+
+
+
+        //my_frame.config.updateData();
         my_frame.addView(visField, "Field");
 
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
 
         visSpeed vis_speed = new visSpeed();
-        vis_speed.updateData(frameSet);
         my_frame.addView(vis_speed, "speed");
 
         vis_mean = new visMean();
@@ -71,7 +63,7 @@ public class idp {
         my_frame.addView(vis_sprints, "sprints");
 
         // events depend on an existing frameset when being instantiated
-        events = new Events("data/S_14_15_BRE_HSV/events.xml");
+//        events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
         //visField.updateData(position, match);
         vis_zones.repaint();
@@ -89,14 +81,17 @@ public class idp {
         frameSet = game.positions.get(idx).frameSet;  // make this frameset accessible
         position = game.positions.get(idx);
         match = game.matchs.get(idx); // danger how to verify that mathc has been loaded
+        updateTable();
         analyze();
     }
     public static void onGameLoaded() {
         System.out.println("a game has been loaded");
         selectFrameSet(0);
+        config.updateData();
+
     }
 
-    public void createTable() {
+    public static void updateTable() {
 
         // create a table view
 
@@ -134,8 +129,12 @@ public class idp {
         }
         Object columnNames[] = { "#", "Object", "firstHalf", "mean [km/h]", "duration [min]", "distance [km]", "#sprints (all, inter, active), per minute", "starting", "position"};
 
-        my_frame.addView(new Table(rowData, columnNames), "Table");
-
+        if (table != null) {
+            table.update(rowData);
+        } else {
+            table = new Table(rowData, columnNames);
+            my_frame.addView(table, "Table");
+        }
 
 
         //  canvas.updateData(dat, frameSet);

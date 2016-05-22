@@ -23,17 +23,12 @@ public class Match {
         InputStream in;
         long startTime = System.nanoTime();
 
-        int c_nodes = 0;
-
         Player p2 = new Player();
         p2.ShortName = "Ball";
         p2.PersonId = "DFL-OBJ-0000XT";
         p2.PlayingPosition = "-";
         players[c_player++] = p2;
 
-
-
-        Frame[] frames = new Frame[3600000];
         try {
             in = new FileInputStream(filename);
             XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);

@@ -8,11 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 
+import static idp.idp.config;
+import static idp.idp.match;
+
 /**
  * Created by Andre on 23/04/2016.
  */
 public class Config extends JPanel {
-
+    private JComboBox selectList = null, selectMatchList = null;
     public Config() {
         setLayout(new GridLayout(10,2));
 
@@ -98,15 +101,22 @@ public class Config extends JPanel {
 
     }
     public void updateData() {
+        // if already existent ,remove
+        if (selectList != null) {
+            remove(selectList);
+        }
+        if (selectMatchList != null) {
+            remove(selectMatchList);
+        }
         // which player is currently selected
         String[] selectString = new String[idp.frameSet.length];
 
         for (int i = 0; i < idp.frameSet.length; i++) {
-            selectString[i] = i + ": " + idp.frameSet[i].Object;
+            selectString[i] = i + ": " + match.getPlayer(idp.frameSet[i].Object).ShortName;
         }
         System.out.println(selectString);
 
-        JComboBox selectList = new JComboBox(selectString);
+        selectList = new JComboBox(selectString);
         selectList.setSelectedIndex(App.selctedFramesetIdx);
         selectList.addActionListener(new ActionListener() {
             @Override
@@ -122,11 +132,11 @@ public class Config extends JPanel {
         String[] selectMatch = new String[idp.game.positions.size()];
 
         for (int i = 0; i < idp.game.positions.size(); i++) {
-            selectMatch[i] = i + ": " + idp.game.positions.get(i).frameSet[0].Match; // TODO shorten these paths
+            selectMatch[i] = i + ": " + idp.game.matchs.get(i).GameTitle;; // TODO shorten these paths
         }
         System.out.println(selectMatch);
 
-        JComboBox selectMatchList = new JComboBox(selectMatch);
+        selectMatchList = new JComboBox(selectMatch);
         // selectList.setSelectedIndex(App.selctedFramesetIdx);
         // TODO change listener
 
@@ -134,6 +144,7 @@ public class Config extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 idp.selectFrameSet(selectMatchList.getSelectedIndex());
+                config.updateData();    // so other player can be selected
             }
         });
 

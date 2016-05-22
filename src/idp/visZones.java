@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 
-public class visZones extends JPanel  {
+public class visZones extends JPanel {
 
     FrameSet[] frameSet;
     Graphics2D g2d;

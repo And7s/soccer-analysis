@@ -23,16 +23,16 @@ import java.util.concurrent.Callable;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import static idp.idp.frameSet;
+
 
 public class visSpeed extends JPanel implements MouseWheelListener {
 
-    FrameSet[] frameSet;
     Graphics2D g2d;
     private int width, height;
     float zoom = 1;
 
-    public void updateData(FrameSet[] frameSet) {
-        this.frameSet = frameSet;
+    public void updateData() {
         repaint();
     }
 
