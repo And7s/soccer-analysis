@@ -31,7 +31,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
     Graphics2D g2d;
     private int width, height;
     float zoom = 1;
-
+    private int height_plot = 150;
     public void updateData() {
         repaint();
     }
@@ -63,15 +63,15 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
         double scale_x = (double) width / (end - start);
         double scale_y = f.scale;
-        System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
+        //System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         for (int i = start + 1; i < end; i++ ) {
             double val = f.Frames(fs[i]);
             g2d.setColor(f.getColor(val));
             g2d.drawLine(
                 (int)((double)(i - start - 1) * scale_x),
-                (int)(f.Frames(fs[i - 1]) * scale_y + offset_y),
+                (int)(height_plot - f.Frames(fs[i - 1]) * scale_y + offset_y),
                 (int)((double)(i - start) * scale_x),
-                (int)(val * scale_y + offset_y)
+                (int)(height_plot - val * scale_y + offset_y)
             );
         }
     }
@@ -84,6 +84,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, // Anti-alias!
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.WHITE);
+
 
 
         Dimension size = getSize();
@@ -121,7 +122,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         plotSubset(0, length, 0, filter_speed);
 
 
-        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 100, filter_speed);
+        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 1 * height_plot, filter_speed);
 
         VisFilter filter_acc =  new VisFilter(2.6f) {
             @Override
@@ -140,9 +141,9 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             }
         };
 
-        plotSubset(0, frameSet[App.selctedFramesetIdx].frames.length, 200, filter_acc);
+        plotSubset(0, frameSet[App.selctedFramesetIdx].frames.length, 2 * height_plot, filter_acc);
 
-        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 300, filter_acc);
+        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 3 * height_plot, filter_acc);
 
 
 
@@ -152,10 +153,10 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
         int start = (int)((0.5 - 0.5 / zoom) * length);
         int end = (int)((0.5 + 0.5 / zoom) * length);
-        int offset_y = 400;
+        int offset_y = 4* height_plot;
         float scale_x = scale_x = (float) width / (end - start);
         float scale_y = 8f;
-        System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
+        //System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         g2d.setColor(Color.black);
         double EC_before = 0;
         double EC_sum = 0;
@@ -181,25 +182,25 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             double P = EC * fs[i].S / 3.6 / 25; // unit J/kg
             P_sum += P;
 
-            if (EC < ec_min) {
+            /*if (EC < ec_min) {
                 ec_min = EC;
                 System.out.println("new min " + EC + "EC m"+EM+" slo"+ES);
-            }
+            }*/
 
             //System.out.println("Energy cost "+EC+" EM "+EM+" POWER "+P+" ES:"+ES);
 
             g2d.drawLine(
                 (int)((float)(i - start - 1) * scale_x),
-                (int)(EC_before * scale_y + offset_y),
+                (int)(height_plot - EC_before * scale_y + offset_y),
                 (int)((float)(i - start) * scale_x),
-                (int)(EC * scale_y + offset_y)
+                (int)(height_plot - EC * scale_y + offset_y)
             );
 
             g2d.drawLine(
                 (int)((float)(i - start - 1) * scale_x),
-                (int)(P_before * scale_y + offset_y + 100),
+                (int)(height_plot - P_before * scale_y + offset_y + 100),
                 (int)((float)(i - start) * scale_x),
-                (int)(P * scale_y + offset_y + 100)
+                (int)(height_plot - P * scale_y + offset_y + 100)
             );
             EC_before = EC;
             P_before = P;

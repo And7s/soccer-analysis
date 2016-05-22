@@ -79,7 +79,7 @@ public class Config extends JPanel {
         add(ignoreExchange);
 
 
-        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,4);//direction , min , max , current
+        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,5);//direction , min , max , current
 
         slider_playback_speed.setMajorTickSpacing(3);
         slider_playback_speed.setMinorTickSpacing(1);
@@ -92,8 +92,8 @@ public class Config extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 System.out.println(slider_playback_speed.getValue());
-                App.playback_speed = Math.exp(slider_playback_speed.getValue() - 1) - 1;
-                System.out.println("set to " + App.playback_speed);
+                App.smooth_factor = slider_playback_speed.getValue() * 0.1;
+                idp.redoAnalyze();
 
             }
         });

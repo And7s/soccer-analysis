@@ -138,7 +138,7 @@ public class FrameSet {
 
         int dur_sprint = 0;
 
-        double smooth_factor = 0.7;
+        double smooth_factor = App.smooth_factor;
 
         for (int i = 0; i < frames.length; i++) {
             // smooth the graph

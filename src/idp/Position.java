@@ -23,6 +23,7 @@ public class Position {
         this.frameSet = frameSet;
         analyzeFrameSet();
         spreadBallStatus();
+        precalculateNumbers();
     }
 
     public FrameSet getBallFirstHalf(boolean firstHalf) {
@@ -89,6 +90,10 @@ public class Position {
                 frameSet[i].frames[j].BallStatus = frameSet[ball_idx].frames[j + diff].BallStatus;
             }
         }
+
+    }
+
+    public void precalculateNumbers() {
         // precalculate numbers
         long startTime = System.nanoTime();
         for (int i = 0; i < frameSet.length; i++) {

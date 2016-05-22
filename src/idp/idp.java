@@ -1,5 +1,6 @@
 package idp;
 
+import static idp.App.vis_speed;
 import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
@@ -48,12 +49,11 @@ public class idp {
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
 
-        visSpeed vis_speed = new visSpeed();
+        App.vis_speed = new visSpeed();
         my_frame.addView(vis_speed, "speed");
 
         vis_mean = new visMean();
         App.vis_mean = vis_mean;    // set static ref
-        App.vis_speed = vis_speed;
 
         my_frame.addView(vis_mean, "mean");
 
@@ -69,6 +69,13 @@ public class idp {
         vis_zones.repaint();
 
 
+    }
+
+    public static void redoAnalyze() {
+        for (int i = 0; i < game.positions.size(); i++) {
+            game.positions.get(i).precalculateNumbers();
+        }
+        analyze();  // update all views
     }
 
     public static void main(String[] args) {
@@ -146,7 +153,7 @@ public class idp {
         if (vis_zones != null) vis_zones.repaint();
         if (vis_sprints != null) vis_sprints.repaint();
         if (vis_mean != null) vis_mean.updateData();
-
+        if (vis_speed != null) vis_speed.repaint();
         long duration = System.nanoTime() - startTime;
         System.out.println("analyze took" + (duration / 1E6)+ "ms");
 
