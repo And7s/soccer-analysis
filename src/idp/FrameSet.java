@@ -29,6 +29,7 @@ public class FrameSet {
     public boolean isBall = false;
     public Frame frames[];
     public int frames_missing = 0;
+    public boolean no_ball_status = false;
     private GameSection[][][] aggregate;
 
 

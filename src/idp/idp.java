@@ -32,7 +32,7 @@ public class idp {
 
         game = new Game();
         batch = new Batch();
-
+/*
         my_frame = new myFrame();
 
 
@@ -67,7 +67,7 @@ public class idp {
 
         //visField.updateData(position, match);
         vis_zones.repaint();
-        onGameLoaded();
+        onGameLoaded();*/
 
     }
 

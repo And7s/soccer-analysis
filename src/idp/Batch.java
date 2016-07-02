@@ -1,11 +1,16 @@
 package idp;
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 import static idp.idp.game;
 
+
+class FilePair {
+    String position, match;
+    int posType;
+}
 /**
  * Created by Andre on 01/05/2016.
  */
@@ -15,28 +20,56 @@ public class Batch {
 
     public Batch() {
         files = new Vector<String>(10);
+
+        Map<String, FilePair> pairs = new HashMap<String, FilePair>(10);
+
         final File folder = new File("D:\\dfl\\");
         listFilesForFolder(folder, "D:\\dfl\\");
         System.out.println(files.size());
 
+        int count = 0;
 
-        /*for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-
+        for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
+            if (count >= 30) break;
+            count++;
             String s = (String) it.nextElement();
+            if (s.contains("DFL-CLU")) continue;    // is a DFL club definition
+            int ret = Position.checkType(s);
 
-            int ret = Position_new.checkType(s);
+
+            if (s.contains("DFL-MAT")) {
+
+                String matchId = s.substring(s.indexOf("DFL-MAT-") + 8, s.indexOf("_"));
+                System.out.println("matchId is "+matchId);
+                FilePair p;
+                if (pairs.get(matchId) != null) {
+                    p = pairs.get(matchId);
+                } else {
+                    p = new FilePair();
+                    pairs.put(matchId, p);
+                }
+
+                if (ret == 3) {
+                    p.match = s;
+                } else if (ret == 0 || ret == 1) {
+                    p.position = s;
+                    p.posType = ret;
+                }
+            }
             if (ret >= 0) {
                 System.out.println(s + " = " +ret);
+            } else {
+                System.out.println("cant handle file "+s);
             }
 
             if (ret == 3) {
-                game.addMatch(new Match(s));
+                //game.addMatch(new Match(s));
             }
 
-            if (ret == 1 || ret == 0) {
+            /*if (ret == 1 || ret == 0) {
                 try {
-                    FrameSet[] frame_set = Position_new.readPosition(s, ret);
-                    Position_new pos = new Position_new(frame_set);
+                    FrameSet[] frame_set = Position.readPosition(s, ret);
+                    Position pos = new Position(frame_set);
                     game.addPosition(pos);
 
 
@@ -44,10 +77,34 @@ public class Batch {
                     System.out.println("could not load file " + s);
                 }
 
+            }*/
+
+            //game.writeCSV();
+
+
+        }
+        System.out.println("==Analysze==");
+        for (Map.Entry<String, FilePair> entry : pairs.entrySet()) {
+
+            // analyze this
+            String pos = entry.getValue().position,
+                match = entry.getValue().match;
+
+            System.out.println("match "+entry.getKey() + " pos: "+ pos + " match "+ match);
+            if (pos != null && match != null) {
+
+                game.addMatch(new Match(match));
+                try {
+                    FrameSet[] frame_set = Position.readPosition(pos, entry.getValue().posType);
+                    game.addPosition(new Position(frame_set));
+                    game.writeCSV();
+                } catch (InvalidPositionDataSet e) {
+                    System.out.println("could not load file "+pos );
+                }
+
             }
 
-            game.writeCSV();
-        }*/
+        }
 
 // single game output
 /*
@@ -71,7 +128,7 @@ public class Batch {
         //String[] matches = {"DFL-MAT-0002UQ", "DFL-MAT-0002UP", "DFL-MAT-0002UO", "DFL-MAT-00031J", "DFL-MAT-0002UH", "DFL-MAT-0002UI", "DFL-MAT-0002UK", "DFL-MAT-0002UL"};
         //String[] matches = {};
 
-        for (int i = 0; i < matches.length; i++) {
+        /*for (int i = 0; i < matches.length; i++) {
             Position.showMemory("before " + i);
             game.addMatch(new Match("D:\\dfl\\" + matches[i] + "_MatchInformation.xml"));
             try {
@@ -89,7 +146,7 @@ public class Batch {
         //idp.onGameLoaded();
         //game.writeCSV();
         Position.showMemory("at end ");
-
+*/
     }
 
     public void listFilesForFolder(final File folder, String path) {

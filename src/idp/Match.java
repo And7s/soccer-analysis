@@ -43,6 +43,8 @@ public class Match {
                         p.LastName = streamReader.getAttributeValue(null, "LastName");
                         p.PersonId = streamReader.getAttributeValue(null, "PersonId");
                         p.PlayingPosition = streamReader.getAttributeValue(null, "PlayingPosition");
+                        if (p.PlayingPosition == null) p.PlayingPosition = "";  // fallback
+                        System.out.println("player "+p.PersonId+" = "+p.PlayingPosition);
                         p.Starting = streamReader.getAttributeValue(null, "Starting").equals("true");
                         p.ShortName = streamReader.getAttributeValue(null, "Shortname");
                         p.ShirtNumber = Integer.parseInt(streamReader.getAttributeValue(null, "ShirtNumber"));

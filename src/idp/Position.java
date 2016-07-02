@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 /**
@@ -44,9 +46,25 @@ public class Position {
                     idx_ball_second_half = i;
                 }
             }
+        }
+
+        // sort data at N
+        for (int i = 0; i < frameSet.length; i++) {
+            Frame[] frames = frameSet[i].frames;
+
+            Arrays.sort(frames, new Comparator<Frame>() {
+                public int compare(Frame a, Frame b) {
+                    return a.N - b.N;
+                }
+            });
+        }
+
+        // check for frame gaps
+        for (int i = 0; i < frameSet.length; i++) {
             Frame[] frames = frameSet[i].frames;
             int last_n = frames[0].N;
             for (int j = 1; j < frames.length; j++) {
+                //System.out.println("at "+i+" "+ j +" = "+frames[j].N + "; ");
                 if (frames[j].N != last_n + 1) {
                     System.out.println("error" + (frames[j].N - last_n - 1));
                     frameSet[i].frames_missing += (frames[j].N - last_n - 1);
@@ -116,7 +134,7 @@ public class Position {
                 streamReader.next();
                 if (streamReader.isStartElement()) {
                     if (streamReader.getLocalName().equals("PutDataRequest")) {
-                        System.out.println("could be a position dataset");
+                        // System.out.println("could be a position dataset");
                         do streamReader.next(); while(!streamReader.isStartElement());
 
                         String tag = streamReader.getLocalName();
@@ -190,14 +208,24 @@ public class Position {
                 if (streamReader.isStartElement()) {
                     String tag = streamReader.getLocalName();
 
-                    /*System.out.println(streamReader.getLocalName());
-                    int count = streamReader.getAttributeCount();
-                    for (int i = 0; i < count; i++) {
-                        System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
+                    /*if (!tag.equals("Frame")) {
+
+                        System.out.println(streamReader.getLocalName());
+                        int count2 = streamReader.getAttributeCount();
+                        for (int i = 0; i < count2; i++) {
+                            System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
+                        }
                     }*/
-
-
                     if (tag.equals("Frame")) {
+
+                        /*if (tmp_c_nodes < 50) {
+                            System.out.println(streamReader.getLocalName());
+                            int count2 = streamReader.getAttributeCount();
+                            for (int i = 0; i < count2; i++) {
+                                System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
+                            }
+                        }*/
+
                         Frame frame = new Frame();
 
                         frame.N = Integer.parseInt(streamReader.getAttributeValue(null, "N"));
@@ -206,16 +234,22 @@ public class Position {
 
                             if (ball_posession == null) {
                                 // OUTPUT NODE
-                                System.out.println(streamReader.getLocalName());
+                                /*System.out.println(streamReader.getLocalName());
                                 int count = streamReader.getAttributeCount();
                                 for (int i = 0; i < count; i++) {
                                     System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
-                                }
+                                }*/
                                 // OUTPUT NODE END
-                                throw new InvalidPositionDataSet();
+                                // throw new InvalidPositionDataSet();
+                                // System.out.println("ERROR no ballstatus is given");
+                                frame.BallPossession = 0;   // take dummy data
+                                frame.BallStatus = 1;   // assume everything is active play
+                                tmp_framesets[tmp_c_framesets].no_ball_status = true;
+                            } else {
+                                frame.BallPossession = Byte.parseByte(ball_posession);
+                                frame.BallStatus = Byte.parseByte(streamReader.getAttributeValue(null, "BallStatus"));
                             }
-                            frame.BallPossession = Byte.parseByte(ball_posession);
-                            frame.BallStatus = Byte.parseByte(streamReader.getAttributeValue(null, "BallStatus"));
+
 
                         }
 
@@ -237,6 +271,13 @@ public class Position {
 
 
                         if (fr.Object.equals("DFL-OBJ-0000XT")) {
+
+                            /*System.out.println(streamReader.getLocalName());
+                            int count2 = streamReader.getAttributeCount();
+                            for (int i = 0; i < count2; i++) {
+                                System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
+                            }*/
+
                             System.out.println("found ball" + tmp_c_framesets);
                             if (fr.firstHalf) {
                                 idx_ball_first_half = tmp_c_framesets;
