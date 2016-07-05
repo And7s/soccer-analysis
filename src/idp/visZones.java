@@ -2,23 +2,28 @@ package idp;
 
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 
 public class visZones extends JPanel {
 
     FrameSet[] frameSet;
+
     Graphics2D g2d;
     private int width, height;
     private GameSection[][] plotPoints;
 
     public void updateData(FrameSet[] frameSet) {
-
+        System.out.println("set to "+frameSet.length);
         this.frameSet = frameSet;
         repaint();
+
 
     }
 
@@ -36,11 +41,11 @@ public class visZones extends JPanel {
             int end = (int)(45.0 / steps * ((i % steps) +1 ));
             for (int j = 0; j < 5; j++) {
                 GameSection gs = new GameSection();
-                FrameSet[] sets = idp.frameSet;
+                FrameSet[] sets = this.frameSet;
 
                 for (int k = 0; k < sets.length; k++) {
                     if (sets[k].isBall) continue;
-                    Player player = idp.match.getPlayer(sets[k].Object);
+                    Player player = idp.game.getPlayer(sets[k].Object);
                     boolean is_tw = player.PlayingPosition.equals("TW");
                     boolean is_starting = player.Starting;
                     if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
@@ -55,6 +60,8 @@ public class visZones extends JPanel {
         }
 
     }
+
+
     private int getMeanStart(int i) {
         int steps = App.steps_mean;
         return (int)(45.0 / steps * (i % steps));
@@ -65,6 +72,15 @@ public class visZones extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
+        Dimension size = getSize();
+        width = size.width ;
+        height = size.height;
+        paint(g, width, height);
+    }
+
+    public void paint(Graphics g, int width, int height) {
+        this.width = width;
+        this.height = height;
         analyze();
         //super.paintComponent(g);
 
@@ -74,9 +90,6 @@ public class visZones extends JPanel {
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.WHITE);
 
-        Dimension size = getSize();
-        width = size.width ;
-        height = size.height;
         g2d.fillRect(0, 0, width, height);
 
         g2d.setColor(Color.DARK_GRAY);

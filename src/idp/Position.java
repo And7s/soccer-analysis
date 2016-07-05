@@ -26,6 +26,10 @@ public class Position {
         analyzeFrameSet();
         spreadBallStatus();
         precalculateNumbers();
+        //this.frameSet = null;   // free mem?
+        for (int i = 0; i < this.frameSet.length; i++) {
+            this.frameSet[i].frames = null;
+        }
     }
 
     public FrameSet getBallFirstHalf(boolean firstHalf) {

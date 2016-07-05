@@ -1,5 +1,13 @@
 package idp;
 
+import javafx.geometry.Pos;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import static idp.App.vis_mean;
 import static idp.App.vis_speed;
 import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
@@ -28,11 +36,37 @@ public class idp {
 
     public static Batch batch;
 
+    public void paint(Graphics g, int width, int height) {
+
+
+
+     Graphics2D g2=(Graphics2D)g;
+
+        g2.setBackground(Color.WHITE);
+        g2.clearRect(0, 0, width, height);
+        g2.setColor(Color.BLACK);
+        g2.drawString("Draw a rectangle", 100,100);
+        g2.drawRect(100,200,50,50);
+    }
+
+
     public idp() {
+
+        /*BufferedImage image=new BufferedImage(600, 100,BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g2=(Graphics2D)image.getGraphics();
+
+
+        paint(g2, 600, 100);
+        try {
+            ImageIO.write(image, "png", new File("mycanvas.png"));
+        } catch (Exception e) {
+
+        }*/
 
         game = new Game();
         batch = new Batch();
-/*
+
         my_frame = new myFrame();
 
 
@@ -67,8 +101,97 @@ public class idp {
 
         //visField.updateData(position, match);
         vis_zones.repaint();
-        onGameLoaded();*/
+        onGameLoaded();
 
+    //
+
+        // EXPORT
+        // set some settings
+        App.ignore_exchange = true;
+        App.ignore_keeper = true;
+        App.only_active = true;
+
+
+        int all_fs_count = 0;
+        for (int i = 0; i < game.positions.size(); i++) {
+            all_fs_count += game.positions.get(i).frameSet.length;
+        }
+        FrameSet[] all_fs = new FrameSet[all_fs_count];
+        int c = 0;
+        for (int i = 0; i < game.positions.size(); i++) {
+            FrameSet[] fs = game.positions.get(i).frameSet;
+            for (int j = 0; j < fs.length; j++) {
+                all_fs[c++] = fs[j];
+            }
+        }
+        try {
+
+
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 700,BufferedImage.TYPE_INT_RGB);
+                vis_zones.updateData(game.positions.get(i).frameSet);
+
+                Graphics2D cg = image.createGraphics();
+                vis_zones.paint(cg, 1000, 700);
+                ImageIO.write(image, "png", new File("export/" + game.matchs.get(i).MatchId + "speed_zones.png"));
+            }
+
+
+            BufferedImage image = new BufferedImage(1000, 700,BufferedImage.TYPE_INT_RGB);
+            vis_zones.updateData(all_fs);
+            Graphics2D cg = image.createGraphics();
+            vis_zones.paint(cg, 1000, 700);
+            ImageIO.write(image, "png", new File("export/all_speed_zones.png"));
+
+        } catch (Exception e) {
+
+        }
+
+        // draw speed chart
+        /*
+        try {
+            int all_fs_count = 0;
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(2000, 900, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                frameSet = fs;
+                for (int j = 0; j < fs.length; j++) {
+                    App.selctedFramesetIdx = j;
+                    Graphics2D cg = image.createGraphics();
+                    vis_speed.paint(cg, 2000, 900);
+                    ImageIO.write(image, "png", new File("export/" + fs[j].Match + "_" + fs[j].Object + "speed_zones.png"));
+                }
+            }
+            System.out.println("in total there are "+ all_fs_count);
+        } catch (Exception e) {
+
+        }*/
+
+        try {
+
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                match = game.matchs.get(i);
+                frameSet = fs;
+
+                Graphics2D cg = image.createGraphics();
+                vis_mean.paint(cg, 1000, 500);
+                ImageIO.write(image, "png", new File("export/" + match.MatchId + "_mean.png"));
+
+            }
+            // all together
+            BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+
+            frameSet = all_fs;
+
+            Graphics2D cg = image.createGraphics();
+            vis_mean.paint(cg, 1000, 500);
+            ImageIO.write(image, "png", new File("export/all_mean.png"));
+        } catch (Exception e) {
+
+        }
+        System.out.println("export finished");
     }
 
     public static void redoAnalyze() {

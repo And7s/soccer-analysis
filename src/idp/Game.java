@@ -32,13 +32,24 @@ public class Game {
     }
 
 
+    public Player getPlayer(String id) {
+        // if not found check all other matches
+        for (int i = 0; i < matchs.size(); i++) {
+            Player p = matchs.get(i).getPlayer(id);
+            if (p != null) {
+                return p;
+            }
+        }
+
+        return null;
+    }
     public void writeCSV() {
         if (matchs.size() != positions.size()) return;
 
 
         try
         {
-            OutputStream os = new FileOutputStream("analyze.csv");
+            OutputStream os = new FileOutputStream("export/analyze.csv");
             os.write(239);
             os.write(187);
             os.write(191);
@@ -51,7 +62,7 @@ public class Game {
                 writeMatch(wr, frameSet, match);
 
                 // write individual files
-                OutputStream os2 = new FileOutputStream(match.MatchId + ".csv");
+                OutputStream os2 = new FileOutputStream("export/" + match.MatchId + ".csv");
                 os2.write(239);
                 os2.write(187);
                 os2.write(191);

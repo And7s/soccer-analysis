@@ -32,7 +32,7 @@ public class Table extends JPanel {
             model.removeRow(0);
         }
         for (int i = 0; i < rows.length; i++) {
-            System.out.println("ins i "+i+"has "+model.getRowCount());
+            // System.out.println("ins i "+i+"has "+model.getRowCount());
             model.addRow(rows[i]);
         }
     }

@@ -30,58 +30,61 @@ public class Batch {
         int count = 0;
 
         for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-            if (count >= 30) break;
+            if (count >= 150) break;
             count++;
             String s = (String) it.nextElement();
-            if (s.contains("DFL-CLU")) continue;    // is a DFL club definition
-            int ret = Position.checkType(s);
+
+            if (count  > 100) {
+                if (s.contains("DFL-CLU")) continue;    // is a DFL club definition
+                int ret = Position.checkType(s);
 
 
-            if (s.contains("DFL-MAT")) {
+                if (s.contains("DFL-MAT")) {
 
-                String matchId = s.substring(s.indexOf("DFL-MAT-") + 8, s.indexOf("_"));
-                System.out.println("matchId is "+matchId);
-                FilePair p;
-                if (pairs.get(matchId) != null) {
-                    p = pairs.get(matchId);
+                    String matchId = s.substring(s.indexOf("DFL-MAT-") + 8);
+                    matchId = matchId.substring(0, matchId.length() - Math.max(matchId.indexOf("_"), matchId.indexOf(".")));
+                    System.out.println("matchId is " + matchId);
+                    FilePair p;
+                    if (pairs.get(matchId) != null) {
+                        p = pairs.get(matchId);
+                    } else {
+                        p = new FilePair();
+                        pairs.put(matchId, p);
+                    }
+
+                    if (ret == 3) {
+                        p.match = s;
+                    } else if (ret == 0 || ret == 1) {
+                        p.position = s;
+                        p.posType = ret;
+                    }
+                }
+                if (ret >= 0) {
+                    System.out.println(s + " = " + ret);
                 } else {
-                    p = new FilePair();
-                    pairs.put(matchId, p);
+                    System.out.println("cant handle file " + s);
                 }
 
                 if (ret == 3) {
-                    p.match = s;
-                } else if (ret == 0 || ret == 1) {
-                    p.position = s;
-                    p.posType = ret;
-                }
-            }
-            if (ret >= 0) {
-                System.out.println(s + " = " +ret);
-            } else {
-                System.out.println("cant handle file "+s);
-            }
-
-            if (ret == 3) {
-                //game.addMatch(new Match(s));
-            }
-
-            /*if (ret == 1 || ret == 0) {
-                try {
-                    FrameSet[] frame_set = Position.readPosition(s, ret);
-                    Position pos = new Position(frame_set);
-                    game.addPosition(pos);
-
-
-                } catch (InvalidPositionDataSet e) {
-                    System.out.println("could not load file " + s);
+                    //game.addMatch(new Match(s));
                 }
 
-            }*/
+                /*if (ret == 1 || ret == 0) {
+                    try {
+                        FrameSet[] frame_set = Position.readPosition(s, ret);
+                        Position pos = new Position(frame_set);
+                        game.addPosition(pos);
 
-            //game.writeCSV();
 
+                    } catch (InvalidPositionDataSet e) {
+                        System.out.println("could not load file " + s);
+                    }
 
+                }*/
+
+                //game.writeCSV();
+
+            }
         }
         System.out.println("==Analysze==");
         for (Map.Entry<String, FilePair> entry : pairs.entrySet()) {
@@ -97,6 +100,7 @@ public class Batch {
                 try {
                     FrameSet[] frame_set = Position.readPosition(pos, entry.getValue().posType);
                     game.addPosition(new Position(frame_set));
+                    frame_set = null;   // does this free the mem?
                     game.writeCSV();
                 } catch (InvalidPositionDataSet e) {
                     System.out.println("could not load file "+pos );

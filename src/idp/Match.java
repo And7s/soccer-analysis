@@ -92,8 +92,6 @@ public class Match {
                 return players[i];
             }
         }
-
-        System.out.println("Cannot found player " + id);
         return null;
     }
 

@@ -54,7 +54,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         }
         zoom = Math.max(zoom, 1);
 
-        System.out.println("zoom "+zoom);
+        // System.out.println("zoom "+zoom);
         repaint();
     }
 
@@ -77,7 +77,18 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         }
     }
 
+
     public void paintComponent(Graphics g) {
+        Dimension size = getSize();
+        width = size.width ;
+        height = size.height;
+
+        paint(g, width, height);
+    }
+    public void paint(Graphics g, int width, int height) {
+
+        this.width = width;
+        this.height = height;
         //super.paintComponent(g);
 
         long startTime = System.nanoTime();
@@ -86,11 +97,6 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.WHITE);
 
-
-
-        Dimension size = getSize();
-        width = size.width ;
-        height = size.height;
         g2d.fillRect(0, 0, width, height);
         g2d.setColor(Color.BLACK);
 
@@ -156,7 +162,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         int start = (int)((0.5 - 0.5 / zoom) * length);
         int end = (int)((0.5 + 0.5 / zoom) * length);
         int offset_y = 4* height_plot;
-        float scale_x = scale_x = (float) width / (end - start);
+        float scale_x  = (float) width / (end - start);
         float scale_y = 8f;
         //System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
         g2d.setColor(Color.black);
