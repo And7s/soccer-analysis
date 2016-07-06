@@ -63,7 +63,7 @@ public class idp {
         } catch (Exception e) {
 
         }*/
-
+        App.vis_speed = new visSpeed();
         game = new Game();
         batch = new Batch();
 
@@ -83,7 +83,7 @@ public class idp {
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
 
-        App.vis_speed = new visSpeed();
+
         my_frame.addView(vis_speed, "speed");
 
         vis_mean = new visMean();
@@ -191,6 +191,32 @@ public class idp {
         } catch (Exception e) {
 
         }
+        // draw sprints#
+        try {
+
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                match = game.matchs.get(i);
+                frameSet = fs;
+
+                Graphics2D cg = image.createGraphics();
+                vis_sprints.paint(cg, 1000, 500);
+                ImageIO.write(image, "png", new File("export/" + match.MatchId + "_sprints.png"));
+
+            }
+            // all together
+            BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+
+            frameSet = all_fs;
+
+            Graphics2D cg = image.createGraphics();
+            vis_sprints.paint(cg, 1000, 500);
+            ImageIO.write(image, "png", new File("export/all_sprints.png"));
+        } catch (Exception e) {
+
+        }
+
         System.out.println("export finished");
     }
 

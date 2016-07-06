@@ -64,7 +64,7 @@ public class visSprints extends JPanel {
 
             for (int k = 0; k < sets.length; k++) {
                 if (sets[k].isBall) continue;
-                Player player = idp.match.getPlayer(sets[k].Object);
+                Player player = idp.game.getPlayer(sets[k].Object);
                 boolean is_tw = player.PlayingPosition.equals("TW");
                 boolean is_starting = player.Starting;
                 if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
@@ -78,13 +78,20 @@ public class visSprints extends JPanel {
         }
     }
 
+
     public void paintComponent(Graphics g) {
+        Dimension size = getSize();
+        width = (int) size.getWidth();
+        height = (int) size.getHeight();
+
+        paint(g, width, height);
+    }
+    public void paint(Graphics g, int width, int height) {
+        this.width = width;
+        this.height = height;
+        scale = height * 3f;
         analyze();
 
-        Dimension size = getSize();
-        width = size.width ;
-        height = size.height;
-        scale = height * 3f;
         g.setColor(new Color(255, 255, 255));
         g.fillRect(0, 0, width, height);
         g.setFont(font_big);

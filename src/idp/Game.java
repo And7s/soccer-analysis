@@ -40,7 +40,7 @@ public class Game {
                 return p;
             }
         }
-
+        System.out.println("REAl didnt find palyer "+id);
         return null;
     }
     public void writeCSV() {
@@ -57,8 +57,10 @@ public class Game {
             PrintWriter wr = new PrintWriter(new OutputStreamWriter(os, "UTF-8"));
 
             for (int k = 0; k < positions.size(); k++) {
+
                 FrameSet[] frameSet = positions.get(k).frameSet;
                 Match match = matchs.get(k);
+                System.out.println("write output "+match.MatchId);
                 writeMatch(wr, frameSet, match);
 
                 // write individual files
@@ -86,18 +88,19 @@ public class Game {
     private void writeMatch(PrintWriter wr, FrameSet[] frameSet, Match match) {
 
         wr.append(
-            "Match,MatchTitle,Competition,KickoffTime," +
+            "Match,GameTitle,Competition,KickoffTime," +
                 "Player, " +
                 "intervall," +
                 "Sprint [sprint/min]," +
                 "Speed [m/min]," +
                 "duration [min]," +
                 "acceleration [m/s2]," +
-                "first half, club,energy[J/kg/m]," +
+                "first half," +
+                "club,energy[J/kg/m]," +
                 "total distance[m],"+
                 "mean abs acc [m/s2],");
         for (int l = VAR.SZ0; l <= VAR.SZ4; l++) {
-            wr.append("speedzone "+(l-VAR.SZ0)+"duration [min], speedzone"+(l-VAR.SZ0)+" distance [m/min],");
+            wr.append("speedzone "+(l-VAR.SZ0)+"duration [min], speedzone"+(l-VAR.SZ0)+" vel [m/min],");
         }
         wr.append("\n");
 
@@ -105,7 +108,7 @@ public class Game {
             FrameSet fs = frameSet[i];
 
             if (fs.isBall) continue;
-            Player player = match.getPlayer(fs.Object);
+            Player player = idp.game.getPlayer(fs.Object);
             boolean is_tw = player.PlayingPosition.equals("TW");
             boolean is_starting = player.Starting;
             if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
@@ -119,8 +122,8 @@ public class Game {
                 wr.append(
                     match.MatchId + "," +
                         match.GameTitle + "," +
-                        match.KickoffTime + "," +
                         match.Competition + "," +
+                        match.KickoffTime + "," +
                         match.getPlayer(fs.Object).ShortName + ((j == 0) ? " all": " active") + "," +
                         start + "-" + end + "," +
                         (fs.getVar(VAR.SPRINT, start, end, filter) / fs.getVarCount(VAR.SPRINT, start, end, filter) * 25 * 60) + "," +

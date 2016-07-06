@@ -1,9 +1,13 @@
 package idp;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import static idp.idp.frameSet;
 import static idp.idp.game;
 
 
@@ -22,27 +26,29 @@ public class Batch {
         files = new Vector<String>(10);
 
         Map<String, FilePair> pairs = new HashMap<String, FilePair>(10);
-
-        final File folder = new File("D:\\dfl\\");
-        listFilesForFolder(folder, "D:\\dfl\\");
+final String base = "D:\\dfl\\mat02\\";
+        final File folder = new File(base);
+        listFilesForFolder(folder, base);
         System.out.println(files.size());
 
         int count = 0;
 
         for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-            if (count >= 150) break;
+            if (count >= 10) break;
             count++;
             String s = (String) it.nextElement();
 
-            if (count  > 100) {
+            if (count  > 0) {
                 if (s.contains("DFL-CLU")) continue;    // is a DFL club definition
                 int ret = Position.checkType(s);
 
 
-                if (s.contains("DFL-MAT")) {
-
+                if (s.contains("DFL-MAT-")) {
+                    System.out.println("extract from "+s);
                     String matchId = s.substring(s.indexOf("DFL-MAT-") + 8);
-                    matchId = matchId.substring(0, matchId.length() - Math.max(matchId.indexOf("_"), matchId.indexOf(".")));
+                    System.out.println("now after start "+matchId);
+                    System.out.println("length "+matchId.length()+", starts "+matchId.indexOf("_")+ "; "+matchId.indexOf("."));
+                    matchId = matchId.substring(0, 6);
                     System.out.println("matchId is " + matchId);
                     FilePair p;
                     if (pairs.get(matchId) != null) {
@@ -99,7 +105,43 @@ public class Batch {
                 game.addMatch(new Match(match));
                 try {
                     FrameSet[] frame_set = Position.readPosition(pos, entry.getValue().posType);
-                    game.addPosition(new Position(frame_set));
+                    Position position = new Position(frame_set);
+                    game.addPosition(position);
+
+
+                    // output plots taht depend on the position
+
+
+                    // draw the position of a single player
+/*
+                    try {
+
+                        BufferedImage image = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_RGB);
+                        for (int j = 0; j < frame_set.length; j++) {
+                            Graphics2D cg = image.createGraphics();
+                            visPosition.paint(cg, 1200, 900, frame_set[j]);
+                            ImageIO.write(image, "png", new File("export/" + frame_set[j].Match + "_" + frame_set[j].Object + "vispos.png"));
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    // draw speed hcarts
+                    try {
+                        BufferedImage image = new BufferedImage(2000, 900, BufferedImage.TYPE_INT_RGB);
+                        for (int j = 0; j < frame_set.length; j++) {
+                            Graphics2D cg = image.createGraphics();
+                            idp.position = position;
+                            visSpeed.paint(cg, frame_set[j], 2000, 900);
+                            ImageIO.write(image, "png", new File("export/" + frame_set[j].Match + "_" + frame_set[j].Object + "speed_zones.png"));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }*/
+                    // end output
+
+                    position.freeMemory();
+                    position = null;
                     frame_set = null;   // does this free the mem?
                     game.writeCSV();
                 } catch (InvalidPositionDataSet e) {

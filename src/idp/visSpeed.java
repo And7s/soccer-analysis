@@ -3,39 +3,17 @@ package idp;
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Random;
-
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-
-
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.Callable;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import static idp.idp.frameSet;
-import static idp.idp.position;
-
 
 public class visSpeed extends JPanel implements MouseWheelListener {
 
-    Graphics2D g2d;
-    private int width, height;
-    float zoom = 1;
-    private int height_plot = 150;
-    public void updateData() {
-        repaint();
-    }
+    private static Graphics2D g2d;
+    private static int width, height;
+    static float zoom = 1;
+    private static int height_plot = 150;
 
     visSpeed() {
         addMouseWheelListener(this);
@@ -58,10 +36,8 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         repaint();
     }
 
-    public void plotSubset(int start, int end, int offset_y, VisFilter f) {
+    public static void plotSubset(Frame[] fs, int start, int end, int offset_y, VisFilter f) {
 
-        int j = 0;  // which frameset
-        Frame[] fs = frameSet[App.selctedFramesetIdx].frames;
         double scale_x = (double) width / (end - start);
         double scale_y = f.scale;
         //System.out.println("plot " + (end-start)+" in "+width+" = "+scale_x);
@@ -83,12 +59,12 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         width = size.width ;
         height = size.height;
 
-        paint(g, width, height);
+        paint(g, idp.frameSet[App.selctedFramesetIdx], width, height);
     }
-    public void paint(Graphics g, int width, int height) {
+    public static void paint(Graphics g, FrameSet frameset, int width, int height) {
 
-        this.width = width;
-        this.height = height;
+        visSpeed.width = width ;
+        visSpeed.height = height;
         //super.paintComponent(g);
 
         long startTime = System.nanoTime();
@@ -125,11 +101,11 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             }
         };
 
-        int length = frameSet[App.selctedFramesetIdx].frames.length;
-        plotSubset(0, length, 0, filter_speed);
+        int length = frameset.frames.length;
+        plotSubset(frameset.frames, 0, length, 0, filter_speed);
 
 
-        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 1 * height_plot, filter_speed);
+        plotSubset(frameset.frames, (int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 1 * height_plot, filter_speed);
 
         VisFilter filter_acc =  new VisFilter(2.6f) {
             @Override
@@ -148,15 +124,15 @@ public class visSpeed extends JPanel implements MouseWheelListener {
             }
         };
 
-        plotSubset(0, frameSet[App.selctedFramesetIdx].frames.length, 2 * height_plot, filter_acc);
+        plotSubset(frameset.frames, 0, frameset.frames.length, 2 * height_plot, filter_acc);
 
-        plotSubset((int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 3 * height_plot, filter_acc);
+        plotSubset(frameset.frames, (int)((0.5 - 0.5 / zoom) * length), (int)((0.5 + 0.5 / zoom) * length), 3 * height_plot, filter_acc);
 
 
 
         // filter some more (calculate power consumption
-        FrameSet cur_fs = frameSet[App.selctedFramesetIdx];
-        cur_fs.analyze(position.getBallFirstHalf(cur_fs.firstHalf));
+        FrameSet cur_fs = frameset;
+        cur_fs.analyze(idp.position.getBallFirstHalf(cur_fs.firstHalf));
         Frame[] fs = cur_fs.frames;
 
         int start = (int)((0.5 - 0.5 / zoom) * length);

@@ -27,6 +27,9 @@ public class Position {
         spreadBallStatus();
         precalculateNumbers();
         //this.frameSet = null;   // free mem?
+    }
+
+    public void freeMemory() {
         for (int i = 0; i < this.frameSet.length; i++) {
             this.frameSet[i].frames = null;
         }
@@ -190,6 +193,7 @@ public class Position {
     }
 
     public static FrameSet[] readPosition(String fileName, int FORMAT) throws InvalidPositionDataSet{
+        System.out.println("read Position of file " + fileName);
         int idx_ball_first_half = -1;
         int idx_ball_second_half = -1;  // define to be not in the fst index (0)
         FrameSet[] frameSet;
@@ -212,14 +216,14 @@ public class Position {
                 if (streamReader.isStartElement()) {
                     String tag = streamReader.getLocalName();
 
-                    /*if (!tag.equals("Frame")) {
+                    if (!tag.equals("Frame")) {
 
                         System.out.println(streamReader.getLocalName());
                         int count2 = streamReader.getAttributeCount();
                         for (int i = 0; i < count2; i++) {
                             System.out.println("\t" + streamReader.getAttributeLocalName(i) + ": " + streamReader.getAttributeValue(i));
                         }
-                    }*/
+                    }
                     if (tag.equals("Frame")) {
 
                         /*if (tmp_c_nodes < 50) {
@@ -257,7 +261,8 @@ public class Position {
 
                         }
 
-
+                        frame.X = Float.parseFloat(streamReader.getAttributeValue(null, "X"));
+                        frame.Y = Float.parseFloat(streamReader.getAttributeValue(null, "Y"));
                         frame.OS = Float.parseFloat(streamReader.getAttributeValue(null, "S"));  // km/h
                         tmp_frames[tmp_c_nodes++] = frame;
 

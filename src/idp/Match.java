@@ -44,12 +44,12 @@ public class Match {
                         p.PersonId = streamReader.getAttributeValue(null, "PersonId");
                         p.PlayingPosition = streamReader.getAttributeValue(null, "PlayingPosition");
                         if (p.PlayingPosition == null) p.PlayingPosition = "";  // fallback
-                        System.out.println("player "+p.PersonId+" = "+p.PlayingPosition);
+                        // System.out.println("player "+p.PersonId+" = "+p.PlayingPosition);
                         p.Starting = streamReader.getAttributeValue(null, "Starting").equals("true");
                         p.ShortName = streamReader.getAttributeValue(null, "Shortname");
                         p.ShirtNumber = Integer.parseInt(streamReader.getAttributeValue(null, "ShirtNumber"));
                         players[c_player++] = p;
-                        System.out.println(p.toString());
+                        // System.out.println(p.toString());
                     }
                     if (tag.equals("General")) {
                         MatchId = streamReader.getAttributeValue(null, "MatchId");
