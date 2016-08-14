@@ -189,7 +189,9 @@ public class FrameSet {
             for (int k = VAR.SZ0; k <= VAR.SZ4; k++) {
                 if (frames[i].S / 3.6 >= zones[k - VAR.SZ0]) {
                     addValue(k, ball_frames[i].BallStatus, cur_minute, frames[i].S);
-                    break;  // only account to the highes speed zone
+                    // break;  // only account to the highes speed zone
+                } else {
+                    addValue(k, ball_frames[i].BallStatus, cur_minute, 0);
                 }
             }
         }

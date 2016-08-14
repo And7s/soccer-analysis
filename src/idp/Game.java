@@ -41,7 +41,17 @@ public class Game {
             }
         }
         System.out.println("REAl didnt find palyer "+id);
-        return null;
+        Player p = new Player();// return dummy palyer topo avoid nullpointerexception
+
+        p.FirstName = id;
+        p.LastName = id;
+        p.PlayingPosition = "";
+        p.PersonId = id;
+        p.ShortName = id;
+        p.ShirtNumber = -1;
+        p.Starting = false;
+
+        return p;
     }
     public void writeCSV() {
         if (matchs.size() != positions.size()) return;

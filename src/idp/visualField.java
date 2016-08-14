@@ -4,30 +4,29 @@ package idp;
 import javax.swing.*;
 import java.awt.*;
 
+import static idp.idp.game;
+import static java.lang.Thread.sleep;
+
 
 /**
  * Created by Andre on 19/04/2016.
  */
 public class visualField extends JPanel {
-/*
-    MeanData[] data;
-    FrameSet[] frameSet;
-    Match match;
+
+    //MeanData[] data;
     Graphics g;
-    Position position;
+
     int width, height;
     float scale = 10f;
     int cur_pos = 0;
     boolean show_first_half = true;
 
-    public void updateData(Position position, Match match) {
-        this.position = position;
-        this.frameSet = position.frameSet;
-        this.match = match;
-        repaint();
-
-        Thread th = new Thread() {
+    public visualField() {
+        new Thread(new Runnable() {
+            @Override
             public void run() {
+                System.out.println("Inner Thread");
+
                 while (!Thread.currentThread().isInterrupted()) {
                     update();
                     try {
@@ -37,15 +36,14 @@ public class visualField extends JPanel {
                     }
                 }
             }
-        };
-        th.run();
+        }).start();
     }
 
 
     public void update() {
-
+        if (idp.frameSet == null ||idp.position == null) return;
         cur_pos += App.playback_speed;
-        int amount = position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
+        int amount = idp.position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
         if (cur_pos >= amount) {
             cur_pos = 0;
             show_first_half = !show_first_half;
@@ -54,6 +52,10 @@ public class visualField extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
+        FrameSet[] frameSet = idp.frameSet;
+        Position position = idp.position;
+        Match match = idp.match;
+
         // System.out.println("update"+cur_pos);
         this.g = g;
         long startTime = System.nanoTime();
@@ -112,13 +114,13 @@ public class visualField extends JPanel {
                     g.fillArc(x - 1, y - 1, 3, 3, 0, 360);
                     g.setColor(Color.black);
                     ((Graphics2D) g).drawString(
-                        match.getPlayer(frameSet[j].Object).ShortName, x,y);
+                        game.getPlayer(frameSet[j].Object).ShortName, x,y);
                 }
             }
         }
 
         // draw the Frames
-        Event[] event = Events.event;
+        /*Event[] event = Events.event;
 
         int draw_event_count = 1 * 60 * 25;     // x minutes of events
         int end_frame = ball_frames.frames[0].N + cur_pos + draw_frames_count;
@@ -154,6 +156,7 @@ public class visualField extends JPanel {
 
             //System.out.println(event[i]);
         }
+        */
         // indicate ballstatus and ballposession
 
 
@@ -209,5 +212,4 @@ public class visualField extends JPanel {
         return (int) ((y + 50) * scale);
     }
 
-*/
 }

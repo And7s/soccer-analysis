@@ -34,7 +34,7 @@ final String base = "D:\\dfl\\mat02\\";
         int count = 0;
 
         for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-            if (count >= 10) break;
+            if (count >= 0) break;
             count++;
             String s = (String) it.nextElement();
 
@@ -75,7 +75,7 @@ final String base = "D:\\dfl\\mat02\\";
                     //game.addMatch(new Match(s));
                 }
 
-                /*if (ret == 1 || ret == 0) {
+                if (ret == 1 || ret == 0) {
                     try {
                         FrameSet[] frame_set = Position.readPosition(s, ret);
                         Position pos = new Position(frame_set);
@@ -86,7 +86,7 @@ final String base = "D:\\dfl\\mat02\\";
                         System.out.println("could not load file " + s);
                     }
 
-                }*/
+                }
 
                 //game.writeCSV();
 
@@ -113,7 +113,7 @@ final String base = "D:\\dfl\\mat02\\";
 
 
                     // draw the position of a single player
-/*
+
                     try {
 
                         BufferedImage image = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_RGB);
@@ -137,7 +137,7 @@ final String base = "D:\\dfl\\mat02\\";
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }*/
+                    }
                     // end output
 
                     position.freeMemory();

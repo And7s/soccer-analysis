@@ -25,6 +25,7 @@ public class visMean extends JPanel {
 
     private int width, height;
     private float scale;
+    private float offsetY = 100;
     private Font font_big, font_small;
     private  GameSection[] plotPoints;
     public visMean() {
@@ -89,7 +90,7 @@ public class visMean extends JPanel {
         analyze();
 
 
-        scale = height / 30f;
+        scale = height / 80f;
         g.setColor(new Color(255, 255, 255));
         g.fillRect(0, 0, width, height);
         g.setFont(font_big);
@@ -109,7 +110,7 @@ public class visMean extends JPanel {
 
         g2d.setStroke(dashed);
 
-        for (int i = 0; i < 20; i +=2) {    // horizontal lines
+        for (int i = 50; i < 180; i +=10) {    // horizontal lines
             g2d.drawString(i+"", 5, scaleY(i) + 5);
             g2d.drawLine(20, scaleY(i), width, scaleY(i));
         }
@@ -122,8 +123,8 @@ public class visMean extends JPanel {
         // connect dots
         g2d.setColor(Color.BLUE);
         for (int i = 1; i < plotPoints.length; i++) {
-            double val1 = plotPoints[i - 1].sum / plotPoints[i - 1].count;
-            double val2 = plotPoints[i].sum / plotPoints[i].count;
+            double val1 = plotPoints[i - 1].sum / plotPoints[i - 1].count / 3.6 * 60;   // m/min
+            double val2 = plotPoints[i].sum / plotPoints[i].count / 3.6 *60;    // m /min
             g2d.drawLine(scaleX(i - 1), scaleY(val1), scaleX(i), scaleY(val2));
         }
 
@@ -131,9 +132,9 @@ public class visMean extends JPanel {
 
         for (int i = 0; i < plotPoints.length; i++) {
             int x = scaleX(i);
-            double val = plotPoints[i].sum / plotPoints[i].count;
+            double val = plotPoints[i].sum / plotPoints[i].count / 3.6 * 60;
             int y = scaleY(val);
-            double sd = Math.sqrt(plotPoints[i].sq_sum / plotPoints[i].count - Math.pow(val, 2));
+            double sd = Math.sqrt(plotPoints[i].sq_sum / (3.6 * 60) / (3.6 * 60) / plotPoints[i].count - Math.pow(val, 2));
             int delta = (int)(sd * scale);
 
             ((Graphics2D) g).setStroke(new BasicStroke(3));
@@ -146,7 +147,7 @@ public class visMean extends JPanel {
 
             // value
 
-            g2d.drawString(String.format("%.2f", plotPoints[i].sum / plotPoints[i].count), x + 10, y);
+            g2d.drawString(String.format("%.2f", plotPoints[i].sum / plotPoints[i].count / 3.6 * 60), x + 10, y);
             g.setFont(font_small);
             g2d.drawString("c: " + String.format("%4.0f", plotPoints[i].count), x, y + delta / 2 + 20);
             g.setFont(font_big);
@@ -162,7 +163,7 @@ public class visMean extends JPanel {
     }
 
     public int scaleY(double y) {
-        return (int)(height - y * scale);
+        return (int)(height - (y - offsetY) * scale);
     }
 
 

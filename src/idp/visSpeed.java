@@ -58,8 +58,9 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         Dimension size = getSize();
         width = size.width ;
         height = size.height;
-
-        paint(g, idp.frameSet[App.selctedFramesetIdx], width, height);
+        if (idp.frameSet.length > App.selctedFramesetIdx) {    // if there is a loaded frameSet
+            paint(g, idp.frameSet[App.selctedFramesetIdx], width, height);
+        }
     }
     public static void paint(Graphics g, FrameSet frameset, int width, int height) {
 

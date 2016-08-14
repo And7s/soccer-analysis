@@ -13,7 +13,6 @@ import java.io.File;
 
 public class visZones extends JPanel {
 
-    FrameSet[] frameSet;
 
     Graphics2D g2d;
     private int width, height;
@@ -21,10 +20,7 @@ public class visZones extends JPanel {
 
     public void updateData(FrameSet[] frameSet) {
         System.out.println("set to "+frameSet.length);
-        this.frameSet = frameSet;
         repaint();
-
-
     }
 
     // generate the data to be plotted
@@ -35,13 +31,12 @@ public class visZones extends JPanel {
 
         int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
 
-        for (int i = 0; i < steps * 2; i++) {   // the time zones (15 mins) TODO: use condig
-
+        for (int i = 0; i < steps * 2; i++) {
             int start = (int)(45.0 / steps * (i % steps));
             int end = (int)(45.0 / steps * ((i % steps) +1 ));
             for (int j = 0; j < 5; j++) {
                 GameSection gs = new GameSection();
-                FrameSet[] sets = this.frameSet;
+                FrameSet[] sets = idp.frameSet;
 
                 for (int k = 0; k < sets.length; k++) {
                     if (sets[k].isBall) continue;
@@ -100,9 +95,9 @@ public class visZones extends JPanel {
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
         g2d.setStroke(dashed);
 
-        for (int i = 0; i < 10; i += 2) {   // horizontal lines
-            int y = height - (int)(i * height / 10f);
-            g2d.drawString(i+"", 10, y);
+        for (int i = 0; i < 150; i += 20) {   // horizontal lines
+            int y = scaleY(i);
+            g2d.drawString(i+" [m/min]", 10, y);
             g2d.drawLine(20, y, width, y);
         }
         for (int i = 0; i < plotPoints.length; i++) {   // vertical lines
@@ -114,8 +109,8 @@ public class visZones extends JPanel {
         g2d.setColor(Color.BLUE);
         for (int i = 1; i < plotPoints.length; i++) {
             for (int j = 0; j < plotPoints[i].length; j++) {    // loops the other way might be more effective?
-                double val1 = plotPoints[i - 1][j].sum / plotPoints[i - 1][j].count / 3.6;
-                double val2 = plotPoints[i][j].sum / plotPoints[i][j].count / 3.6;
+                double val1 = plotPoints[i - 1][j].sum / plotPoints[i - 1][j].count / 3.6 * 60;
+                double val2 = plotPoints[i][j].sum / plotPoints[i][j].count / 3.6 * 60;
                 g2d.drawLine(scaleX(i - 1), scaleY(val1), scaleX(i), scaleY(val2));
             }
         }
@@ -129,9 +124,9 @@ public class visZones extends JPanel {
 
                 int x = scaleX(i);
 
-                double val = gs[j].sum / gs[j].count / 3.6; // which unit??
+                double val = gs[j].sum / gs[j].count / 3.6 * 60; // m/min
 
-                double sd = Math.sqrt(gs[j].sq_sum / gs[j].count / 3.6 / 3.6 - val * val); // sq_sum/count - mean^2 = var
+                double sd = Math.sqrt(gs[j].sq_sum / gs[j].count / (3.6*60) / (3.6*60) - val * val); // sq_sum/count - mean^2 = var
 
                 int y = scaleY(val); // 10 is the max of the height //
                 int delta = (int)(height * sd / 10f);
@@ -144,7 +139,7 @@ public class visZones extends JPanel {
                 g2d.drawLine(x - 2, y - delta / 2, x + 2, y - delta / 2);   // upper horizontal bar
                 g2d.drawLine(x - 2, y + delta / 2, x + 2, y + delta / 2);   // lower
 
-                g2d.drawString(String.format("%.2f", val), x + 10, y + 5);
+                g2d.drawString(String.format("%.2f sz:"+j, val), x + 10, y + 5);
                 g2d.drawString(String.format("%4.0f", gs[j].count), x - 10, y + delta / 2 + 15);
             }
         }
@@ -158,7 +153,7 @@ public class visZones extends JPanel {
     }
 
     public int scaleY(double y) {
-        return height - (int)(y * height / 10f);
+        return height - (int)(y * height / 200f);
     }
 
 }

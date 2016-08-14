@@ -132,11 +132,14 @@ public class Config extends JPanel {
         String[] selectString = new String[idp.frameSet.length];
 
         for (int i = 0; i < idp.frameSet.length; i++) {
-            selectList.addItem(i + ": " + match.getPlayer(idp.frameSet[i].Object).ShortName);
+            Player p = game.getPlayer(idp.frameSet[i].Object);
+            String playerName = (p == null) ? "unknown" : p.ShortName;
+
+            selectList.addItem(i + ": " + playerName);
         }
         System.out.println(selectString);
 
-        selectList.setSelectedIndex(App.selctedFramesetIdx);
+        selectList.setSelectedIndex(0);
         selectList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

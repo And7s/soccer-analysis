@@ -80,6 +80,9 @@ public class idp {
         //my_frame.config.updateData();
         my_frame.addView(visField, "Field");
 
+        visBatch vis_batch = new visBatch();
+        my_frame.addView(vis_batch, "batch");
+
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
 
@@ -99,9 +102,9 @@ public class idp {
         // events depend on an existing frameset when being instantiated
 //        events = new Events("data/S_14_15_BRE_HSV/events.xml");
 
-        //visField.updateData(position, match);
+        // visField.updateData();
         vis_zones.repaint();
-        onGameLoaded();
+//        onGameLoaded();
 
     //
 
@@ -189,7 +192,7 @@ public class idp {
             vis_mean.paint(cg, 1000, 500);
             ImageIO.write(image, "png", new File("export/all_mean.png"));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         // draw sprints#
         try {
@@ -214,7 +217,7 @@ public class idp {
             vis_sprints.paint(cg, 1000, 500);
             ImageIO.write(image, "png", new File("export/all_sprints.png"));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         System.out.println("export finished");
@@ -233,6 +236,10 @@ public class idp {
     }
 
     public static void selectFrameSet(int idx) {
+        if (idx < 0) {
+            System.out.println("error why do youlselect -1");
+            return;
+        }
         System.out.println("slect match "+ idx);
         frameSet = game.positions.get(idx).frameSet;  // make this frameset accessible
         position = game.positions.get(idx);
@@ -243,6 +250,7 @@ public class idp {
         analyze();
     }
     public static void onGameLoaded() {
+        //visField.updateData();
         System.out.println("a game has been loaded");
         selectFrameSet(0);
         config.updateData();
