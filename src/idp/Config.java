@@ -79,6 +79,20 @@ public class Config extends JPanel {
         });
         add(ignoreExchange);
 
+        JCheckBox ignoreOfficials = new JCheckBox("ignore officials");
+        ignoreOfficials.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(ignoreOfficials.isSelected());
+                if ( App.ignore_officials != ignoreOfficials.isSelected()) {
+                    App.ignore_officials = ignoreOfficials.isSelected();
+                    idp.analyze();
+                }
+            }
+        });
+        add(ignoreOfficials);
+
+
 
         JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,5);//direction , min , max , current
 
@@ -107,7 +121,8 @@ public class Config extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("will export");
-                game.writeCSV();
+                //game.writeCSV();
+                game.exportLoaded();
             }
         });
         add(button);

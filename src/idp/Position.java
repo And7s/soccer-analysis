@@ -279,6 +279,9 @@ public class Position {
                         fr.firstHalf = streamReader.getAttributeValue(null, "GameSection").equals("firstHalf");
 
 
+                        if (!fr.Club.contains("DFL-CLU")) {  // cannot account to a team (referee, officials, ball)
+                            fr.noTeam = true;
+                        }
                         if (fr.Object.equals("DFL-OBJ-0000XT")) {
 
                             /*System.out.println(streamReader.getLocalName());

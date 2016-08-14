@@ -65,11 +65,12 @@ public class visMean extends JPanel {
 
             for (int k = 0; k < sets.length; k++) {
                 if (sets[k].isBall) continue;
+                if (App.ignore_officials && sets[k].noTeam) continue;
                 Player player = idp.game.getPlayer(sets[k].Object);
                 boolean is_tw = player.PlayingPosition.equals("TW");
                 boolean is_starting = player.Starting;
-                if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
-                if(App.ignore_exchange && !is_starting) continue;
+                if (App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+                if (App.ignore_exchange && !is_starting) continue;
 
                 if ((i < steps) == sets[k].firstHalf) { // account to the right half time
                     gs.add(sets[k].getGS(VAR.SPEED, start, end, filter));

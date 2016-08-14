@@ -27,6 +27,7 @@ public class FrameSet {
     public String Match, Club, Object;
     public boolean firstHalf;
     public boolean isBall = false;
+    public boolean noTeam = false;
     public Frame frames[];
     public int frames_missing = 0;
     public boolean no_ball_status = false;

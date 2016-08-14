@@ -1,10 +1,13 @@
 package idp;
 
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
-import static idp.idp.match;
+import static idp.idp.*;
 
 
 /**
@@ -95,6 +98,13 @@ public class Game {
         }
     }
 
+    private void redoAnalyze() {
+        for (int i = 0; i < game.positions.size(); i++) {
+            game.positions.get(i).precalculateNumbers();
+        }
+        analyze();  // update all views
+    }
+
     private void writeMatch(PrintWriter wr, FrameSet[] frameSet, Match match) {
 
         wr.append(
@@ -118,11 +128,12 @@ public class Game {
             FrameSet fs = frameSet[i];
 
             if (fs.isBall) continue;
-            Player player = idp.game.getPlayer(fs.Object);
+            if (App.ignore_officials && fs.noTeam) continue;
+            Player player = game.getPlayer(fs.Object);
             boolean is_tw = player.PlayingPosition.equals("TW");
             boolean is_starting = player.Starting;
-            if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
-            if(App.ignore_exchange && !is_starting) continue;
+            if (App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+            if (App.ignore_exchange && !is_starting) continue;
 
             for (int j = 0; j <= App.steps_mean; j++) {
                 int filter = (j == 0) ? FILTER.ALL : FILTER.ACTIVE;
@@ -134,7 +145,7 @@ public class Game {
                         match.GameTitle + "," +
                         match.Competition + "," +
                         match.KickoffTime + "," +
-                        match.getPlayer(fs.Object).ShortName + ((j == 0) ? " all": " active") + "," +
+                        game.getPlayer(fs.Object).ShortName + ((j == 0) ? " all": " active") + "," +
                         start + "-" + end + "," +
                         (fs.getVar(VAR.SPRINT, start, end, filter) / fs.getVarCount(VAR.SPRINT, start, end, filter) * 25 * 60) + "," +
                         (fs.getVar(VAR.SPEED, start, end, filter) / fs.getVarCount(VAR.SPEED, start, end, filter) / 3.6 * 60) + "," +
@@ -165,5 +176,122 @@ public class Game {
     private int getMeanEnd(int i) {
         int steps = App.steps_mean;
         return (int)(45.0 / steps * ((i % steps) +1 ));
+    }
+
+
+    public void exportLoaded() {
+
+        // exports all currently loaded datasets
+        redoAnalyze();  // get correct numbers
+
+        int all_fs_count = 0;
+        for (int i = 0; i < game.positions.size(); i++) {
+            all_fs_count += game.positions.get(i).frameSet.length;
+        }
+        FrameSet[] all_fs = new FrameSet[all_fs_count];
+        int c = 0;
+        for (int i = 0; i < game.positions.size(); i++) {
+            FrameSet[] fs = game.positions.get(i).frameSet;
+            for (int j = 0; j < fs.length; j++) {
+                all_fs[c++] = fs[j];
+            }
+        }
+        try {
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 700,BufferedImage.TYPE_INT_RGB);
+                vis_zones.updateData(game.positions.get(i).frameSet);
+
+                Graphics2D cg = image.createGraphics();
+                vis_zones.paint(cg, 1000, 700);
+                ImageIO.write(image, "png", new File("export/" + getExportName(i) + "_speed_zones.png"));
+            }
+
+
+            BufferedImage image = new BufferedImage(1000, 700,BufferedImage.TYPE_INT_RGB);
+            vis_zones.updateData(all_fs);
+            Graphics2D cg = image.createGraphics();
+            vis_zones.paint(cg, 1000, 700);
+            ImageIO.write(image, "png", new File("export/all_speed_zones.png"));
+
+        } catch (Exception e) {
+
+        }
+
+        // draw speed chart
+        /*
+        try {
+            int all_fs_count = 0;
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(2000, 900, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                frameSet = fs;
+                for (int j = 0; j < fs.length; j++) {
+                    App.selctedFramesetIdx = j;
+                    Graphics2D cg = image.createGraphics();
+                    vis_speed.paint(cg, 2000, 900);
+                    ImageIO.write(image, "png", new File("export/" + fs[j].Match + "_" + fs[j].Object + "speed_zones.png"));
+                }
+            }
+            System.out.println("in total there are "+ all_fs_count);
+        } catch (Exception e) {
+
+        }*/
+
+        try {
+
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                match = game.matchs.get(i);
+                frameSet = fs;
+
+                Graphics2D cg = image.createGraphics();
+                vis_mean.paint(cg, 1000, 500);
+                ImageIO.write(image, "png", new File("export/" + getExportName(i) + "_mean.png"));
+
+            }
+            // all together
+            BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+
+            frameSet = all_fs;
+
+            Graphics2D cg = image.createGraphics();
+            vis_mean.paint(cg, 1000, 500);
+            ImageIO.write(image, "png", new File("export/all_mean.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // draw sprints#
+        try {
+
+            for (int i = 0; i < game.positions.size(); i++) {
+                BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+                FrameSet[] fs = game.positions.get(i).frameSet;
+                match = game.matchs.get(i);
+                frameSet = fs;
+
+                Graphics2D cg = image.createGraphics();
+                vis_sprints.paint(cg, 1000, 500);
+                ImageIO.write(image, "png", new File("export/" + getExportName(i) + "_sprints.png"));
+
+            }
+            // all together
+            BufferedImage image = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_RGB);
+
+            frameSet = all_fs;
+
+            Graphics2D cg = image.createGraphics();
+            vis_sprints.paint(cg, 1000, 500);
+            ImageIO.write(image, "png", new File("export/all_sprints.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        writeCSV();
+        System.out.println("export finished");
+    }
+
+    private String getExportName(int i) {
+        return game.matchs.get(i).MatchId + '_' + App.ignore_keeper + '_'+ App.only_active + '_'+ App.ignore_exchange + '_' + App.steps_mean + '_' + App.smooth_factor;
     }
 }
