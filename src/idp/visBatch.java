@@ -56,6 +56,7 @@ class FileStruct {
 public class visBatch extends JPanel {
     Vector<String> files;
     Vector<FileStruct> files_struct;
+    Map<String, FilePair> pairs;
     private static int LIMIT = 1000;
     public visBatch() {
 
@@ -68,7 +69,7 @@ public class visBatch extends JPanel {
         files = new Vector<String>(LIMIT);
         files_struct = new Vector<FileStruct>(LIMIT);
 
-        Map<String, FilePair> pairs = new HashMap<String, FilePair>(LIMIT);
+        pairs = new HashMap<String, FilePair>(LIMIT);
         final String base = "D:\\dfl\\";
         final File folder = new File(base);
         listFilesForFolder(folder, base);
@@ -77,7 +78,6 @@ public class visBatch extends JPanel {
         int count = 0;
 
         for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-
 
             String s = (String) it.nextElement();
             //files_struct.elementAt(count).name = s;
@@ -138,17 +138,12 @@ public class visBatch extends JPanel {
             cont.setText(dispPos + "<br />" + dispMatch);
 
             JButton but = new JButton();
-            but.setText("export");
-
-            JButton but2 = new JButton();
-            but2.setText("load");
+            but.setText("load");
 
             panel.add(name);
             panel.add(cont);
             panel.add(but);
-            panel.add(but2);
             numPairs++;
-
 
             // adding event listener
             but.addActionListener(new ActionListener() {
@@ -157,22 +152,8 @@ public class visBatch extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("clicked" + entry.getKey());
-                   // myNamePanel.setText(myKey + "loading...");
-
-                    /*game.addMatch(new Match(match));
-                    myNamePanel.setText(myKey + " match complete, loading...");
-                    try {
-                        FrameSet[] frame_set = Position.readPosition(pos, entry.getValue().posType);
-                        Position position = new Position(frame_set);
-                        game.addPosition(position);
-                        myNamePanel.setText(myKey + " sucessfully loaded, current FS");
-                    } catch (Exception e2) {
-                        e2.printStackTrace();
-                        myNamePanel.setText(myKey + " error "+e2.getMessage());
-                    }*/
-                    LoadGameParallel lgp = new LoadGameParallel(myEntry, myTextField);
+                    LoadGameParallel lgp = new LoadGameParallel(myEntry, myTextField);  // could be replaced with loadgame, but doesnt ahve ffeeback to textfield yet
                     lgp.run();
-
                 }
             });
         }
@@ -192,5 +173,35 @@ public class visBatch extends JPanel {
                 }
             }
         }
+    }
+
+    private void loadGame(Map.Entry<String, FilePair> entry) {
+        game.addMatch(new Match(entry.getValue().match));
+        try {
+            FrameSet[] frame_set = Position.readPosition(entry.getValue().position, entry.getValue().posType);
+            idp.frameSet = frame_set;
+
+            Position position = new Position(frame_set);
+            idp.position = position;
+            game.addPosition(position);
+            position.freeMemory();
+        } catch (Exception e2) {
+            e2.printStackTrace();
+        }
+
+
+        System.out.println("Thread  exiting.");
+        //idp.onGameLoaded();   // not necessary here, right?
+    }
+
+    public void exportAll() {
+        System.out.println("EXPORT ALL");
+        int c = 0;
+        for (Map.Entry<String, FilePair> entry : pairs.entrySet()) {
+            loadGame(entry);
+            c++;
+            if (c >= 128) break;
+        }
+        game.exportLegacy();
     }
 }

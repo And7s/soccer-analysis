@@ -8,9 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 
-import static idp.idp.config;
-import static idp.idp.game;
-import static idp.idp.match;
+import static idp.idp.*;
 
 /**
  * Created by Andre on 23/04/2016.
@@ -18,7 +16,7 @@ import static idp.idp.match;
 public class Config extends JPanel {
     private JComboBox selectList = null, selectMatchList = null;
     public Config() {
-        setLayout(new GridLayout(10,2));
+        setLayout(new GridLayout(12,2));
 
         JSlider slider1 = new JSlider(JSlider.HORIZONTAL,1,10,4);//direction , min , max , current
 
@@ -92,6 +90,19 @@ public class Config extends JPanel {
         });
         add(ignoreOfficials);
 
+        JCheckBox noIndividualExport = new JCheckBox("no individual export");
+        noIndividualExport.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                System.out.println(noIndividualExport.isSelected());
+                if ( App.no_individual_export != noIndividualExport.isSelected()) {
+                    App.no_individual_export = noIndividualExport.isSelected();
+                    idp.analyze();
+                }
+            }
+        });
+        add(noIndividualExport);
+
 
 
         JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,5);//direction , min , max , current
@@ -116,7 +127,7 @@ public class Config extends JPanel {
         add(slider_playback_speed);
 
 
-        JButton button = new JButton("export");
+        JButton button = new JButton("export loaded");
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,6 +138,16 @@ public class Config extends JPanel {
         });
         add(button);
 
+
+        JButton buttonAll = new JButton("bactch anlyze all");
+        buttonAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("will export all");
+                vis_batch.exportAll();
+            }
+        });
+        add(buttonAll);
     }
 
 

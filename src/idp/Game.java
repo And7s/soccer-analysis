@@ -178,12 +178,8 @@ public class Game {
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 
-
-    public void exportLoaded() {
-
-        // exports all currently loaded datasets
-        redoAnalyze();  // get correct numbers
-
+    // export data that dopes not have the positions anymore
+    public void exportLegacy() {
         int all_fs_count = 0;
         for (int i = 0; i < game.positions.size(); i++) {
             all_fs_count += game.positions.get(i).frameSet.length;
@@ -286,8 +282,50 @@ public class Game {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         writeCSV();
+    }
+    public void exportLoaded() {
+
+        // exports all currently loaded datasets
+        redoAnalyze();  // get correct numbers
+
+        exportLegacy();
+
+        // draw the data that requires the FrameSet still be loaded
+
+        if (!App.no_individual_export) {
+            for (int i = 0; i < game.positions.size(); i++) {
+                FrameSet[] frame_set = game.positions.get(i).frameSet;
+                try {
+
+                    BufferedImage image = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_RGB);
+                    for (int j = 0; j < frame_set.length; j++) {
+                        Graphics2D cg = image.createGraphics();
+                        visPosition.paint(cg, 1200, 900, frame_set[j]);
+                        ImageIO.write(image, "png", new File("export/" + getExportName(i) + "_" + frame_set[j].Object + "_fh" + frame_set[i].firstHalf + "vispos.png"));
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // draw speed charts
+            for (int i = 0; i < game.positions.size(); i++) {
+                FrameSet[] frame_set = game.positions.get(i).frameSet;
+                try {
+
+                    BufferedImage image = new BufferedImage(2000, 900, BufferedImage.TYPE_INT_RGB);
+                    for (int j = 0; j < frame_set.length; j++) {
+                        Graphics2D cg = image.createGraphics();
+                        visSpeed.paint(cg, frame_set[j], 2000, 900);
+                        ImageIO.write(image, "png", new File("export/" + getExportName(i) + "_" + frame_set[j].Object + "_fh" + frame_set[i].firstHalf + "speed_zones.png"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         System.out.println("export finished");
     }
 

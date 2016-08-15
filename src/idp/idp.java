@@ -31,6 +31,7 @@ public class idp {
     public static Config config;
     public static Position position;
     public static visSprints vis_sprints;
+    public static visBatch vis_batch;
     public static visMean vis_mean;
     public static Table table;
 
@@ -80,7 +81,7 @@ public class idp {
         //my_frame.config.updateData();
         my_frame.addView(visField, "Field");
 
-        visBatch vis_batch = new visBatch();
+        vis_batch = new visBatch();
         my_frame.addView(vis_batch, "batch");
 
         vis_zones = new visZones();

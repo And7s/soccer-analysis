@@ -257,8 +257,6 @@ public class Position {
                                 frame.BallPossession = Byte.parseByte(ball_posession);
                                 frame.BallStatus = Byte.parseByte(streamReader.getAttributeValue(null, "BallStatus"));
                             }
-
-
                         }
 
                         frame.X = Float.parseFloat(streamReader.getAttributeValue(null, "X"));
