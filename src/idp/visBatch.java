@@ -16,45 +16,14 @@ import static idp.idp.game;
  * Created by Andre on 31/07/2016.
  */
 
+
 class FilePair {
     String position, match;
     int posType;
 }
 
-class LoadGameParallel {
-    private JTextField panel;
-    private Map.Entry<String, FilePair> entry;
-
-    LoadGameParallel(Map.Entry<String, FilePair> entry, JTextField panel){
-        this.entry = entry;
-        this.panel = panel;
-    }
-
-    public void run() {
-
-        game.addMatch(new Match(entry.getValue().match));
-        panel.setText(entry.getKey() + " match complete, loading...");
-        try {
-            FrameSet[] frame_set = Position.readPosition(entry.getValue().position, entry.getValue().posType);
-            idp.frameSet = frame_set;
-
-            Position position = new Position(frame_set);
-            idp.position = position;
-            game.addPosition(position);
-            panel.setText(entry.getKey() + " sucessfully loaded, current FS");
-        } catch (Exception e2) {
-            e2.printStackTrace();
-            panel.setText(entry.getKey() + " error "+e2.getMessage());
-        }
-
-        System.out.println("Thread  exiting.");
-        idp.onGameLoaded();
-    }
-
-}
-
-
 public class visBatch extends JPanel {
+
     Vector<String> files;
 
     Map<String, FilePair> pairs;
@@ -152,8 +121,24 @@ public class visBatch extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("clicked" + entry.getKey());
-                    LoadGameParallel lgp = new LoadGameParallel(myEntry, myTextField);  // could be replaced with loadgame, but doesnt ahve ffeeback to textfield yet
-                    lgp.run();
+
+                    game.addMatch(new Match(entry.getValue().match));
+                    myTextField.setText(myEntry.getKey() + " match complete, loading...");
+                    try {
+                        FrameSet[] frame_set = Position.readPosition(myEntry.getValue().position, myEntry.getValue().posType);
+                        idp.frameSet = frame_set;
+
+                        Position position = new Position(frame_set);
+                        idp.position = position;
+                        game.addPosition(position);
+                        myTextField.setText(myEntry.getKey() + " sucessfully loaded, current FS");
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                        myTextField.setText(myEntry.getKey() + " error "+e2.getMessage());
+                    }
+
+                    System.out.println("Thread  exiting.");
+                    idp.onGameLoaded();
                 }
             });
         }

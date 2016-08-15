@@ -60,9 +60,9 @@ public class FrameSet {
         return md;
     }
 
-    public double getVarSq(int var) { return getVarSq(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
-    public double getVarSq(int var, int start, int end) { return getVarSq(var, start, end, FILTER.ALL); }
-    public double getVarSq(int var, int filter) { return getVarSq(var, 0, aggregate[var][filter].length, filter); }
+    // public double getVarSq(int var) { return getVarSq(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
+    // public double getVarSq(int var, int start, int end) { return getVarSq(var, start, end, FILTER.ALL); }
+    // public double getVarSq(int var, int filter) { return getVarSq(var, 0, aggregate[var][filter].length, filter); }
 
     public double getVarSq(int var, int start, int end, int filter) {
         MeanData[] dat = aggregate[var][filter];
@@ -74,7 +74,7 @@ public class FrameSet {
     }
 
     public int getVarCount(int var) { return getVarCount(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
-    public int getVarCount(int var, int start, int end) { return getVarCount(var, start, end, FILTER.ALL); }
+    // public int getVarCount(int var, int start, int end) { return getVarCount(var, start, end, FILTER.ALL); }
     public int getVarCount(int var, int filter) { return getVarCount(var, 0, aggregate[var][filter].length, filter); }
 
     public int getVarCount(int var, int start, int end, int filter) {
@@ -86,7 +86,7 @@ public class FrameSet {
         return count;
     }
 
-    public double getVarMin(int var, int start, int end, int filter) {
+    /*public double getVarMin(int var, int start, int end, int filter) {
         MeanData[] dat = aggregate[var][filter];
         double min = Double.MAX_VALUE;
         for (int i = 0; i < dat.length; i++) {
@@ -101,7 +101,7 @@ public class FrameSet {
             max = Math.max(max, dat[i].max);
         }
         return max;
-    }
+    }*/
 
 
     public void addValue(int var, int status, int min, double val) {
@@ -140,7 +140,7 @@ public class FrameSet {
 
         int dur_sprint = 0;
 
-        double smooth_factor = App.smooth_factor;
+        double smooth_factor = Config.smooth_factor;
 
         for (int i = 0; i < frames.length; i++) {
             // smooth the graph

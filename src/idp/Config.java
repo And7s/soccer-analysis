@@ -15,6 +15,13 @@ import static idp.idp.*;
  */
 public class Config extends JPanel {
     private JComboBox selectList = null, selectMatchList = null;
+
+    public static boolean only_active = false, ignore_keeper = false, ignore_exchange = false, ignore_officials = false, no_individual_export = false;
+    public static int steps_mean = 4, selctedFramesetIdx = 0, selectedMatchIdx = 0;
+
+    public static double playback_speed = 10;
+    public static double smooth_factor = 0.9;
+
     public Config() {
         setLayout(new GridLayout(12, 2));
 
@@ -29,7 +36,7 @@ public class Config extends JPanel {
         slider1.setAutoscrolls(true);
         slider1.addChangeListener(e -> {
             System.out.println(slider1.getValue());
-            App.steps_mean = slider1.getValue();
+            Config.steps_mean = slider1.getValue();
             idp.analyze();
         });
         add(slider1);
@@ -38,8 +45,8 @@ public class Config extends JPanel {
         JCheckBox chinButton = new JCheckBox("only active play");
         chinButton.addChangeListener(e -> {
             System.out.println(chinButton.isSelected());
-            if (App.only_active != chinButton.isSelected()) {   // only do something if value actually changed
-                App.only_active = chinButton.isSelected();
+            if (Config.only_active != chinButton.isSelected()) {   // only do something if value actually changed
+                Config.only_active = chinButton.isSelected();
                 idp.analyze();
             }
         });
@@ -48,8 +55,8 @@ public class Config extends JPanel {
         JCheckBox ignoreKeeper = new JCheckBox("ignopre keeper");
         ignoreKeeper.addChangeListener(e -> {
             System.out.println(ignoreKeeper.isSelected());
-            if (App.ignore_keeper != ignoreKeeper.isSelected()) {
-                App.ignore_keeper = ignoreKeeper.isSelected();
+            if (Config.ignore_keeper != ignoreKeeper.isSelected()) {
+                Config.ignore_keeper = ignoreKeeper.isSelected();
                 idp.analyze();
             }
         });
@@ -58,8 +65,8 @@ public class Config extends JPanel {
         JCheckBox ignoreExchange = new JCheckBox("ignore exchange players");
         ignoreExchange.addChangeListener(e -> {
             System.out.println(ignoreExchange.isSelected());
-            if ( App.ignore_exchange != ignoreExchange.isSelected()) {
-                App.ignore_exchange = ignoreExchange.isSelected();
+            if (Config.ignore_exchange != ignoreExchange.isSelected()) {
+                Config.ignore_exchange = ignoreExchange.isSelected();
                 idp.analyze();
             }
         });
@@ -68,8 +75,8 @@ public class Config extends JPanel {
         JCheckBox ignoreOfficials = new JCheckBox("ignore officials");
         ignoreOfficials.addChangeListener(e -> {
             System.out.println(ignoreOfficials.isSelected());
-            if ( App.ignore_officials != ignoreOfficials.isSelected()) {
-                App.ignore_officials = ignoreOfficials.isSelected();
+            if (Config.ignore_officials != ignoreOfficials.isSelected()) {
+                Config.ignore_officials = ignoreOfficials.isSelected();
                 idp.analyze();
             }
         });
@@ -78,8 +85,8 @@ public class Config extends JPanel {
         JCheckBox noIndividualExport = new JCheckBox("no individual export");
         noIndividualExport.addChangeListener(e -> {
             System.out.println(noIndividualExport.isSelected());
-            if ( App.no_individual_export != noIndividualExport.isSelected()) {
-                App.no_individual_export = noIndividualExport.isSelected();
+            if ( Config.no_individual_export != noIndividualExport.isSelected()) {
+                Config.no_individual_export = noIndividualExport.isSelected();
                 idp.analyze();
             }
         });
@@ -96,9 +103,9 @@ public class Config extends JPanel {
         slider_playback_speed.setAutoscrolls(true);
         slider_playback_speed.addChangeListener(e -> {
             System.out.println(slider_playback_speed.getValue());
-            App.smooth_factor = slider_playback_speed.getValue() * 0.1;
+            Config.smooth_factor = slider_playback_speed.getValue() * 0.1;
             //idp.redoAnalyze();
-            App.vis_speed.repaint();
+            vis_speed.repaint();
 
         });
         add(slider_playback_speed);
@@ -147,8 +154,8 @@ public class Config extends JPanel {
 
         selectList.setSelectedIndex(0);
         selectList.addActionListener(e -> {
-            App.selctedFramesetIdx = selectList.getSelectedIndex();
-            App.vis_speed.repaint();
+            Config.selctedFramesetIdx = selectList.getSelectedIndex();
+            vis_speed.repaint();
         });
 
         for (int i = 0; i < idp.game.positions.size(); i++) {
@@ -159,6 +166,6 @@ public class Config extends JPanel {
             idp.selectFrameSet(selectMatchList.getSelectedIndex());
             config.updateData();    // so other player can be selected
         });
-        selectMatchList.setSelectedIndex(App.selectedMatchIdx);
+        selectMatchList.setSelectedIndex(Config.selectedMatchIdx);
     }
 }

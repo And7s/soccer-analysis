@@ -3,7 +3,7 @@ package idp;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import static idp.App.vis_speed;
+
 import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
 
@@ -36,17 +36,18 @@ public class idp {
     public static myFrame my_frame;
     public static Config config;
     public static Position position;
-    public static visSprints vis_sprints;
     public static visBatch vis_batch;
-    public static visMean vis_mean;
     public static Table table;
+    public static visMean vis_mean;
+    public static visSpeed vis_speed;
+    public static visSprints vis_sprints;
 
 
     private idp() {
         PrintStream origOut = System.out;
         PrintStream interceptor = new Interceptor(origOut);
         System.setOut(interceptor);// just add the interceptor
-        App.vis_speed = new visSpeed();
+        vis_speed = new visSpeed();
         game = new Game();
 
         my_frame = new myFrame();
@@ -66,12 +67,12 @@ public class idp {
         my_frame.addView(vis_speed, "speed");
 
         vis_mean = new visMean();
-        App.vis_mean = vis_mean;    // set static ref
+        vis_mean = vis_mean;    // set static ref
 
         my_frame.addView(vis_mean, "mean");
 
         vis_sprints = new visSprints();
-        App.vis_sprints = vis_sprints;
+        vis_sprints = vis_sprints;
         vis_sprints.updateData(frameSet);
         my_frame.addView(vis_sprints, "sprints");
 
@@ -92,7 +93,7 @@ public class idp {
         frameSet = game.positions.get(idx).frameSet;  // make this frameset accessible
         position = game.positions.get(idx);
         match = game.matchs.get(idx); // danger how to verify that mathc has been loaded
-        App.selectedMatchIdx = idx;
+        Config.selectedMatchIdx = idx;
 
         updateTable();
         analyze();

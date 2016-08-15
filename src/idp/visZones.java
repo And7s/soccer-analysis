@@ -25,10 +25,10 @@ public class visZones extends JPanel {
     // generate the data to be plotted
     private void analyze() {
 
-        int steps = App.steps_mean;
+        int steps = Config.steps_mean;
         plotPoints = new MeanData[steps * 2][5];
 
-        int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
+        int filter = Config.only_active? FILTER.ACTIVE : FILTER.ALL;
 
         for (int i = 0; i < steps * 2; i++) {
             int start = (int)(45.0 / steps * (i % steps));
@@ -39,12 +39,12 @@ public class visZones extends JPanel {
 
                 for (int k = 0; k < sets.length; k++) {
                     if (sets[k].isBall) continue;
-                    if (App.ignore_officials && sets[k].noTeam) continue;
+                    if (Config.ignore_officials && sets[k].noTeam) continue;
                     Player player = idp.game.getPlayer(sets[k].Object);
                     boolean is_tw = player.PlayingPosition.equals("TW");
                     boolean is_starting = player.Starting;
-                    if(App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
-                    if(App.ignore_exchange && !is_starting) continue;
+                    if(Config.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+                    if(Config.ignore_exchange && !is_starting) continue;
 
                     if ((i < steps) == sets[k].firstHalf) { // account to the right half time
                         md.add(sets[k].getMD(VAR.SZ0 + j, start, end, filter));
@@ -58,11 +58,11 @@ public class visZones extends JPanel {
 
 
     private int getMeanStart(int i) {
-        int steps = App.steps_mean;
+        int steps = Config.steps_mean;
         return (int)(45.0 / steps * (i % steps));
     }
     private int getMeanEnd(int i) {
-        int steps = App.steps_mean;
+        int steps = Config.steps_mean;
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 

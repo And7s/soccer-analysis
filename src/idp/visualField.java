@@ -37,7 +37,7 @@ public class visualField extends JPanel {
 
     private void update() {
         if (idp.frameSet == null ||idp.position == null) return;
-        cur_pos += App.playback_speed;
+        cur_pos += Config.playback_speed;
         int amount = idp.position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
         if (cur_pos >= amount) {
             cur_pos = 0;

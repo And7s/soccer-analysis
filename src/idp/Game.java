@@ -122,14 +122,14 @@ public class Game {
             FrameSet fs = frameSet[i];
 
             if (fs.isBall) continue;
-            if (App.ignore_officials && fs.noTeam) continue;
+            if (Config.ignore_officials && fs.noTeam) continue;
             Player player = game.getPlayer(fs.Object);
             boolean is_tw = player.PlayingPosition.equals("TW");
             boolean is_starting = player.Starting;
-            if (App.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
-            if (App.ignore_exchange && !is_starting) continue;
+            if (Config.ignore_keeper && is_tw) continue;   // dont take keeper into the dataset
+            if (Config.ignore_exchange && !is_starting) continue;
 
-            for (int j = 0; j <= App.steps_mean; j++) {
+            for (int j = 0; j <= Config.steps_mean; j++) {
                 int filter = (j == 0) ? FILTER.ALL : FILTER.ACTIVE;
                 int start = (j == 0) ? 0 : getMeanStart(j - 1);
                 int end = (j == 0) ? 45 : getMeanEnd(j - 1);
@@ -164,11 +164,11 @@ public class Game {
         }
     }
     private int getMeanStart(int i) {
-        int steps = App.steps_mean;
+        int steps = Config.steps_mean;
         return (int)(45.0 / steps * (i % steps));
     }
     private int getMeanEnd(int i) {
-        int steps = App.steps_mean;
+        int steps = Config.steps_mean;
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 
@@ -267,7 +267,7 @@ public class Game {
 
         // draw the data that requires the FrameSet still be loaded
 
-        if (!App.no_individual_export) {
+        if (!Config.no_individual_export) {
             for (int i = 0; i < game.positions.size(); i++) {
                 FrameSet[] frame_set = game.positions.get(i).frameSet;
                 try {
@@ -304,6 +304,6 @@ public class Game {
     }
 
     private String getExportName(int i) {
-        return game.matchs.get(i).MatchId + '_' + App.ignore_keeper + '_'+ App.only_active + '_'+ App.ignore_exchange + '_' + App.steps_mean + '_' + App.smooth_factor;
+        return game.matchs.get(i).MatchId + '_' + Config.ignore_keeper + '_'+ Config.only_active + '_'+ Config.ignore_exchange + '_' + Config.steps_mean + '_' + Config.smooth_factor;
     }
 }
