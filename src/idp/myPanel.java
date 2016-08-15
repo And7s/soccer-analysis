@@ -12,8 +12,7 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import static idp.idp.game;
-import static idp.idp.onGameLoaded;
+import static idp.idp.*;
 
 
 /**
@@ -37,7 +36,7 @@ public class myPanel extends JPanel {
                 }
             }
         };
-        JButton button = new JButton("open, fst position, then match");
+        JButton button = new JButton("select Rroot dir");
         button.addActionListener(e -> {
             System.out.println("clicked open");
             openDialog();
@@ -66,69 +65,19 @@ public class myPanel extends JPanel {
         g.fillRect(0, height / 2 - 10, c_paint, 20);
     }
 
-    public void openDialog() {
-        if (true) {        // DEBUG
-            File position_file = null, match_file = null;
-            JFileChooser fc = new JFileChooser("select a position set please");
-            fc.setCurrentDirectory(new java.io.File(".")); // start at application current directory
-            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            int returnVal = fc.showSaveDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                position_file = fc.getSelectedFile();
+    private void openDialog() {
 
-                int ret = Position.checkType(position_file.getAbsolutePath());
-                if (ret != 1 && ret != 0) {
-                    JOptionPane.showMessageDialog(null, "not a valid position set");
-                    return;
-                }
-            }
+        File root_dir;
+        JFileChooser fc = new JFileChooser("select Root dir");
+        fc.setCurrentDirectory(new java.io.File(".")); // start at application current directory
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            root_dir = fc.getSelectedFile();
 
-            fc = new JFileChooser("select a match set please");
-            fc.setCurrentDirectory(new java.io.File(position_file.getPath())); // start at application current directory
-            fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            returnVal = fc.showSaveDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                match_file = fc.getSelectedFile();
-                int ret = Position.checkType(match_file.getAbsolutePath());
-                if (ret != 3) {
-                    JOptionPane.showMessageDialog(null, "not a valid match set " + ret);
-                    return;
-                }
-            }
-            if (position_file != null && match_file != null) {
-                JOptionPane.showMessageDialog(null, "you selected " + position_file.getName());
-                addMatch(position_file, match_file);
-            } else {
-                JOptionPane.showMessageDialog(null, "not both files were selected");
-            }
-        } else {
+            vis_batch = new visBatch(root_dir.getAbsolutePath()+'\\');
+            my_frame.addView(vis_batch, "batch");
 
-            addMatch(new File("D:\\dfl\\" + "DFL-MAT-00031J" + "_ObservedPositionalData.xml"),
-                new File("D:\\dfl\\" + "DFL-MAT-00031J" + "_MatchInformation.xml"));
         }
-
     }
-
-    public void addMatch(File position_file, File match_file) {
-        Position pos;
-        Match match;
-        try {
-            int ret = Position.checkType(position_file.getAbsolutePath());
-            FrameSet[] frame_set = Position.readPosition(position_file.getAbsolutePath(), ret);
-            pos = new Position(frame_set);
-
-            match = new Match(match_file.getAbsolutePath());
-
-            game.addPosition(pos);
-            game.addMatch(match);
-
-            onGameLoaded();
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "error laoding");
-        }
-
-    }
-
-
 }

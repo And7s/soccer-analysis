@@ -58,8 +58,7 @@ public class idp {
 
         my_frame.addView(visField, "Field");
 
-        vis_batch = new visBatch();
-        my_frame.addView(vis_batch, "batch");
+
 
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
@@ -67,12 +66,11 @@ public class idp {
         my_frame.addView(vis_speed, "speed");
 
         vis_mean = new visMean();
-        vis_mean = vis_mean;    // set static ref
 
         my_frame.addView(vis_mean, "mean");
 
         vis_sprints = new visSprints();
-        vis_sprints = vis_sprints;
+
         vis_sprints.updateData(frameSet);
         my_frame.addView(vis_sprints, "sprints");
 

@@ -28,7 +28,7 @@ public class visBatch extends JPanel {
 
     Map<String, FilePair> pairs;
     private static int LIMIT = 1000;
-    public visBatch() {
+    public visBatch(String rootDir) {
 
         JPanel panel = new JPanel();
 
@@ -39,7 +39,7 @@ public class visBatch extends JPanel {
         files = new Vector<>(LIMIT);
 
         pairs = new HashMap<String, FilePair>(LIMIT);
-        final String base = "D:\\dfl\\";
+        final String base = rootDir; // "D:\\dfl\\";
         final File folder = new File(base);
         listFilesForFolder(folder, base);
         System.out.println(files.size());
