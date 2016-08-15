@@ -14,7 +14,6 @@ import static idp.idp.config;
  * Created by Andre on 16/04/2016.
  */
 public class myFrame extends JFrame {
-    public int count;
     private JTabbedPane tabbedPane;
 
     public myFrame() {

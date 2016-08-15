@@ -1,6 +1,5 @@
 package idp;
 
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,7 +12,6 @@ import static java.lang.Thread.sleep;
  */
 public class visualField extends JPanel {
 
-    //MeanData[] data;
     Graphics g;
 
     int width, height;
@@ -22,25 +20,22 @@ public class visualField extends JPanel {
     boolean show_first_half = true;
 
     public visualField() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Inner Thread");
+        new Thread(() -> {
+            System.out.println("Inner Thread");
 
-                while (!Thread.currentThread().isInterrupted()) {
-                    update();
-                    try {
-                        sleep(32);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            while (!Thread.currentThread().isInterrupted()) {
+                update();
+                try {
+                    sleep(32);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
     }
 
 
-    public void update() {
+    private void update() {
         if (idp.frameSet == null ||idp.position == null) return;
         cur_pos += App.playback_speed;
         int amount = idp.position.getBallFirstHalf(show_first_half).frames.length;  // how long is this half
@@ -98,7 +93,6 @@ public class visualField extends JPanel {
                             g.setColor(new Color(0, 0, 0, 0.1f * i / 10.0f));
                         }
 
-
                         g.drawLine(
                             scaleX(frameSet[j].frames[idx - 1].X),
                             scaleY(frameSet[j].frames[idx - 1].Y),
@@ -112,20 +106,17 @@ public class visualField extends JPanel {
                         y = scaleY(frameSet[j].frames[idx].Y);
                     g.fillArc(x - 1, y - 1, 3, 3, 0, 360);
                     g.setColor(Color.black);
-                    ((Graphics2D) g).drawString(
+                    g.drawString(
                         game.getPlayer(frameSet[j].Object).ShortName, x,y);
                 }
             }
         }
 
-
-
-
-        long duration = System.nanoTime() - startTime;
+        // long duration = System.nanoTime() - startTime;
         // System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
-    public void drawBackground() {
+    private void drawBackground() {
         g.setColor(new Color(182,215,174));
         g.fillRect(0, 0, width, height);
 
@@ -160,16 +151,11 @@ public class visualField extends JPanel {
         g.drawArc(left - meterSize / 2, bottom - meterSize / 2, meterSize, meterSize, 0, 90);
     }
 
-    // draws a line, but takes arguments in METER
-    public void drawLine(double x1, double y1, double x2, double y2) {
-        g.drawLine(scaleX(x1), scaleY(y1), scaleX(x2), scaleY(y2));
-    }
-
-    public int scaleX(double x) {
+    private int scaleX(double x) {
         return (int) ((x + 75) * scale) ;
     }
 
-    public int scaleY(double y) {
+    private int scaleY(double y) {
         return (int) ((y + 50) * scale);
     }
 

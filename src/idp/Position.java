@@ -44,7 +44,7 @@ public class Position {
     }
 
 
-    public void analyzeFrameSet() {
+    private void analyzeFrameSet() {
         for (int i = 0; i < frameSet.length; i++) {
             if (frameSet[i].isBall) {       // determine which frameset is the ball
                 if (frameSet[i].firstHalf) {
@@ -81,7 +81,7 @@ public class Position {
         }
     }
 
-    public void spreadBallStatus() {
+    private void spreadBallStatus() {
         // get ballposession and ballstatus for others
         int start_first_half = frameSet[idx_ball_first_half].frames[0].N,
             start_second_half = frameSet[idx_ball_second_half].frames[0].N;

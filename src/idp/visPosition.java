@@ -29,7 +29,7 @@ import static idp.idp.position;
 
 public class visPosition extends JPanel {
 
-    public static double scale = 1;
+    private static double scale = 1;
 
     public static void paint(Graphics g, int width, int height, FrameSet fs) {
         scale = Math.min(
@@ -78,7 +78,7 @@ public class visPosition extends JPanel {
         }
     }
 
-    public static void drawBackground(Graphics2D g, int width, int height) {
+    private static void drawBackground(Graphics2D g, int width, int height) {
         g.setColor(new Color(77,158,58, 100));
 
         g.fillRect(0, 0, width, height);
@@ -114,18 +114,13 @@ public class visPosition extends JPanel {
         g.drawArc(left - meterSize / 2, bottom - meterSize / 2, meterSize, meterSize, 0, 90);
     }
 
-    // draws a line, but takes arguments in METER
-   /* public void drawLine(Graphics2D g, double x1, double y1, double x2, double y2) {
-        g.drawLine(scaleX(x1), scaleY(y1), scaleX(x2), scaleY(y2));
-    }*/
 
-    public static int scaleX(double x) {
+    private static int scaleX(double x) {
         return (int) ((x + 75) * scale) ;
     }
 
-    public static int scaleY(double y) {
+    private static int scaleY(double y) {
         return (int) ((y + 50) * scale);
     }
-
 
 }

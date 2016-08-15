@@ -56,7 +56,6 @@ public class Game {
     public void writeCSV() {
         if (matchs.size() != positions.size()) return;
 
-
         try
         {
             OutputStream os = new FileOutputStream("export/analyze.csv");
@@ -83,9 +82,7 @@ public class Game {
                 writeMatch(wr2, frameSet, match);
                 wr2.flush();
                 wr2.close();
-
             }
-
             //generate whatever data you want
 
             wr.flush();
@@ -209,26 +206,6 @@ public class Game {
         } catch (Exception e) {
 
         }
-
-        // draw speed chart
-        /*
-        try {
-            int all_fs_count = 0;
-            for (int i = 0; i < game.positions.size(); i++) {
-                BufferedImage image = new BufferedImage(2000, 900, BufferedImage.TYPE_INT_RGB);
-                FrameSet[] fs = game.positions.get(i).frameSet;
-                frameSet = fs;
-                for (int j = 0; j < fs.length; j++) {
-                    App.selctedFramesetIdx = j;
-                    Graphics2D cg = image.createGraphics();
-                    vis_speed.paint(cg, 2000, 900);
-                    ImageIO.write(image, "png", new File("export/" + fs[j].Match + "_" + fs[j].Object + "speed_zones.png"));
-                }
-            }
-            System.out.println("in total there are "+ all_fs_count);
-        } catch (Exception e) {
-
-        }*/
 
         try {
 

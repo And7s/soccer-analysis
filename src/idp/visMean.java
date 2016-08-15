@@ -1,25 +1,10 @@
 package idp;
 
 import java.awt.*;
-import java.util.Random;
-
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-
-
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 
 public class visMean extends JPanel {
 
@@ -28,28 +13,27 @@ public class visMean extends JPanel {
     private float offsetY = 100;
     private Font font_big, font_small;
     private  MeanData[] plotPoints;
+
     public visMean() {
         font_big = new Font("Segoe UI Light", Font.PLAIN, 14);
         font_small = new Font("Segoe UI Light", Font.PLAIN, 10);
-
-
     }
+
     public void updateData() {
-
         repaint();
-
     }
 
     private int getMeanStart(int i) {
         int steps = App.steps_mean;
         return (int)(45.0 / steps * (i % steps));
     }
+
     private int getMeanEnd(int i) {
         int steps = App.steps_mean;
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 
-    public void analyze() {
+    private void analyze() {
         int steps = App.steps_mean;
         plotPoints = new MeanData[steps * 2];
 
@@ -159,11 +143,11 @@ public class visMean extends JPanel {
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
-    public int scaleX(double x) {
+    private int scaleX(double x) {
         return (int)((x + 0.5f) * width / plotPoints.length);
     }
 
-    public int scaleY(double y) {
+    private int scaleY(double y) {
         return (int)(height - (y - offsetY) * scale);
     }
 

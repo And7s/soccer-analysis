@@ -1,37 +1,19 @@
 package idp;
 
-import idp.FrameSet;
-import idp.Position;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import static idp.idp.game;
-import static idp.idp.match;
 import static idp.idp.onGameLoaded;
-
-import idp.InvalidPositionDataSet;
 
 
 /**
@@ -42,7 +24,6 @@ public class myPanel extends JPanel {
 
     Vector<String> files;
     public myPanel() {
-
 
         Thread th = new Thread() {
             public void run() {
@@ -57,19 +38,15 @@ public class myPanel extends JPanel {
             }
         };
         JButton button = new JButton("open, fst position, then match");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("clicked open");
-                openDialog();
-            }
+        button.addActionListener(e -> {
+            System.out.println("clicked open");
+            openDialog();
         });
         add(button);
         th.start();
     }
 
     public void paintComponent(Graphics g) {
-       // System.out.println("print "+c_paint);
         c_paint++;
         super.paintComponent(g);
         Font f = new Font("Segoe UI Light", Font.PLAIN, 50);

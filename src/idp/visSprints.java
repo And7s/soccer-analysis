@@ -31,11 +31,8 @@ public class visSprints extends JPanel {
     public visSprints() {
         font_big = new Font("Segoe UI Light", Font.PLAIN, 14);
         font_small = new Font("Segoe UI Light", Font.PLAIN, 10);
-
-
     }
     public void updateData(FrameSet[] frameSet) {
-
         repaint();
     }
 
@@ -48,7 +45,7 @@ public class visSprints extends JPanel {
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 
-    public void analyze() {
+    private void analyze() {
         int steps = App.steps_mean;
         plotPoints = new MeanData[steps * 2];
 
@@ -84,9 +81,9 @@ public class visSprints extends JPanel {
         Dimension size = getSize();
         width = (int) size.getWidth();
         height = (int) size.getHeight();
-
         paint(g, width, height);
     }
+
     public void paint(Graphics g, int width, int height) {
         this.width = width;
         this.height = height;
@@ -154,13 +151,12 @@ public class visSprints extends JPanel {
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
-    public int scaleX(double x) {
+    private int scaleX(double x) {
         return (int)((x + 0.5) * width / plotPoints.length);
     }
 
-    public int scaleY(double y) {
+    private int scaleY(double y) {
         return (int)(height - y * scale);
     }
-
 
 }

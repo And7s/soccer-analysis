@@ -53,14 +53,10 @@ class LoadGameParallel {
 
 }
 
-class FileStruct {
-    String name;
-    int type;
-    boolean inMem;
-}
+
 public class visBatch extends JPanel {
     Vector<String> files;
-    Vector<FileStruct> files_struct;
+
     Map<String, FilePair> pairs;
     private static int LIMIT = 1000;
     public visBatch() {
@@ -71,8 +67,7 @@ public class visBatch extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
         setLayout(new GridLayout(1,0));
 
-        files = new Vector<String>(LIMIT);
-        files_struct = new Vector<FileStruct>(LIMIT);
+        files = new Vector<>(LIMIT);
 
         pairs = new HashMap<String, FilePair>(LIMIT);
         final String base = "D:\\dfl\\";
@@ -168,7 +163,7 @@ public class visBatch extends JPanel {
         panel.setLayout(experimentLayout);
     }
 
-    public void listFilesForFolder(final File folder, String path) {
+    private void listFilesForFolder(final File folder, String path) {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry, path + fileEntry.getName() + "/" );

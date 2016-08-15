@@ -1,15 +1,8 @@
 package idp;
 
-import javafx.geometry.Pos;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import static idp.App.vis_mean;
 import static idp.App.vis_speed;
 import static idp.Position.showMemory;
 // http://knowm.org/open-source/xchart/xchart-example-code/
@@ -49,7 +42,7 @@ public class idp {
     public static Table table;
 
 
-    public idp() {
+    private idp() {
         PrintStream origOut = System.out;
         PrintStream interceptor = new Interceptor(origOut);
         System.setOut(interceptor);// just add the interceptor
@@ -111,7 +104,7 @@ public class idp {
         config.updateData();
     }
 
-    public static void updateTable() {
+    private static void updateTable() {
 
         // create a table view
 
@@ -165,7 +158,7 @@ public class idp {
         System.out.println("analyze took" + (duration / 1E6)+ "ms");
 
     }
-    public static String leftPad(String originalString, int length,
+    private static String leftPad(String originalString, int length,
                                  char padCharacter) {
         StringBuilder sb = new StringBuilder();
 

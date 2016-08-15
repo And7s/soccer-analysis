@@ -32,7 +32,7 @@ public class Match {
         try {
             in = new FileInputStream(filename);
             XMLStreamReader streamReader = inputFactory.createXMLStreamReader(in);
-            int next = streamReader.nextTag(); // Advance to "book" element
+            streamReader.nextTag(); // Advance to "book" element
 
             while (streamReader.hasNext()) {
                 if (streamReader.isStartElement()) {
@@ -102,15 +102,6 @@ public class Match {
             }
         }
         System.out.println("Cannot find team " + id);
-        Team t = new Team();
-        return t;
-    }
-
-    public String getDescr() {
-        return "MatchId," + MatchId+ "\n" +
-            "GameTitle," + GameTitle + "\n" +
-            "Season," + Season + "\n" +
-            "KickoffTime, " + KickoffTime + "\n" +
-            "Competition," + Competition + "\n";
+        return new Team();  // return dummy
     }
 }

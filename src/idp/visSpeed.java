@@ -36,7 +36,7 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         repaint();
     }
 
-    public static void plotSubset(Frame[] fs, int start, int end, int offset_y, VisFilter f) {
+    private static void plotSubset(Frame[] fs, int start, int end, int offset_y, VisFilter f) {
 
         double scale_x = (double) width / (end - start);
         double scale_y = f.scale;
@@ -195,5 +195,4 @@ public class visSpeed extends JPanel implements MouseWheelListener {
         long duration = System.nanoTime() - startTime;
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
-
 }

@@ -13,7 +13,6 @@ import java.io.File;
 
 public class visZones extends JPanel {
 
-
     Graphics2D g2d;
     private int width, height;
     private MeanData[][] plotPoints;
@@ -24,7 +23,7 @@ public class visZones extends JPanel {
     }
 
     // generate the data to be plotted
-    public void analyze() {
+    private void analyze() {
 
         int steps = App.steps_mean;
         plotPoints = new MeanData[steps * 2][5];
@@ -149,11 +148,11 @@ public class visZones extends JPanel {
         System.out.println("duration" + (duration / 1E6)+ "ms");
     }
 
-    public int scaleX(int i) {
+    private int scaleX(int i) {
         return (int)((i + 0.5) * width / plotPoints.length);
     }
 
-    public int scaleY(double y) {
+    private int scaleY(double y) {
         return height - (int)(y * height / 200f);
     }
 
