@@ -1,15 +1,15 @@
 package idp;
 
-class GameSection {
+class MeanData {
     double sum = 0, sq_sum, count = 0, min = Double.MAX_VALUE, max = Double.MIN_VALUE;
 
     // merges two game section
-    void add(GameSection gs) {
-        sum += gs.sum;
-        sq_sum += gs.sq_sum;
-        count += gs.count;
-        min = Math.min(min, gs.min);
-        max = Math.max(max, gs.max);
+    void add(MeanData md) {
+        sum += md.sum;
+        sq_sum += md.sq_sum;
+        count += md.count;
+        min = Math.min(min, md.min);
+        max = Math.max(max, md.max);
     }
 }
 
@@ -31,7 +31,7 @@ public class FrameSet {
     public Frame frames[];
     public int frames_missing = 0;
     public boolean no_ball_status = false;
-    private GameSection[][][] aggregate;
+    private MeanData[][][] aggregate;
 
 
     public String toString() {
@@ -43,7 +43,7 @@ public class FrameSet {
     public double getVar(int var, int filter) { return getVar(var, 0, aggregate[var][filter].length, filter); }
 
     public double getVar(int var, int start, int end, int filter) {
-        GameSection[] dat = aggregate[var][filter];
+        MeanData[] dat = aggregate[var][filter];
         double val = 0;
         for (int i = start; i < end && i < dat.length; i++) {
             val += dat[i].sum;
@@ -52,12 +52,12 @@ public class FrameSet {
     }
 
     // var filter time
-    public GameSection getGS(int var, int start, int end, int filter) {
-        GameSection gs = new GameSection(); // create new gs
+    public MeanData getMD(int var, int start, int end, int filter) {
+        MeanData md = new MeanData(); // create new md
         for (int i = start; i < end; i++) {
-            gs.add(aggregate[var][filter][i]);
+            md.add(aggregate[var][filter][i]);
         }
-        return gs;
+        return md;
     }
 
     public double getVarSq(int var) { return getVarSq(var, 0, aggregate[var][FILTER.ALL].length, FILTER.ALL);}
@@ -65,7 +65,7 @@ public class FrameSet {
     public double getVarSq(int var, int filter) { return getVarSq(var, 0, aggregate[var][filter].length, filter); }
 
     public double getVarSq(int var, int start, int end, int filter) {
-        GameSection[] dat = aggregate[var][filter];
+        MeanData[] dat = aggregate[var][filter];
         double val = 0;
         for (int i = start; i < end && i < dat.length; i++) {
             val += dat[i].sq_sum;
@@ -78,7 +78,7 @@ public class FrameSet {
     public int getVarCount(int var, int filter) { return getVarCount(var, 0, aggregate[var][filter].length, filter); }
 
     public int getVarCount(int var, int start, int end, int filter) {
-        GameSection[] dat = aggregate[var][filter];
+        MeanData[] dat = aggregate[var][filter];
         int count = 0;
         for (int i = start; i < end && i < dat.length; i++) {
             count += dat[i].count;
@@ -87,7 +87,7 @@ public class FrameSet {
     }
 
     public double getVarMin(int var, int start, int end, int filter) {
-        GameSection[] dat = aggregate[var][filter];
+        MeanData[] dat = aggregate[var][filter];
         double min = Double.MAX_VALUE;
         for (int i = 0; i < dat.length; i++) {
             min = Math.min(min, dat[i].min);
@@ -95,7 +95,7 @@ public class FrameSet {
         return min;
     }
     public double getVarMax(int var, int start, int end, int filter) {
-        GameSection[] dat = aggregate[var][filter];
+        MeanData[] dat = aggregate[var][filter];
         double max = Double.MIN_VALUE;
         for (int i = 0; i < dat.length; i++) {
             max = Math.max(max, dat[i].max);
@@ -127,13 +127,13 @@ public class FrameSet {
         int last_frame = frameSet.frames[frameSet.frames.length - 1].N;
         int duration_game_min = (int) Math.ceil((last_frame - ball_fs_offset) / 25.0 / 60);
 
-        aggregate = new GameSection[VAR.length][FILTER.length][duration_game_min];
+        aggregate = new MeanData[VAR.length][FILTER.length][duration_game_min];
 
         // initialize objects
         for (int i = 0; i < VAR.length; i++) {
             for (int j = 0; j < FILTER.length; j++) {
                 for (int k = 0; k < duration_game_min; k++) {
-                    aggregate[i][j][k] = new GameSection();
+                    aggregate[i][j][k] = new MeanData();
                 }
             }
         }

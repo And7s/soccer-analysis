@@ -37,7 +37,6 @@ public class idp {
     public static Match match;
     public visualField visField;
     public static visZones vis_zones;
-    public Events events;
     public static FrameSet[] frameSet;
     public static Game game;
 
@@ -48,17 +47,6 @@ public class idp {
     public static visBatch vis_batch;
     public static visMean vis_mean;
     public static Table table;
-
-    public void paint(Graphics g, int width, int height) {
-
-     Graphics2D g2=(Graphics2D)g;
-
-        g2.setBackground(Color.WHITE);
-        g2.clearRect(0, 0, width, height);
-        g2.setColor(Color.BLACK);
-        g2.drawString("Draw a rectangle", 100,100);
-        g2.drawRect(100,200,50,50);
-    }
 
 
     public idp() {
@@ -94,15 +82,8 @@ public class idp {
         vis_sprints.updateData(frameSet);
         my_frame.addView(vis_sprints, "sprints");
 
-        // events depend on an existing frameset when being instantiated
-//        events = new Events("data/S_14_15_BRE_HSV/events.xml");
-
-        // visField.updateData();
         vis_zones.repaint();
-//        onGameLoaded();
     }
-
-
 
     public static void main(String[] args) {
         new idp();
@@ -128,7 +109,6 @@ public class idp {
         System.out.println("a game has been loaded");
         selectFrameSet(0);
         config.updateData();
-
     }
 
     public static void updateTable() {
@@ -162,10 +142,6 @@ public class idp {
             rowData[i][8] = match.getPlayer(frameSet[i].Object) != null ?
                 match.getPlayer(frameSet[i].Object).PlayingPosition :
                 "-";
-
-            //System.out.println("psoition"+match.getPlayer(frameSet[i].Object).PlayingPosition);
-
-
         }
         Object columnNames[] = { "#", "Object", "firstHalf", "mean [km/h]", "duration [min]", "distance [km]", "#sprints (all, inter, active), per minute", "starting", "position"};
 
@@ -176,8 +152,6 @@ public class idp {
             my_frame.addView(table, "Table");
         }
 
-
-        //  canvas.updateData(dat, frameSet);
     }
 
     public static void analyze() {
@@ -202,6 +176,5 @@ public class idp {
 
         return sb.toString();
     }
-    
 }
 

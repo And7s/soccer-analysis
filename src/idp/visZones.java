@@ -16,7 +16,7 @@ public class visZones extends JPanel {
 
     Graphics2D g2d;
     private int width, height;
-    private GameSection[][] plotPoints;
+    private MeanData[][] plotPoints;
 
     public void updateData(FrameSet[] frameSet) {
         System.out.println("set to "+frameSet.length);
@@ -27,7 +27,7 @@ public class visZones extends JPanel {
     public void analyze() {
 
         int steps = App.steps_mean;
-        plotPoints = new GameSection[steps * 2][5];
+        plotPoints = new MeanData[steps * 2][5];
 
         int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
 
@@ -35,7 +35,7 @@ public class visZones extends JPanel {
             int start = (int)(45.0 / steps * (i % steps));
             int end = (int)(45.0 / steps * ((i % steps) +1 ));
             for (int j = 0; j < 5; j++) {
-                GameSection gs = new GameSection();
+                MeanData md = new MeanData();
                 FrameSet[] sets = idp.frameSet;
 
                 for (int k = 0; k < sets.length; k++) {
@@ -48,10 +48,10 @@ public class visZones extends JPanel {
                     if(App.ignore_exchange && !is_starting) continue;
 
                     if ((i < steps) == sets[k].firstHalf) { // account to the right half time
-                        gs.add(sets[k].getGS(VAR.SZ0 + j, start, end, filter));
+                        md.add(sets[k].getMD(VAR.SZ0 + j, start, end, filter));
                     }
                 }
-                plotPoints[i][j] = gs;
+                plotPoints[i][j] = md;
             }
         }
 
@@ -120,14 +120,14 @@ public class visZones extends JPanel {
 
         for (int i = 0; i < plotPoints.length; i++) {
             //Mean[] plot_data = idp.dat[i].speed_zones;
-            GameSection[] gs = plotPoints[i];
-            for (int j = 0; j < gs.length; j++) {
+            MeanData[] md = plotPoints[i];
+            for (int j = 0; j < md.length; j++) {
 
                 int x = scaleX(i);
 
-                double val = gs[j].sum / gs[j].count / 3.6 * 60; // m/min
+                double val = md[j].sum / md[j].count / 3.6 * 60; // m/min
 
-                double sd = Math.sqrt(gs[j].sq_sum / gs[j].count / (3.6*60) / (3.6*60) - val * val); // sq_sum/count - mean^2 = var
+                double sd = Math.sqrt(md[j].sq_sum / md[j].count / (3.6*60) / (3.6*60) - val * val); // sq_sum/count - mean^2 = var
 
                 int y = scaleY(val); // 10 is the max of the height //
                 int delta = (int)(height * sd / 10f);
@@ -141,7 +141,7 @@ public class visZones extends JPanel {
                 g2d.drawLine(x - 2, y + delta / 2, x + 2, y + delta / 2);   // lower
 
                 g2d.drawString(String.format("%.2f sz:"+j, val), x + 10, y + 5);
-                g2d.drawString(String.format("%4.0f", gs[j].count), x - 10, y + delta / 2 + 15);
+                g2d.drawString(String.format("%4.0f", md[j].count), x - 10, y + delta / 2 + 15);
             }
         }
 

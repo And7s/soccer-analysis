@@ -54,7 +54,6 @@ public class visualField extends JPanel {
     public void paintComponent(Graphics g) {
         FrameSet[] frameSet = idp.frameSet;
         Position position = idp.position;
-        Match match = idp.match;
 
         // System.out.println("update"+cur_pos);
         this.g = g;
@@ -119,45 +118,7 @@ public class visualField extends JPanel {
             }
         }
 
-        // draw the Frames
-        /*Event[] event = Events.event;
 
-        int draw_event_count = 1 * 60 * 25;     // x minutes of events
-        int end_frame = ball_frames.frames[0].N + cur_pos + draw_frames_count;
-        int start_frame =  end_frame - draw_event_count;    // startframe
-
-        int plot_event = 0;
-        Color eventcolor = new Color(1, 1, 0, 0.05f);
-        for (int  i = 0; i < event.length; i++) {
-            if (event[i].T > end_frame) break;  // can end now, as frames are sorted
-            if (event[i].T > start_frame) {
-                g2d.setColor(Color.black);
-                g2d.drawString(event[i].type, width - 150, 20 * plot_event);
-                plot_event++;
-
-
-                g2d.setColor(eventcolor);
-                // where was the ball at this time?
-                int ball_idx = event[i].T - ball_frames.frames[0].N;    // the offset from curent frameset to the first
-                if (ball_idx >= 0 && ball_idx < ball_frames.frames.length) {    // check if not out of bounds
-                    ///System.out.println("ball idx is " + ball_idx);
-                    Frame event_frame = ball_frames.frames[ball_idx];    //TODO: take players position rather than the one of the ball
-
-                    for (int j = 1; j < 10; j++) {
-                        int s = j*j;
-                        g2d.fillArc(scaleX(event_frame.X) - s / 2, scaleY(event_frame.Y) - s / 2, s, s, 0, 360);
-                    }
-
-
-                } else {
-                    System.out.println("out of bounds " + ball_idx);    // should not happen with a regular dataset
-                }
-            }
-
-            //System.out.println(event[i]);
-        }
-        */
-        // indicate ballstatus and ballposession
 
 
         long duration = System.nanoTime() - startTime;
@@ -165,7 +126,7 @@ public class visualField extends JPanel {
     }
 
     public void drawBackground() {
-        g.setColor(new Color(77,158,58, 100));
+        g.setColor(new Color(182,215,174));
         g.fillRect(0, 0, width, height);
 
         g.setColor(Color.white);

@@ -16,9 +16,9 @@ import static idp.idp.*;
 public class Config extends JPanel {
     private JComboBox selectList = null, selectMatchList = null;
     public Config() {
-        setLayout(new GridLayout(12,2));
+        setLayout(new GridLayout(12, 2));
 
-        JSlider slider1 = new JSlider(JSlider.HORIZONTAL,1,10,4);//direction , min , max , current
+        JSlider slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 4);//direction , min , max , current
 
         slider1.setMajorTickSpacing(3);
         slider1.setMinorTickSpacing(1);
@@ -27,85 +27,65 @@ public class Config extends JPanel {
         slider1.setPaintTicks(true);
         slider1.setPaintTrack(true);
         slider1.setAutoscrolls(true);
-        slider1.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(slider1.getValue());
-                App.steps_mean = slider1.getValue();
-                idp.analyze();
-            }
+        slider1.addChangeListener(e -> {
+            System.out.println(slider1.getValue());
+            App.steps_mean = slider1.getValue();
+            idp.analyze();
         });
         add(slider1);
 
 
         JCheckBox chinButton = new JCheckBox("only active play");
-        chinButton.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(chinButton.isSelected());
-                if (App.only_active != chinButton.isSelected()) {   // only do something if value actually changed
-                    App.only_active = chinButton.isSelected();
-                    idp.analyze();
-                }
+        chinButton.addChangeListener(e -> {
+            System.out.println(chinButton.isSelected());
+            if (App.only_active != chinButton.isSelected()) {   // only do something if value actually changed
+                App.only_active = chinButton.isSelected();
+                idp.analyze();
             }
         });
         add(chinButton);
 
         JCheckBox ignoreKeeper = new JCheckBox("ignopre keeper");
-        ignoreKeeper.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(ignoreKeeper.isSelected());
-                if (App.ignore_keeper != ignoreKeeper.isSelected()) {
-                    App.ignore_keeper = ignoreKeeper.isSelected();
-                    idp.analyze();
-                }
+        ignoreKeeper.addChangeListener(e -> {
+            System.out.println(ignoreKeeper.isSelected());
+            if (App.ignore_keeper != ignoreKeeper.isSelected()) {
+                App.ignore_keeper = ignoreKeeper.isSelected();
+                idp.analyze();
             }
         });
         add(ignoreKeeper);
 
         JCheckBox ignoreExchange = new JCheckBox("ignore exchange players");
-        ignoreExchange.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(ignoreExchange.isSelected());
-                if ( App.ignore_exchange != ignoreExchange.isSelected()) {
-                    App.ignore_exchange = ignoreExchange.isSelected();
-                    idp.analyze();
-                }
+        ignoreExchange.addChangeListener(e -> {
+            System.out.println(ignoreExchange.isSelected());
+            if ( App.ignore_exchange != ignoreExchange.isSelected()) {
+                App.ignore_exchange = ignoreExchange.isSelected();
+                idp.analyze();
             }
         });
         add(ignoreExchange);
 
         JCheckBox ignoreOfficials = new JCheckBox("ignore officials");
-        ignoreOfficials.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(ignoreOfficials.isSelected());
-                if ( App.ignore_officials != ignoreOfficials.isSelected()) {
-                    App.ignore_officials = ignoreOfficials.isSelected();
-                    idp.analyze();
-                }
+        ignoreOfficials.addChangeListener(e -> {
+            System.out.println(ignoreOfficials.isSelected());
+            if ( App.ignore_officials != ignoreOfficials.isSelected()) {
+                App.ignore_officials = ignoreOfficials.isSelected();
+                idp.analyze();
             }
         });
         add(ignoreOfficials);
 
         JCheckBox noIndividualExport = new JCheckBox("no individual export");
-        noIndividualExport.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(noIndividualExport.isSelected());
-                if ( App.no_individual_export != noIndividualExport.isSelected()) {
-                    App.no_individual_export = noIndividualExport.isSelected();
-                    idp.analyze();
-                }
+        noIndividualExport.addChangeListener(e -> {
+            System.out.println(noIndividualExport.isSelected());
+            if ( App.no_individual_export != noIndividualExport.isSelected()) {
+                App.no_individual_export = noIndividualExport.isSelected();
+                idp.analyze();
             }
         });
         add(noIndividualExport);
 
-
-
-        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1,10,5);//direction , min , max , current
+        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1, 10, 5);//direction , min , max , current
 
         slider_playback_speed.setMajorTickSpacing(3);
         slider_playback_speed.setMinorTickSpacing(1);
@@ -114,38 +94,28 @@ public class Config extends JPanel {
         slider_playback_speed.setPaintTicks(true);
         slider_playback_speed.setPaintTrack(true);
         slider_playback_speed.setAutoscrolls(true);
-        slider_playback_speed.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                System.out.println(slider_playback_speed.getValue());
-                App.smooth_factor = slider_playback_speed.getValue() * 0.1;
-                //idp.redoAnalyze();
-                App.vis_speed.repaint();
+        slider_playback_speed.addChangeListener(e -> {
+            System.out.println(slider_playback_speed.getValue());
+            App.smooth_factor = slider_playback_speed.getValue() * 0.1;
+            //idp.redoAnalyze();
+            App.vis_speed.repaint();
 
-            }
         });
         add(slider_playback_speed);
 
 
         JButton button = new JButton("export loaded");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("will export");
-                //game.writeCSV();
-                game.exportLoaded();
-            }
+        button.addActionListener(e -> {
+            System.out.println("will export");
+            game.exportLoaded();
         });
         add(button);
 
 
         JButton buttonAll = new JButton("bactch anlyze all");
-        buttonAll.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("will export all");
-                vis_batch.exportAll();
-            }
+        buttonAll.addActionListener(e -> {
+            System.out.println("will export all");
+            vis_batch.exportAll();
         });
         add(buttonAll);
     }
@@ -176,24 +146,18 @@ public class Config extends JPanel {
         System.out.println(selectString);
 
         selectList.setSelectedIndex(0);
-        selectList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                App.selctedFramesetIdx = selectList.getSelectedIndex();
-                App.vis_speed.repaint();
-            }
+        selectList.addActionListener(e -> {
+            App.selctedFramesetIdx = selectList.getSelectedIndex();
+            App.vis_speed.repaint();
         });
 
         for (int i = 0; i < idp.game.positions.size(); i++) {
             selectMatchList.addItem(i + ": " + idp.game.matchs.get(i).GameTitle);
         }
 
-        selectMatchList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                idp.selectFrameSet(selectMatchList.getSelectedIndex());
-                config.updateData();    // so other player can be selected
-            }
+        selectMatchList.addActionListener(e -> {
+            idp.selectFrameSet(selectMatchList.getSelectedIndex());
+            config.updateData();    // so other player can be selected
         });
         selectMatchList.setSelectedIndex(App.selectedMatchIdx);
     }

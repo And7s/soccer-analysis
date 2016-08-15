@@ -26,7 +26,7 @@ public class visSprints extends JPanel {
     private int width, height;
     private float scale;
     private Font font_big, font_small;
-    private  GameSection[] plotPoints;
+    private  MeanData[] plotPoints;
 
     public visSprints() {
         font_big = new Font("Segoe UI Light", Font.PLAIN, 14);
@@ -50,7 +50,7 @@ public class visSprints extends JPanel {
 
     public void analyze() {
         int steps = App.steps_mean;
-        plotPoints = new GameSection[steps * 2];
+        plotPoints = new MeanData[steps * 2];
 
         int filter = App.only_active? FILTER.ACTIVE : FILTER.ALL;
 
@@ -59,7 +59,7 @@ public class visSprints extends JPanel {
             int start = getMeanStart(i);
             int end = getMeanEnd(i);
 
-            GameSection gs = new GameSection();
+            MeanData md = new MeanData();
             FrameSet[] sets = idp.frameSet;
 
             for (int k = 0; k < sets.length; k++) {
@@ -72,10 +72,10 @@ public class visSprints extends JPanel {
                 if(App.ignore_exchange && !is_starting) continue;
 
                 if ((i < steps) == sets[k].firstHalf) { // account to the right half time
-                    gs.add(sets[k].getGS(VAR.SPRINT, start, end, filter));
+                    md.add(sets[k].getMD(VAR.SPRINT, start, end, filter));
                 }
             }
-            plotPoints[i] = gs;
+            plotPoints[i] = md;
         }
     }
 
