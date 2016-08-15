@@ -97,12 +97,12 @@ public class visZones extends JPanel {
 
         for (int i = 0; i < 150; i += 20) {   // horizontal lines
             int y = scaleY(i);
-            g2d.drawString(i+" [m/min]", 10, y);
-            g2d.drawLine(20, y, width, y);
+            g2d.drawString(i+" [m/min]", 10, y - 5);
+            g2d.drawLine(0, y, width, y);
         }
         for (int i = 0; i < plotPoints.length; i++) {   // vertical lines
-            g2d.drawLine(scaleX(i), 0, scaleX(i), height);
-            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 30);
+            g2d.drawLine(scaleX(i), 30, scaleX(i), height);
+            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 15);
         }
 
         // connect dots

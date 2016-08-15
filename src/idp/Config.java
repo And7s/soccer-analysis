@@ -52,7 +52,7 @@ public class Config extends JPanel {
         });
         add(chinButton);
 
-        JCheckBox ignoreKeeper = new JCheckBox("ignopre keeper");
+        JCheckBox ignoreKeeper = new JCheckBox("ignore keeper");
         ignoreKeeper.addChangeListener(e -> {
             System.out.println(ignoreKeeper.isSelected());
             if (Config.ignore_keeper != ignoreKeeper.isSelected()) {
@@ -119,7 +119,7 @@ public class Config extends JPanel {
         add(button);
 
 
-        JButton buttonAll = new JButton("bactch anlyze all");
+        JButton buttonAll = new JButton("batch anlayze all");
         buttonAll.addActionListener(e -> {
             System.out.println("will export all");
             vis_batch.exportAll();

@@ -96,13 +96,13 @@ public class visMean extends JPanel {
         g2d.setStroke(dashed);
 
         for (int i = 50; i < 180; i +=10) {    // horizontal lines
-            g2d.drawString(i+"", 5, scaleY(i) + 5);
-            g2d.drawLine(20, scaleY(i), width, scaleY(i));
+            g2d.drawString(i+"", 10, scaleY(i) + 5);
+            g2d.drawLine(40, scaleY(i), width, scaleY(i));
         }
 
         for (int i = 0; i < plotPoints.length; i++) {   // vertical lines
-            g2d.drawLine(scaleX(i), 0, scaleX(i), height);
-            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 30);
+            g2d.drawLine(scaleX(i), 30, scaleX(i), height);
+            g2d.drawString(getMeanStart(i) + "-" + getMeanEnd(i) + "min", scaleX(i) - 20, 15);
         }
 
         // connect dots
@@ -132,9 +132,9 @@ public class visMean extends JPanel {
 
             // value
 
-            g2d.drawString(String.format("%.2f", plotPoints[i].sum / plotPoints[i].count / 3.6 * 60), x + 10, y);
+            g2d.drawString(String.format("%.2f", plotPoints[i].sum / plotPoints[i].count / 3.6 * 60), x - 10, y - 10);
             g.setFont(font_small);
-            g2d.drawString("c: " + String.format("%4.0f", plotPoints[i].count), x, y + delta / 2 + 20);
+            g2d.drawString("c: " + String.format("%4.0f", plotPoints[i].count), x - 20, y + delta / 2 + 20);
             g.setFont(font_big);
         }
 
