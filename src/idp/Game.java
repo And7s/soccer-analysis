@@ -19,9 +19,6 @@ public class Game {
     ArrayList<Position> positions = new ArrayList<Position>();
     ArrayList<Match> matchs = new ArrayList<Match>();
 
-
-
-
     public Game() {
 
     }

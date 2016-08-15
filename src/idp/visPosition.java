@@ -80,6 +80,7 @@ public class visPosition extends JPanel {
 
     public static void drawBackground(Graphics2D g, int width, int height) {
         g.setColor(new Color(77,158,58, 100));
+
         g.fillRect(0, 0, width, height);
 
         g.setColor(Color.white);

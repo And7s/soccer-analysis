@@ -165,7 +165,7 @@ public class visualField extends JPanel {
     }
 
     public void drawBackground() {
-        g.setColor(new Color(77,158,58));
+        g.setColor(new Color(77,158,58, 100));
         g.fillRect(0, 0, width, height);
 
         g.setColor(Color.white);

@@ -39,7 +39,7 @@ import idp.InvalidPositionDataSet;
  */
 public class myPanel extends JPanel {
     int c_paint = 0;
-    int c_lines = 0;
+
     Vector<String> files;
     public myPanel() {
 
@@ -62,8 +62,6 @@ public class myPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("clicked open");
                 openDialog();
-
-
             }
         });
         add(button);
@@ -155,57 +153,5 @@ public class myPanel extends JPanel {
 
     }
 
-    public void readDir(File folder) {
 
-        files = new Vector<String>(10);
-
-        listFilesForFolder(folder, folder.getAbsolutePath()+"\\");
-        System.out.println(files.size());
-
-
-        for (Enumeration it = files.elements(); it.hasMoreElements(); ) {
-
-            String s = (String) it.nextElement();
-
-            int ret = Position.checkType(s);//
-            if (ret >= 0) {
-                System.out.println(s + " = " +ret);
-                try {
-                    FrameSet[] frame_set = Position.readPosition(s, ret);
-                    Position pos = new Position(frame_set);
-                    game.addPosition(pos);
-                } catch (InvalidPositionDataSet e) {
-                    System.out.println("could not load file " + s);
-                }
-
-            }
-
-           /*
-
-            if (ret == 1 || ret == 0) {
-                try {
-                    FrameSet[] frame_set = Position_new.readPosition(s, ret);
-                    Position_new pos = new Position_new(frame_set);
-                    game.addPosition(pos);
-
-
-                } catch (InvalidPositionDataSet e) {
-                    System.out.println("could not load file " + s);
-                }
-
-            }*/
-        }
-    }
-
-    public void listFilesForFolder(final File folder, String path) {
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry, path + fileEntry.getName() + "/" );
-            } else {
-                if (fileEntry.getName().endsWith(".xml")) {
-                    files.add(path + fileEntry.getName());
-                }
-            }
-        }
-    }
 }

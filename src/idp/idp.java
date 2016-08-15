@@ -6,6 +6,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import static idp.App.vis_mean;
 import static idp.App.vis_speed;
@@ -17,9 +19,21 @@ import static idp.Position.showMemory;
 
 // about power
 // http://www.gpexe.com/en/blog/metabolic-power-really-understood.html
+
+
+class Interceptor extends PrintStream {
+    public Interceptor(OutputStream out) {
+        super(out, true);
+    }
+    @Override
+    public void print(String s) {//do what ever you like
+        super.print(s);
+    }
+}
+
+
 public class idp {
 
-    public MyCanvas canvas;
     public static Match match;
     public visualField visField;
     public static visZones vis_zones;
@@ -35,11 +49,7 @@ public class idp {
     public static visMean vis_mean;
     public static Table table;
 
-    public static Batch batch;
-
     public void paint(Graphics g, int width, int height) {
-
-
 
      Graphics2D g2=(Graphics2D)g;
 
@@ -52,33 +62,18 @@ public class idp {
 
 
     public idp() {
-
-        /*BufferedImage image=new BufferedImage(600, 100,BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g2=(Graphics2D)image.getGraphics();
-
-
-        paint(g2, 600, 100);
-        try {
-            ImageIO.write(image, "png", new File("mycanvas.png"));
-        } catch (Exception e) {
-
-        }*/
+        PrintStream origOut = System.out;
+        PrintStream interceptor = new Interceptor(origOut);
+        System.setOut(interceptor);// just add the interceptor
         App.vis_speed = new visSpeed();
         game = new Game();
-        batch = new Batch();
 
         my_frame = new myFrame();
-
 
         visField = new visualField();
 
         showMemory("back in main");
-       // analyze();
 
-
-
-        //my_frame.config.updateData();
         my_frame.addView(visField, "Field");
 
         vis_batch = new visBatch();
@@ -86,7 +81,6 @@ public class idp {
 
         vis_zones = new visZones();
         my_frame.addView(vis_zones, "Zones");
-
 
         my_frame.addView(vis_speed, "speed");
 

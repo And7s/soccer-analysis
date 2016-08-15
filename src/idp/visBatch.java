@@ -16,6 +16,11 @@ import static idp.idp.game;
  * Created by Andre on 31/07/2016.
  */
 
+class FilePair {
+    String position, match;
+    int posType;
+}
+
 class LoadGameParallel {
     private JTextField panel;
     private Map.Entry<String, FilePair> entry;
