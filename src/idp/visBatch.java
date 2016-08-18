@@ -5,10 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import static idp.idp.game;
 
@@ -88,12 +85,19 @@ public class visBatch extends JPanel {
 
 
         int numPairs = 0;
-        for (Map.Entry<String, FilePair> entry : pairs.entrySet()) {
+        Iterator<Map.Entry<String,FilePair>> iter = pairs.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, FilePair> entry = iter.next();
+
 
             // analyze this
             String pos = entry.getValue().position,
                 match = entry.getValue().match;
 
+            if (pos == null || match == null) {
+                iter.remove();
+                continue;
+            }
             System.out.println("match "+entry.getKey() + " pos: "+ pos + " match "+ match);
             JTextField name = new JTextField();
             name.setEditable(false);

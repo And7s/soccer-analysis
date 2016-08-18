@@ -1,7 +1,6 @@
 package idp;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -36,7 +35,7 @@ public class myPanel extends JPanel {
                 }
             }
         };
-        JButton button = new JButton("select Rroot dir");
+        JButton button = new JButton("select Root directory");
         button.addActionListener(e -> {
             System.out.println("clicked open");
             openDialog();
