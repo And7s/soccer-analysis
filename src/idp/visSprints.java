@@ -32,7 +32,7 @@ public class visSprints extends JPanel {
         font_big = new Font("Segoe UI Light", Font.PLAIN, 14);
         font_small = new Font("Segoe UI Light", Font.PLAIN, 10);
     }
-    public void updateData(FrameSet[] frameSet) {
+    public void updateData() {
         repaint();
     }
 

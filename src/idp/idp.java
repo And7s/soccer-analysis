@@ -71,7 +71,7 @@ public class idp {
 
         vis_sprints = new visSprints();
 
-        vis_sprints.updateData(frameSet);
+        vis_sprints.updateData();
         my_frame.addView(vis_sprints, "sprints");
 
         vis_zones.repaint();
