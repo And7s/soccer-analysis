@@ -172,8 +172,23 @@ public class Game {
         return (int)(45.0 / steps * ((i % steps) +1 ));
     }
 
+    private void createExportFolder() {
+        File theDir = new File("export");
+
+        // if the directory does not exist, create it
+        if (!theDir.exists()) {
+            try{
+                theDir.mkdir();
+            }
+            catch(SecurityException se){
+                //handle it
+            }
+        }
+    }
+
     // export data that dopes not have the positions anymore
     public void exportLegacy() {
+        createExportFolder();
         int all_fs_count = 0;
         for (int i = 0; i < game.positions.size(); i++) {
             all_fs_count += game.positions.get(i).frameSet.length;

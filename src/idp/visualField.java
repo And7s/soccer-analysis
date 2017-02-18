@@ -78,10 +78,21 @@ public class visualField extends JPanel {
         g2d.drawString("Ballstatus" + ball_frames.frames[cur_pos].BallStatus, 5, 60);
         g2d.drawString("BallPosession" + ball_frames.frames[cur_pos].BallPossession, 5, 90);
 
+        String first_club = "";
 
+        int col_r, col_g, col_b;
         for (int j = 0; j < frameSet.length; j++) {
             g.setColor(new Color(0,0, 0, 0.05f));
-
+            if (!frameSet[j].Club.equals(ball_frames.Club)) {
+                if (first_club.equals("") || frameSet[j].Club.equals(first_club)) {
+                    first_club = frameSet[j].Club;
+                    col_r = 1; col_g = 0; col_b = 0;
+                } else {
+                    col_r = 0; col_g = 0; col_b = 1;
+                }
+            } else {
+                col_r = 0; col_g = 0; col_b = 0;
+            }
             if (frameSet[j].firstHalf == show_first_half) { // if this half is currently shown
                 int offset = ball_frames.frames[0].N - frameSet[j].frames[0].N;  // offset betwen ball (match) and player activation
                 int idx = 0;
@@ -90,7 +101,7 @@ public class visualField extends JPanel {
 
                     if (idx > 0 && idx < frameSet[j].frames.length) {  // inside the array (player is currently active)
                         if (i % steps_increase_alpha == 0) {
-                            g.setColor(new Color(0, 0, 0, 0.1f * i / 10.0f));
+                            g.setColor(new Color(col_r, col_g, col_b, 0.1f * i / 10.0f));
                         }
 
                         g.drawLine(

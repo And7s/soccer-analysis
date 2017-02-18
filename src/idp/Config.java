@@ -23,7 +23,11 @@ public class Config extends JPanel {
     public static double smooth_factor = 0.9;
 
     public Config() {
-        setLayout(new GridLayout(12, 2));
+        setLayout(new GridLayout(16, 2));
+
+        JLabel desc_slots = new JLabel("num. slots");
+        desc_slots.setOpaque(false);
+        add(desc_slots);
 
         JSlider slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 4);//direction , min , max , current
 
@@ -92,20 +96,43 @@ public class Config extends JPanel {
         });
         add(noIndividualExport);
 
-        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,1, 10, 5);//direction , min , max , current
+        JLabel desc = new JLabel("smooth factor (.1x)");
+        add(desc);
 
-        slider_playback_speed.setMajorTickSpacing(3);
-        slider_playback_speed.setMinorTickSpacing(1);
+        JSlider slider_smooth = new JSlider(JSlider.HORIZONTAL,1, 10, 5);//direction , min , max , current
+
+        slider_smooth.setMajorTickSpacing(3);
+        slider_smooth.setMinorTickSpacing(1);
+        slider_smooth.setOpaque(false);
+        slider_smooth.setPaintLabels(true);
+        slider_smooth.setPaintTicks(true);
+        slider_smooth.setPaintTrack(true);
+        slider_smooth.setAutoscrolls(true);
+        slider_smooth.addChangeListener(e -> {
+            System.out.println(slider_smooth.getValue());
+            Config.smooth_factor = slider_smooth.getValue() * 0.1;
+            //idp.redoAnalyze();
+            vis_speed.repaint();
+
+        });
+        add(slider_smooth);
+
+        JLabel desc_pb = new JLabel("playback speed");
+        add(desc_pb);
+        JSlider slider_playback_speed = new JSlider(JSlider.HORIZONTAL,0, 100, 60);//direction , min , max , current
+
+        slider_playback_speed.setMajorTickSpacing(25);
+        slider_playback_speed.setMinorTickSpacing(10);
         slider_playback_speed.setOpaque(false);
         slider_playback_speed.setPaintLabels(true);
         slider_playback_speed.setPaintTicks(true);
         slider_playback_speed.setPaintTrack(true);
         slider_playback_speed.setAutoscrolls(true);
         slider_playback_speed.addChangeListener(e -> {
-            System.out.println(slider_playback_speed.getValue());
-            Config.smooth_factor = slider_playback_speed.getValue() * 0.1;
-            //idp.redoAnalyze();
-            vis_speed.repaint();
+            double fac = (slider_playback_speed.getValue() - 50) / 15.0;
+            fac = Math.pow(fac, 3);
+            System.out.println("fac" + fac);
+            Config.playback_speed = fac;
 
         });
         add(slider_playback_speed);
